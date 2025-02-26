@@ -31,6 +31,20 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
+        $user = Auth::user();
+
+        if ($user->email_verified_at === NULL) {
+            return redirect()->route('verification.notice');
+        }
+        // if ($user->role == 'student' && $user->preference === NULL) {
+        //     return redirect()->route('preferences');
+        // }
+        // // elseif ($user->role == 'teacher') {
+        // //     return redirect()->intended(route('home'));
+        // // } elseif ($user->role == 'admin') {
+        // //     return redirect()->intended(route('admindashboard'));
+        // // }
+
         $request->session()->regenerate();
 
         return redirect()->intended(route('home', absolute: false));

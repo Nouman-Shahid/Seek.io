@@ -54,6 +54,11 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         Auth::login($user);
+        $user = Auth::user();
+
+        if ($user->email_verified_at === NULL) {
+            return redirect()->route('verification.notice');
+        }
 
         return redirect(route('home', absolute: false));
     }

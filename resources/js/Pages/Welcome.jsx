@@ -2,8 +2,8 @@ import { Head, Link } from "@inertiajs/react";
 import logo from "../images/logo.png";
 import hero from "../images/assets/hero.png";
 import Dropdown from "@/Components/Dropdown";
-
 import NavLink from "@/Components/NavLink";
+import { useEffect } from "react";
 
 export default function Welcome({ auth }) {
     const navLinks = [
@@ -20,6 +20,13 @@ export default function Welcome({ auth }) {
         },
         { name: "FAQ", href: route("login"), active: route().current("faq") },
     ];
+
+    useEffect(() => {
+        if (!sessionStorage.getItem("WelcomePageRefreshed")) {
+            sessionStorage.setItem("WelcomePageRefreshed", "true");
+            window.location.reload();
+        }
+    }, []);
 
     return (
         <>
@@ -94,7 +101,7 @@ export default function Welcome({ auth }) {
                     <p className="text-7xl font-bold text-gray-600">
                         ᴀʟʟ ᴛʜᴇ ꜱᴋɪʟʟꜱ ʏᴏᴜ ɴᴇᴇᴅ ɪɴ ᴏɴᴇ ᴘʟᴀᴄᴇ
                     </p>
-                    <p className="text-3xl w-5/6 ">
+                    <p className="text-3xl w-5/6">
                         From critical skills to technical topics, Seekio
                         supports your professional development.
                     </p>
@@ -107,17 +114,17 @@ export default function Welcome({ auth }) {
                             View Courses
                         </Link>
 
-                        {auth.role !== "teacher" ? (
+                        {!auth.user || auth.user.role == "Student" ? (
                             <Link
                                 href={route("login")}
                                 className="px-3 py-2 bg-green-600 text-white rounded-md transition-all duration-300 hover:bg-green-700"
                             >
                                 Enroll Courses
                             </Link>
-                        ) : auth.role === "teacher" ? (
+                        ) : auth.user && auth.user.role === "Teacher" ? (
                             <Link
                                 href={route("login")}
-                                className="px-3 py-2 bg-green-600 text-wihite rounded-md transition-all duration-300 hover:bg-green-700"
+                                className="px-3 py-2 bg-green-600 text-white rounded-md transition-all duration-300 hover:bg-green-700"
                             >
                                 Make Courses
                             </Link>
