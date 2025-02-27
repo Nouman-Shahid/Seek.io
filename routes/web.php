@@ -16,26 +16,21 @@ Route::get('/', function () {
 
 
 
-// Authenticated and verified routes
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // User Role Routes 
-    Route::prefix('user_roles')->name('user_roles.')->group(function () {
-        Route::get('/', function () {
-            return Inertia::render('UserRole');
-        })->name('index');
+    Route::get('/user_roles', function () {
+        return Inertia::render('UserRole');
+    })->name('user_roles');
 
-        Route::post('/set', [UserController::class, 'storeUserRole'])->name('set');
-    });
+    Route::post('/set_user_roles', [UserController::class, 'storeUserRole'])->name('set_user_roles');
 
     // Preferences Routes
-    Route::prefix('preferences')->name('preferences.')->group(function () {
-        Route::get('/', function () {
-            return Inertia::render('Preferences');
-        })->name('index');
+    Route::get('/preferences', function () {
+        return Inertia::render('Preferences');
+    })->name('preferences');
 
-        Route::post('/set', [UserController::class, 'storePreferences'])->name('set');
-    });
+    Route::post('/set_preferences', [UserController::class, 'storePreferences'])->name('set_preferences');
 
     // Dashboard Route
     Route::get('/dashboard', function () {
@@ -49,5 +44,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/', [ProfileController::class, 'destroy'])->name('destroy');
     });
 });
+
+
+
 
 require __DIR__ . '/auth.php';
