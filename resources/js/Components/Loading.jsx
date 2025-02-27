@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import loadingpic from "../images/assets/loading.png";
 import logo from "../images/logo.png";
+import { Head, Link } from "@inertiajs/react";
 
 const quotes = [
     {
@@ -79,26 +80,30 @@ const Loading = () => {
     }, []);
 
     return (
-        <div class="flex flex-wrap">
-            <div class="w-full sm:w-8/12 mb-10">
-                <div class="container mx-auto h-full sm:p-10">
-                    <img src={logo} className="h-12" />
-                    <header class="container px-4 lg:flex mt-10 items-center h-full lg:mt-0">
-                        <div class="w-full">
-                            <h1 class="text-4xl lg:text-6xl font-bold text-gray-600">
-                                {quote.text}
-                            </h1>
-                            <div class="w-20 h-2 bg-green-700 my-4"></div>
-                            <p class="text-xl mb-10">{quote.author}</p>
-                        </div>
-                    </header>
+        <>
+            <Head title="Loading" />
+
+            <div class="flex flex-wrap">
+                <div class="w-full sm:w-8/12 mb-10">
+                    <div class="container mx-auto h-full sm:p-10">
+                        <img src={logo} className="h-12" />
+                        <header class="container px-4 lg:flex mt-10 items-center h-full lg:mt-0">
+                            <div class="w-full">
+                                <h1 class="text-4xl lg:text-6xl font-bold text-gray-600">
+                                    {quote.text}
+                                </h1>
+                                <div class="w-20 h-2 bg-green-700 my-4"></div>
+                                <p class="text-xl mb-10">{quote.author}</p>
+                            </div>
+                        </header>
+                    </div>
                 </div>
+                <img
+                    src={loadingpic}
+                    class="w-full h-48 object-cover sm:h-screen sm:w-4/12 opacity-85"
+                />
             </div>
-            <img
-                src={loadingpic}
-                class="w-full h-48 object-cover sm:h-screen sm:w-4/12 opacity-85"
-            />
-        </div>
+        </>
     );
 };
 
