@@ -36,7 +36,7 @@ export default function UserRole() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        post("/set_user_role");
+        post("/set_user_roles");
     };
 
     return (
