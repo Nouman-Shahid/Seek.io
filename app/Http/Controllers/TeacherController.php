@@ -6,6 +6,7 @@ use App\Models\Course;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
 class TeacherController extends Controller
@@ -15,13 +16,7 @@ class TeacherController extends Controller
     {
         $user = Auth::user();
         $data = User::where('id', $user->id)->first();
-        $courses = Course::where('course_teacher', $user->id)->get();
-
-        // Debugging: Dump data and stop execution
-        dd([
-            'data' => $data,
-            'course' => $courses
-        ]);
+        $courses = Course::where('course_teacher', $user->id)->get(); // Fix applied
 
         return Inertia::render('TeacherDashboard', [
             'data' => $data,

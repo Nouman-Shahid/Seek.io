@@ -6,6 +6,7 @@ use App\Models\Course;
 use App\Services\WebPurifyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
 class CourseController extends Controller
@@ -69,10 +70,10 @@ class CourseController extends Controller
             'course_image' => $request->course_image,
             'content_media' => $request->content_media,
             'content_desc' => $request->content_desc,
-            'course_amount' => $request->module_amount,
+            'course_amount' => $request->course_amount,
             'module_name' => $request->module_name,
         ]);
 
-        return Inertia::render('TeacherDashboard', ['message' => "Course Submitted Successfully."]);
+        return Redirect::to('/teacherdashboard');
     }
 }

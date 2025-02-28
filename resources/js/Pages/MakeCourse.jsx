@@ -5,6 +5,8 @@ import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
 import { useForm } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import Free from "../images/assets/Free.png";
+import Paid from "../images/assets/Paid.png";
 
 const steps = [
     "Course Information",
@@ -15,15 +17,15 @@ const steps = [
 
 const MakeCourse = () => {
     const [step, setStep] = useState(0);
-    const { data, setData, post, errors } = useForm({
+    const { data, setData, post, errors, processing } = useForm({
         course_title: "",
         course_desc: "",
         course_category: "",
         course_hours: "",
         course_level: "",
-        course_amount: "free",
-        course_image: null, // Use null for file inputs
-        content_media: null, // Use null for file inputs
+        course_amount: "",
+        course_image: null,
+        content_media: null,
         module_name: "",
         content_desc: "",
         terms_accepted: false,
@@ -39,9 +41,9 @@ const MakeCourse = () => {
             const formData = new FormData();
             Object.keys(data).forEach((key) => {
                 if (data[key] instanceof File) {
-                    formData.append(key, data[key], data[key].name); // ✅ Fix file upload issue
+                    formData.append(key, data[key], data[key].name);
                 } else if (typeof data[key] === "boolean") {
-                    formData.append(key, data[key].toString()); // ✅ Fix checkbox value issue
+                    formData.append(key, data[key].toString());
                 } else {
                     formData.append(key, data[key]);
                 }
@@ -58,12 +60,7 @@ const MakeCourse = () => {
 
     const handleChange = (e) => {
         const { name, type, value, checked } = e.target;
-
-        if (type === "checkbox") {
-            setData(name, checked);
-        } else {
-            setData(name, value);
-        }
+        setData(name, type === "checkbox" ? checked : value);
     };
 
     return (
@@ -74,13 +71,37 @@ const MakeCourse = () => {
                         {steps.map((label, index) => (
                             <div
                                 key={index}
-                                className={`w-8  h-8 flex items-center justify-center rounded-full ${
-                                    index <= step
-                                        ? "bg-blue-600 text-white"
-                                        : "bg-gray-300 text-gray-600"
-                                }`}
+                                className="flex flex-col items-center w-1/4"
                             >
-                                {index + 1}
+                                <div className="relative flex items-center">
+                                    {/* Step Circle */}
+                                    <motion.div
+                                        className={`w-10 h-10 flex items-center justify-center rounded-full border-2 transition-all 
+                                        ${
+                                            index <= step
+                                                ? "bg-blue-500 text-white border-blue-500"
+                                                : "bg-gray-200 text-gray-500 border-gray-300"
+                                        }
+                                    `}
+                                    >
+                                        {index + 1}
+                                    </motion.div>
+                                    {/* Line Between Steps */}
+                                    {index < steps.length - 1 && (
+                                        <motion.div
+                                            className={`absolute top-1/2 right-12 left-12 w-[22vh] h-1 transition-all duration-300 
+                                            ${
+                                                index < step
+                                                    ? "bg-blue-500"
+                                                    : "bg-gray-300"
+                                            }`}
+                                        />
+                                    )}
+                                </div>
+                                {/* Step Labels */}
+                                <span className="text-sm text-gray-700 mt-2">
+                                    {label}
+                                </span>
                             </div>
                         ))}
                     </div>
@@ -93,7 +114,7 @@ const MakeCourse = () => {
                         transition={{ duration: 0.4 }}
                     >
                         {step === 0 && (
-                            <div className="flex justify-between items-baseline">
+                            <div className="flex justify-between items-baseline h-[65vh] shadow-lg p-8 rounded-lg">
                                 <div className="flex flex-col w-[55%]">
                                     <div>
                                         <InputLabel
@@ -185,7 +206,7 @@ const MakeCourse = () => {
                                             id="course_desc"
                                             name="course_desc"
                                             value={data.course_desc}
-                                            className="w-full min-h-36 max-h-36 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                            className="w-full max-h-24 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                                             onChange={handleChange}
                                             required
                                         />
@@ -251,7 +272,7 @@ const MakeCourse = () => {
                         )}
 
                         {step === 1 && (
-                            <div className="flex justify-between items-baseline">
+                            <div className="flex justify-between items-baseline h-[65vh] shadow-lg rounded-lg p-8">
                                 <div className="flex flex-col w-[55%]">
                                     <div>
                                         <InputLabel
@@ -282,7 +303,7 @@ const MakeCourse = () => {
                                             id="content_desc"
                                             name="content_desc"
                                             value={data.content_desc}
-                                            className="w-full min-h-36 max-h-36 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                            className="w-full min-h-64 max-h-36 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                                             onChange={handleChange}
                                             required
                                         />
@@ -319,10 +340,37 @@ const MakeCourse = () => {
                         )}
 
                         {step === 2 && (
-                            <div>
-                                <InputLabel value="Pricing" />
-                                <div className="flex gap-4">
-                                    <label>
+                            <div className="h-[65vh] flex flex-col space-y-8  shadow-lg rounded-lg">
+                                <h2 className="text-3xl font-semibold text-gray-800 text-center">
+                                    Choose Your Course Pricing
+                                </h2>
+
+                                <div className="flex flex-col space-y-6 p-4">
+                                    {/* Free Option */}
+                                    <div
+                                        className={`flex items-center justify-between border-2 rounded-lg p-6 transition-all duration-300 ${
+                                            data.course_amount === "free"
+                                                ? "border-green-500"
+                                                : "border-gray-300"
+                                        } hover:border-green-500`}
+                                    >
+                                        <img
+                                            src={Free}
+                                            alt="Free"
+                                            className="w-28"
+                                        />
+
+                                        <div className="flex flex-col flex-grow pl-4">
+                                            <p className="text-2xl font-bold text-gray-800">
+                                                Free
+                                            </p>
+                                            <p className="text-gray-600">
+                                                Provide free access to your
+                                                course content without any
+                                                charges.
+                                            </p>
+                                        </div>
+
                                         <input
                                             type="radio"
                                             name="course_amount"
@@ -330,41 +378,143 @@ const MakeCourse = () => {
                                             checked={
                                                 data.course_amount === "free"
                                             }
-                                            onChange={handleChange}
-                                        />{" "}
-                                        Free
-                                    </label>
-                                    <label>
+                                            onChange={() =>
+                                                setData("course_amount", "free")
+                                            }
+                                            className="size-6 accent-green-500 cursor-pointer"
+                                        />
+                                    </div>
+
+                                    {/* Paid Option */}
+                                    <div
+                                        className={`flex items-center justify-between border-2 rounded-lg p-6 transition-all duration-300 ${
+                                            data.course_amount !== "free"
+                                                ? "border-blue-500"
+                                                : "border-gray-300"
+                                        } hover:border-blue-500`}
+                                    >
+                                        <img
+                                            src={Paid}
+                                            alt="Paid"
+                                            className="w-28"
+                                        />
+
+                                        <div className="flex flex-col flex-grow pl-4">
+                                            <p className="text-2xl font-bold text-gray-800">
+                                                Paid
+                                            </p>
+                                            <p className="text-gray-600">
+                                                Allow access once payment is
+                                                received. Keep pricing
+                                                affordable for students.
+                                            </p>
+
+                                            <div className="flex items-center space-x-2 mt-3">
+                                                <p className="font-bold text-green-600">
+                                                    PKR
+                                                </p>
+
+                                                <TextInput
+                                                    id="course_amount"
+                                                    name="course_amount"
+                                                    type="number"
+                                                    value={
+                                                        data.course_amount ===
+                                                        "free"
+                                                            ? ""
+                                                            : data.course_amount
+                                                    }
+                                                    onChange={(e) =>
+                                                        setData(
+                                                            "course_amount",
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                    className="w-44 border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                                                    placeholder="Enter Amount"
+                                                    disabled={
+                                                        data.course_amount ===
+                                                        "free"
+                                                    }
+                                                />
+                                            </div>
+                                        </div>
+
                                         <input
                                             type="radio"
                                             name="course_amount"
-                                            value="paid"
-                                            checked={
-                                                data.course_amount === "paid"
+                                            value={
+                                                data.course_amount === "free"
+                                                    ? ""
+                                                    : data.course_amount
                                             }
-                                            onChange={handleChange}
-                                        />{" "}
-                                        Paid
-                                    </label>
+                                            checked={
+                                                data.course_amount !== "free"
+                                            }
+                                            onChange={() =>
+                                                setData("course_amount", "")
+                                            }
+                                            className="size-6 accent-blue-500 cursor-pointer"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         )}
 
                         {step === 3 && (
-                            <div>
-                                <InputLabel value="Terms & Conditions" />
-                                <label className="flex items-center">
+                            <div className="h-[65vh] flex flex-col justify-between p-6 bg-white shadow-lg rounded-lg">
+                                {/* Title */}
+                                <h2 className="text-3xl font-bold text-gray-800 text-center mb-6">
+                                    Terms & Conditions
+                                </h2>
+
+                                {/* Terms & Conditions Content */}
+                                <div className="bg-gray-100 p-6 rounded-md shadow-sm border border-gray-300 max-h-52 overflow-y-auto">
+                                    <p className="text-gray-700 leading-relaxed">
+                                        By publishing a course on this platform,
+                                        you agree to adhere to our content
+                                        guidelines, ensuring your course
+                                        provides high-quality and educational
+                                        value to students. You are responsible
+                                        for maintaining the course, responding
+                                        to student queries, and ensuring all
+                                        materials comply with copyright laws and
+                                        platform standards.
+                                    </p>
+                                    <p className="text-gray-700 leading-relaxed mt-4">
+                                        If your course is paid, you acknowledge
+                                        that transactions will be securely
+                                        processed via our payment gateway.
+                                        Refund policies apply as per platform
+                                        regulations, and any disputes should be
+                                        handled professionally. Violation of
+                                        these terms may result in course removal
+                                        or account suspension.
+                                    </p>
+                                </div>
+
+                                {/* Checkbox Section */}
+                                <div className="flex items-center justify-center space-x-3 mt-6">
                                     <input
                                         type="checkbox"
                                         name="terms_accepted"
                                         checked={data.terms_accepted}
                                         onChange={handleChange}
+                                        className="w-5 h-5 accent-green-600 border border-gray-400 rounded cursor-pointer"
                                     />
-                                    <span className="ml-2">
-                                        I agree to the Terms and Conditions
+                                    <span className="text-gray-800 text-lg">
+                                        I confirm that I have read and accept
+                                        the terms and conditions and privacy
+                                        policy.
                                     </span>
-                                </label>
-                                <InputError message={errors.terms_accepted} />
+                                </div>
+
+                                {/* Error Message */}
+                                {errors.terms_accepted && (
+                                    <p className="text-red-500 text-sm mt-2 text-center">
+                                        {errors.terms_accepted}
+                                    </p>
+                                )}
                             </div>
                         )}
 
@@ -373,16 +523,21 @@ const MakeCourse = () => {
                                 <button
                                     type="button"
                                     onClick={prevStep}
-                                    className="bg-gray-400 p-2 rounded-md text-white"
+                                    className="bg-gray-400 py-2 px-6 rounded-md text-white "
                                 >
                                     Back
                                 </button>
                             )}
                             <button
                                 type="submit"
-                                className="w-full text-center bg-blue-600 p-2 rounded-md text-white font-bold active:to-blue-700"
+                                className="text-center bg-blue-600 py-2 px-6 rounded-md text-white font-bold active:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                                disabled={processing}
                             >
-                                {step === steps.length - 1 ? "Submit" : "Next"}
+                                {processing
+                                    ? "Submitting..."
+                                    : step === steps.length - 1
+                                    ? "Submit"
+                                    : "Next"}
                             </button>
                         </div>
                     </motion.form>
