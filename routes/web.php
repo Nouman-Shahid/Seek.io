@@ -1,17 +1,17 @@
 <?php
 
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+
 // Home Route
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-    ]);
-})->name('home');
+Route::get('/', [CourseController::class, 'getAllCourse'])->name('home');
+
+Route::get('/course/id/{id}', action: [CourseController::class, 'getSingleCourse']);
 
 
 
@@ -38,7 +38,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     // Profile Routes 
-    Route::prefix('profile')->name('profile.')->group(function () {
+    Route::prefix('settings')->name('settings.')->group(function () {
         Route::get('/', [ProfileController::class, 'edit'])->name('edit');
         Route::patch('/', [ProfileController::class, 'update'])->name('update');
         Route::delete('/', [ProfileController::class, 'destroy'])->name('destroy');
@@ -47,5 +47,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 
+
+Route::get('/teacherdashboard',  [TeacherController::class, 'getTeacherDetails'])->name('teacherdashboard')->middleware('auth');
+// Dashboard Route
+Route::get('/makecourse', function () {
+    return Inertia::render('MakeCourse');
+})->name('makecourse');
+
+Route::post('/submit-course', [CourseController::class, 'submitCourse'])
+    ->name('submit_course')
+    ->middleware('auth');
 
 require __DIR__ . '/auth.php';
