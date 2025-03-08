@@ -30,7 +30,7 @@ export default function Welcome({ auth, data = [] }) {
     }, []);
 
     return (
-        <>
+        <div className="overflow-x-hidden ">
             <Head title="Home" />
             <nav className="flex justify-between items-center p-4 bg-white shadow-md border-b">
                 <img src={logo} className="h-12" alt="Logo" />
@@ -110,6 +110,6 @@ export default function Welcome({ auth, data = [] }) {
                 <Hero auth={auth} />
                 <CourseCards auth={auth} data={data} />
             </main>
-        </>
+        </div>
     );
 }
