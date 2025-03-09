@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\CourseExamController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\UserController;
@@ -13,6 +14,7 @@ Route::get('/', [CourseController::class, 'getAllCourse'])->name('home');
 
 Route::get('/course/id/{id}', action: [CourseController::class, 'getSingleCourse']);
 
+Route::get('/course_exam/id/{id}', action: [CourseExamController::class, 'getExamPage']);
 
 
 
