@@ -18,7 +18,7 @@ const CourseDescription = ({ data = {}, auth }) => {
                     <h2 className="text-3xl font-bold mb-2">
                         {data.course_title}
                     </h2>
-                    <p className="text-gray-600 mb-4">SKU: WH1000XM4</p>
+                    <p className="text-gray-600 mb-4">SKU: WH100XM4</p>
                     <div className="mb-4">
                         <span className="text-2xl font-bold mr-2">
                             PKR {data.course_amount}
