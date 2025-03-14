@@ -1,4 +1,5 @@
 import React from "react";
+import { Head, Link } from "@inertiajs/react";
 import { FaSearch, FaStar, FaQuoteLeft } from "react-icons/fa";
 import instructorImg from "../images/assets/role.png";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
@@ -101,7 +102,9 @@ const ExploreCourses = () => {
 
     return (
         <AuthenticatedLayout>
-            <div className="max-w-6xl mx-auto p-6 py-3">
+            <Head title="Explore" />
+
+            <div className="max-w-6xl mx-auto p-6 py-20">
                 {/* Hero Section */}
                 <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-12">
                     <div className="text-center md:text-left">
@@ -126,11 +129,11 @@ const ExploreCourses = () => {
                     </div>
                     {/* Hero Image */}
                     <div className="flex justify-center">
-                        {/* <img
-                        src={heroImg}
-                        alt="Explore Courses"
-                        className="w-full max-w-md rounded-2xl shadow-lg"
-                    /> */}
+                        <img
+                            src={instructorImg}
+                            alt="Explore Courses"
+                            className="w-full max-h-96 max-w-md rounded-2xl shadow-lg"
+                        />
                     </div>
                 </div>
 

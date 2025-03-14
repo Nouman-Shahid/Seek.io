@@ -1,6 +1,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
+import { Head, Link } from "@inertiajs/react";
 
 const faqs = [
     {
@@ -30,6 +31,7 @@ export default function FAQ() {
 
     return (
         <AuthenticatedLayout>
+            <Head title="FAQ" />
             <div className="pt-20 relative bg-cover bg-center bg-no-repeat py-20 px-6">
                 <div className=""></div>
 

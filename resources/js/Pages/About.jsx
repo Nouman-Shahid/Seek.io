@@ -3,11 +3,13 @@ import aboutImage1 from "../images/assets/aboutImage1.png";
 import aboutImage2 from "../images/assets/aboutImage2.png";
 import aboutImage3 from "../images/assets/aboutImage3.png";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import { Head, Link } from "@inertiajs/react";
 
 const About = () => {
     return (
         <AuthenticatedLayout>
-            <div className="max-w-6xl mx-auto px-6 py-2 text-gray-900">
+            <Head title="About" />
+            <div className="max-w-6xl mx-auto px-6 py-20 text-gray-900">
                 <h2 className="text-5xl font-bold mb-12 text-center">
                     About Us
                 </h2>
