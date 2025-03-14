@@ -10,15 +10,15 @@ export default function AuthenticatedLayout({ header, children }) {
         { name: "Home", href: route("home"), active: route().current("home") },
         {
             name: "Explore",
-            href: route("login"),
+            href: route("explore"),
             active: route().current("explore"),
         },
         {
             name: "About",
-            href: route("login"),
+            href: route("about"),
             active: route().current("about"),
         },
-        { name: "FAQ", href: route("login"), active: route().current("faq") },
+        { name: "FAQ", href: route("faq"), active: route().current("faq") },
     ];
 
     const user = usePage().props.auth.user;

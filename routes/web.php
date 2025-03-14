@@ -12,6 +12,15 @@ use Inertia\Inertia;
 
 // Home Route
 Route::get('/', [CourseController::class, 'getAllCourse'])->name('home');
+Route::get('/about', function () {
+    return Inertia::render('About');
+})->name('about');
+Route::get('/explore', function () {
+    return Inertia::render('Explore');
+})->name('explore');
+Route::get('/faq', function () {
+    return Inertia::render('FAQ');
+})->name('faq');
 
 Route::get('/course/id/{id}', action: [CourseController::class, 'getSingleCourse']);
 
