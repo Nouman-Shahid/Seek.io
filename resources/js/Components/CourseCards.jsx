@@ -1,5 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Link } from "@inertiajs/react";
+import { IoIosArrowDropleftCircle } from "react-icons/io";
+import { IoIosArrowDroprightCircle } from "react-icons/io";
 
 const CourseCards = ({ auth, data = [] }) => {
     const carouselRef = useRef(null);
@@ -107,17 +109,17 @@ const CourseCards = ({ auth, data = [] }) => {
             {canScrollLeft && (
                 <button
                     onClick={scrollLeft}
-                    className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-gray-800 text-white p-4 rounded-full shadow-lg hover:bg-gray-900 transition"
+                    className="absolute top-1/2 left-2 transform -translate-y-1/2 rounded-full shadow-lg hover:bg-blue-600 transition"
                 >
-                    ❮
+                    <IoIosArrowDropleftCircle className="size-10 bg-white text-blue-500 rounded-full" />
                 </button>
             )}
             {canScrollRight && (
                 <button
                     onClick={scrollRight}
-                    className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-gray-800 text-white p-4 rounded-full shadow-lg hover:bg-gray-900 transition"
+                    className="absolute top-1/2 right-2 transform -translate-y-1/2  rounded-full shadow-lg hover:bg-blue-600 transition"
                 >
-                    ❯
+                    <IoIosArrowDroprightCircle className="size-10 bg-white text-blue-500 rounded-full" />
                 </button>
             )}
             <div className="flex justify-center mt-6 space-x-2">
@@ -135,9 +137,9 @@ const CourseCards = ({ auth, data = [] }) => {
                                 setCurrentIndex(index);
                             }
                         }}
-                        className={`h-4 w-4 rounded-full transition-all duration-300 ${
+                        className={`h-3 w-3 rounded-full transition-all duration-300 ${
                             index === currentIndex
-                                ? "bg-gray-900 scale-125"
+                                ? "bg-blue-500 scale-110"
                                 : "bg-gray-400 hover:bg-gray-500"
                         }`}
                     ></button>
