@@ -5,6 +5,7 @@ use App\Http\Controllers\CourseExamController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\TeacherMiddleware;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -49,15 +50,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 
+Route::middleware(TeacherMiddleware::class)->group(
+    function () {
 
-Route::get('/teacherdashboard',  [TeacherController::class, 'getTeacherDetails'])->name('teacherdashboard')->middleware('auth');
-// Dashboard Route
-Route::get('/makecourse', function () {
-    return Inertia::render('MakeCourse');
-})->name('makecourse');
+        Route::get('/teacherdashboard',  [TeacherController::class, 'getTeacherDetails'])->name('teacherdashboard')->middleware('auth');
+        // Dashboard Route
+        Route::get('/makecourse', function () {
+            return Inertia::render('MakeCourse');
+        })->name('makecourse');
 
-Route::post('/submit-course', [CourseController::class, 'submitCourse'])
-    ->name('submit_course')
-    ->middleware('auth');
+        Route::post('/submit-course', [CourseController::class, 'submitCourse'])
+            ->name('submit_course')
+            ->middleware('auth');
+    }
+);
+
 
 require __DIR__ . '/auth.php';
