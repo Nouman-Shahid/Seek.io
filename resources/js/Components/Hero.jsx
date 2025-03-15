@@ -1,9 +1,23 @@
 import React from "react";
 import hero from "../images/assets/hero.png";
-import { Link } from "@inertiajs/react";
+import { Link, useForm } from "@inertiajs/react";
 import { IoSearchOutline } from "react-icons/io5";
 
 const Hero = ({ auth }) => {
+    const { data, setData, post, processing } = useForm({
+        searchdata: "",
+    });
+
+    const handleChange = (e) => {
+        setData("searchdata", e.target.value);
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        post("/search");
+    };
+
     return (
         <>
             <div className="flex justify-between p-16 items-center">
@@ -49,14 +63,21 @@ const Hero = ({ auth }) => {
                 />
             </div>
 
-            <form className="flex mb-14 w-[60vw] items-center rounded-lg overflow-hidden shadow-md hover:shadow-lg border border-gray-200 transition-shadow">
+            <form
+                onSubmit={handleSubmit}
+                className="flex mb-14 w-[60vw] items-center rounded-lg overflow-hidden shadow-md hover:shadow-lg border border-gray-200 transition-shadow"
+            >
                 <input
                     type="text"
+                    name="searchdata"
                     placeholder="Search..."
+                    value={data.searchdata}
+                    onChange={handleChange}
                     className="w-full p-3 text-gray-700 border-none outline-none focus:outline-none focus:ring-0 rounded-tl-lg rounded-bl-lg"
                 />
                 <button
                     type="submit"
+                    disabled={processing}
                     className="text-gray-600 p-3 rounded-tr-lg rounded-br-lg"
                 >
                     <IoSearchOutline className="size-6" />

@@ -3,6 +3,7 @@
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseExamController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\TeacherMiddleware;
@@ -21,6 +22,9 @@ Route::get('/explore', function () {
 Route::get('/faq', function () {
     return Inertia::render('FAQ');
 })->name('faq');
+
+
+
 
 Route::get('/course/id/{id}', action: [CourseController::class, 'getSingleCourse']);
 
@@ -74,5 +78,7 @@ Route::middleware(TeacherMiddleware::class)->group(
     }
 );
 
+
+Route::post('search', [SearchController::class, 'search'])->name('search');
 
 require __DIR__ . '/auth.php';

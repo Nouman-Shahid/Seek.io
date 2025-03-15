@@ -49,16 +49,16 @@ const CourseCards = ({ auth, data = [] }) => {
 
     return (
         <div className="relative w-full p-6 rounded-lg">
-            <div className="overflow-hidden relative">
+            <div className="overflow-hidden relative bg-red-50">
                 <div
                     ref={carouselRef}
-                    className="flex space-x-6 overflow-x-hidden scroll-smooth scrollbar-hidden p-4 "
+                    className="flex space-x-10 overflow-x-hidden scroll-smooth scrollbar-hidden p-4 "
                 >
                     {data.length > 0 ? (
                         data.map((course) => (
                             <div
                                 key={course.id}
-                                className="w-[30vw] flex-shrink-0 snap-center p-2"
+                                className="w-[25vw] flex-shrink-0 snap-center p-2"
                             >
                                 <div className="w-full  bg-white border border-gray-200 rounded-lg  hover:shadow-xl transition-all duration-300">
                                     <img
@@ -66,7 +66,7 @@ const CourseCards = ({ auth, data = [] }) => {
                                         src={course.course_image}
                                         alt={course.course_title}
                                     />
-                                    <div className="p-5 flex flex-col justify-between h-[35vh]">
+                                    <div className="p-5 flex flex-col justify-between h-[28vh]">
                                         <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
                                             {course.course_title}
                                         </h5>
