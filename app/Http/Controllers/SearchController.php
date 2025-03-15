@@ -27,6 +27,7 @@ class SearchController extends Controller
                 'course_level',
                 'course_image as image',
                 'course_category',
+                'course_rating',
                 'course_desc as description',
                 DB::raw("'course' as type")
             )
@@ -49,6 +50,7 @@ class SearchController extends Controller
                 DB::raw("NULL as course_level"),
                 DB::raw("NULL as course_category"),
                 DB::raw("NULL as description"),
+                DB::raw("NULL as rating"),
                 DB::raw("NULL as image"),
                 DB::raw("'user' as type")
             )
