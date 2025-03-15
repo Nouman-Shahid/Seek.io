@@ -6,6 +6,7 @@ use App\Models\Course;
 use App\Services\WebPurifyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
@@ -23,13 +24,19 @@ class CourseController extends Controller
 
     public function getSingleCourse(string $id)
     {
-        $data = Course::find($id);
 
-        if (!$data) {
-            return abort(404, 'Course not found.');
-        }
+        $courses = Course::all();
 
-        return Inertia::render('CourseDescription', ['data' => $data]);
+        $data = DB::table('course')
+            ->join('users', 'course.course_teacher', '=', 'users.id')
+            ->where('course.id', $id)
+            ->select('users.*', 'course.*')
+            ->first();
+
+        return Inertia::render('CourseDescription', [
+            'courses' => $courses,
+            'data' => $data
+        ]);
     }
 
     // protected $webPurifyService;
