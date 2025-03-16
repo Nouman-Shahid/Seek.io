@@ -48,12 +48,19 @@ export default function AuthenticatedLayout({ header, children }) {
                         <Dropdown>
                             <Dropdown.Trigger>
                                 <span className="inline-flex rounded-md">
-                                    <button
-                                        type="button"
-                                        className="bg-orange-500 text-white font-bold w-10 h-10 flex items-center justify-center rounded-full"
-                                    >
-                                        {user.name.charAt(0)}
-                                    </button>
+                                    {user.profile_image ? (
+                                        <img
+                                            src={user.profile_image}
+                                            className="cursor-pointer object-cover w-12 h-12 rounded-full"
+                                        />
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            className="bg-orange-500 text-white font-bold w-10 h-10 flex items-center justify-center rounded-full"
+                                        >
+                                            {user.name.charAt(0)}
+                                        </button>
+                                    )}
                                 </span>
                             </Dropdown.Trigger>
 

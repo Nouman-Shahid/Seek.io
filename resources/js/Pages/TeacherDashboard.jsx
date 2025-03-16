@@ -19,17 +19,21 @@ const TeacherDashboard = ({ data = {}, auth, course = [] }) => {
             <div className="py-20 flex flex-col lg:flex-row p-6  mx-auto">
                 {/* Sidebar */}
                 <aside className="w-full lg:w-1/4 max-h-[100vh] bg-gray-100 p-4 rounded-xl shadow-md flex flex-col justify-start items-center text-center">
-                    <div
-                        type="button"
-                        className="bg-orange-500 text-white text-6xl mb-4 font-bold w-32 h-32 flex items-center justify-center rounded-full"
-                    >
-                        {auth.user.name.charAt(0)}
+                    <div type="button">
+                        {auth.user.profile_image ? (
+                            <img
+                                src={auth.user.profile_image}
+                                className=" mb-4 w-32 h-32 rounded-full"
+                            />
+                        ) : (
+                            <p className="bg-orange-500 text-white text-6xl mb-4 font-bold w-32 h-32 flex items-center justify-center rounded-full">
+                                {auth.user.name.charAt(0)}
+                            </p>
+                        )}
                     </div>
                     <h2 className="text-xl font-semibold"> {data.name}</h2>
-                    <p className="text-gray-600"> {data.email}</p>
-                    <span className="block text-blue-500 font-medium mt-2">
-                        Product Manager
-                    </span>
+                    <p className="text-gray-600"> {data.profile_headline}</p>
+
                     <button className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4">
                         Contact
                     </button>
@@ -62,10 +66,7 @@ const TeacherDashboard = ({ data = {}, auth, course = [] }) => {
                 <main className="w-full lg:w-3/4 p-6">
                     <h1 className="text-2xl font-bold">About me</h1>
                     <p className="text-gray-700 mt-2">
-                        I'm a results-driven Product Manager with a degree from
-                        Oxford University. I specialize in leading
-                        cross-functional teams to deliver innovative products
-                        that meet user needs and drive business growth.
+                        {auth.user.profile_about}
                     </p>
                     {/* Experiences */}
                     <h2 className="text-xl font-bold mt-6">Experiences:</h2>

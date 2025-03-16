@@ -2,9 +2,11 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import React from "react";
 import { Link } from "@inertiajs/react";
 import image from "../images/assets/loading.png";
-const SearchedResults = ({ results = [], count }) => {
+import Navbar from "@/Components/Navbar";
+const SearchedResults = ({ results = [], count, auth }) => {
     return (
-        <AuthenticatedLayout>
+        <>
+            <Navbar auth={auth} />
             <div className="flex w-full">
                 <div className="w-[75%] p-6">
                     <h2 className="text-2xl font-bold  mb-4">
@@ -104,7 +106,7 @@ const SearchedResults = ({ results = [], count }) => {
                     <img src={image} alt="" />
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </>
     );
 };
 

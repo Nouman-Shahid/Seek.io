@@ -18,10 +18,10 @@ class EmailVerificationNotificationController extends Controller
 
         if ($request->user()->hasVerifiedEmail()) {
             if ($user->role === NULL) {
-                return redirect()->route('user_roles');
+                return redirect()->route('user_details');
             }
             if ($user->preference === NULL) {
-                return redirect()->route('preferences');
+                return redirect()->route('user_details');
             }
             return redirect()->intended(route('home', absolute: false));
         }

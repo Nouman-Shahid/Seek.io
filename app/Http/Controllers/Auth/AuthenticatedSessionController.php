@@ -37,7 +37,7 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('verification.notice');
         }
         // if ($user->role == 'student' && $user->preference === NULL) {
-        //     return redirect()->route('preferences');
+        //     return redirect()->route('user_details');
         // }
         // // elseif ($user->role == 'teacher') {
         // //     return redirect()->intended(route('home'));

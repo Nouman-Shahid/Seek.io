@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\BasicInfoMiddleware;
 use App\Http\Middleware\TeacherMiddleware;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -34,19 +35,14 @@ Route::get('/course_exam/id/{id}', action: [CourseExamController::class, 'getExa
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // User Role Routes 
-    Route::get('/user_roles', function () {
-        return Inertia::render('UserRole');
-    })->name('user_roles');
 
-    Route::post('/set_user_roles', [UserController::class, 'storeUserRole'])->name('set_user_roles');
 
-    // Preferences Routes
-    Route::get('/preferences', function () {
-        return Inertia::render('Preferences');
-    })->name('preferences');
+    // // user_details Routes
+    // Route::get('/user_details', function () {
+    //     return Inertia::render('UserDetails');
+    // })->name('user_details');
 
-    Route::post('/set_preferences', [UserController::class, 'storePreferences'])->name('set_preferences');
+    // Route::post('/set_user_details', [UserController::class, 'storeuser_details'])->name('set_user_details');
 
     // Dashboard Route
     Route::get('/dashboard', function () {
@@ -80,5 +76,12 @@ Route::middleware(TeacherMiddleware::class)->group(
 
 
 Route::post('search', [SearchController::class, 'search'])->name('search');
+
+
+
+Route::get('/user_details', function () {
+    return Inertia::render('UserDetails');
+})->name('user_details');
+Route::post('/set_user_details', [UserController::class, 'storeUserDetails'])->name('set_user_details');
 
 require __DIR__ . '/auth.php';
