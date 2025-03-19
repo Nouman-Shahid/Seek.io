@@ -2,12 +2,13 @@ import React from "react";
 import aboutImage1 from "../images/assets/aboutImage1.png";
 import aboutImage2 from "../images/assets/aboutImage2.png";
 import aboutImage3 from "../images/assets/aboutImage3.png";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link } from "@inertiajs/react";
+import Navbar from "@/Components/Navbar";
 
-const About = () => {
+const About = ({ auth }) => {
     return (
-        <AuthenticatedLayout>
+        <>
+            <Navbar auth={auth} />
             <Head title="About" />
             <div className="max-w-6xl mx-auto px-6 py-20 text-gray-900">
                 <h2 className="text-5xl font-bold mb-12 text-center">
@@ -93,7 +94,7 @@ const About = () => {
                     </div>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </>
     );
 };
 

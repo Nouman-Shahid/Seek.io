@@ -1,7 +1,7 @@
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import { Head, Link } from "@inertiajs/react";
+import Navbar from "@/Components/Navbar";
 
 const faqs = [
     {
@@ -22,7 +22,7 @@ const faqs = [
     },
 ];
 
-export default function FAQ() {
+export default function FAQ({ auth }) {
     const [openIndex, setOpenIndex] = useState(null);
 
     const toggleFAQ = (index) => {
@@ -30,7 +30,8 @@ export default function FAQ() {
     };
 
     return (
-        <AuthenticatedLayout>
+        <>
+            <Navbar auth={auth} />
             <Head title="FAQ" />
             <div className="pt-20 relative bg-cover bg-center bg-no-repeat py-20 px-6">
                 <div className=""></div>
@@ -73,6 +74,6 @@ export default function FAQ() {
                     </div>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </>
     );
 }

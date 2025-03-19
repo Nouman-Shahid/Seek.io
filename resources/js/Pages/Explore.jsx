@@ -3,7 +3,8 @@ import { Head, Link } from "@inertiajs/react";
 import { FaSearch, FaStar, FaQuoteLeft } from "react-icons/fa";
 import instructorImg from "../images/assets/role.png";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-const ExploreCourses = () => {
+import Navbar from "@/Components/Navbar";
+const Explore = ({ auth }) => {
     const courses = [
         {
             title: "Science of Well-Being",
@@ -101,8 +102,10 @@ const ExploreCourses = () => {
     ];
 
     return (
-        <AuthenticatedLayout>
+        <>
             <Head title="Explore" />
+
+            <Navbar auth={auth} />
 
             <div className="max-w-6xl mx-auto p-6 py-20">
                 {/* Hero Section */}
@@ -241,8 +244,8 @@ const ExploreCourses = () => {
                     </button>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </>
     );
 };
 
-export default ExploreCourses;
+export default Explore;
