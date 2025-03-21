@@ -19,7 +19,7 @@ class TeacherController extends Controller
         $courses = Course::where('course_teacher', $user->id)->get(); // Fix applied
 
         return Inertia::render('TeacherDashboard', [
-            'data' => $data,
+            'info' => $data,
             'course' => $courses
         ]);
     }
