@@ -39,4 +39,27 @@ class UserController extends Controller
 
         return Redirect::to('/');
     }
+
+    public function updateUserDetails(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'name' => 'required|string|min:3|max:40',
+            'profile_image' => 'required|string',
+            'address' => 'required|string|min:5|max:100',
+            'profile_about' => 'required|string|min:100|max:1500',
+            'profile_headline' => 'required|string|min:50|max:100',
+        ]);
+
+
+        $request->user()->update([
+            'name' => $request->name,
+            'profile_image' => $request->profile_image,
+            'address' => $request->address,
+            'profile_about' => $request->profile_about,
+            'profile_headline' => $request->profile_headline,
+        ]);
+        return Redirect::to('/teacherdashboard');
+    }
 }

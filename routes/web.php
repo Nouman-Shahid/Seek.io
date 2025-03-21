@@ -84,4 +84,8 @@ Route::get('/user_details', function () {
 })->name('user_details');
 Route::post('/set_user_details', [UserController::class, 'storeUserDetails'])->name('set_user_details');
 
+
+Route::patch('/user_details_update', [UserController::class, 'updateUserDetails'])->name('user_details_update');
+
+
 require __DIR__ . '/auth.php';
