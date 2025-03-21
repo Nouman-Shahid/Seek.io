@@ -49,7 +49,7 @@ class UserController extends Controller
             'profile_image' => 'required|string',
             'address' => 'required|string|min:5|max:100',
             'profile_about' => 'required|string|min:100|max:1500',
-            'profile_headline' => 'required|string|min:50|max:100',
+            'profile_headline' => 'required|string|max:400',
         ]);
 
 

@@ -10,7 +10,7 @@ const TeacherDashboard = ({ info = {}, auth, course = [] }) => {
     const [isEditing, setIsEditing] = useState(false);
 
     const { data, setData, patch, errors, processing } = useForm({
-        name: auth.user.name,
+        name: info.name,
         profile_headline: info.profile_headline,
         profile_about: info.profile_about,
         profile_image: info.profile_image,
