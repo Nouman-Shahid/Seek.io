@@ -15,19 +15,16 @@ class CartController extends Controller
     {
         $user = Auth::user();
 
-        // Fetch course and user details safely
         $course = Course::find($id);
         $user_detail = User::find($user->id);
 
-        // Check if course exists before proceeding
-        if (!$course) {
-            return response()->json(['error' => 'Course not found'], 404);
-        }
+        // if (!$course) {
+        //     return response()->json(['error' => 'Course not found'], 404);
+        // }
 
-        // Check if user exists
-        if (!$user_detail) {
-            return response()->json(['error' => 'User not found'], 404);
-        }
+        // if (!$user_detail) {
+        //     return response()->json(['error' => 'User not found'], 404);
+        // }
 
         // Add course to cart
         $cartItems = Cart::create([
