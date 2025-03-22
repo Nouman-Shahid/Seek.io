@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseExamController;
 use App\Http\Controllers\ProfileController;
@@ -88,5 +89,12 @@ Route::patch('/user_details_update', [UserController::class, 'updateUserDetails'
 
 Route::get('/user_dashboard',  [UserController::class, 'getTeacherDetails'])->name('user_dashboard')->middleware('auth');
 
+
+
+
+
+
+
+Route::post('/add_to_cart/id/{id}', [CartController::class, 'addToCart'])->name('add_to_cart');
 
 require __DIR__ . '/auth.php';

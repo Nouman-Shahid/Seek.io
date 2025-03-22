@@ -1,12 +1,13 @@
 import CourseCards from "@/Components/CourseCards";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Link } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 import React from "react";
 import { FaStar } from "react-icons/fa";
 
 const CourseDescription = ({ data = {}, auth, courses = [] }) => {
     return (
         <AuthenticatedLayout>
+            <Head title="Course Description" />
             <div className="pt-20 max-w-6xl mx-auto p-4">
                 {/* Course Header */}
                 <div className="bg-blue-100 p-6 rounded-xl flex flex-col lg:flex-row items-center gap-6">
@@ -21,12 +22,18 @@ const CourseDescription = ({ data = {}, auth, courses = [] }) => {
                             </span>
                             {auth.user.role === "Student" ? (
                                 <>
-                                    <button className="bg-green-500 text-white px-4 py-2 rounded-lg">
+                                    <Link
+                                        href={`/course_exam/id/${data.id}`}
+                                        className="bg-green-500 text-white px-4 py-2 rounded-lg"
+                                    >
                                         Enroll Now
-                                    </button>
-                                    <button className="bg-yellow-500 text-white px-4 py-2 rounded-lg">
+                                    </Link>
+                                    <Link
+                                        href={`/add_to_cart/id/${data.id}`}
+                                        className="bg-yellow-500 text-white px-4 py-2 rounded-lg"
+                                    >
                                         Add To Cart
-                                    </button>
+                                    </Link>
                                 </>
                             ) : (
                                 <>
