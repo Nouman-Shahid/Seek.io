@@ -95,6 +95,6 @@ Route::get('/user_dashboard',  [UserController::class, 'getTeacherDetails'])->na
 
 
 
-Route::post('/add_to_cart/id/{id}', [CartController::class, 'addToCart'])->name('add_to_cart');
+Route::get('/add_to_cart/id/{id}', [CartController::class, 'addToCart'])->name('add_to_cart');
 
 require __DIR__ . '/auth.php';

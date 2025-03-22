@@ -13,20 +13,31 @@ class CartController extends Controller
 {
     public function addToCart($id)
     {
-
         $user = Auth::user();
-        $courses = Course::find($id)->first();
-        $user_detail = User::find($id)->first();
 
+        // Fetch course and user details safely
+        $course = Course::find($id);
+        $user_detail = User::find($user->id);
+
+        // Check if course exists before proceeding
+        if (!$course) {
+            return response()->json(['error' => 'Course not found'], 404);
+        }
+
+        // Check if user exists
+        if (!$user_detail) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        // Add course to cart
         $cartItems = Cart::create([
-
             'student_id' => $user->id,
             'course_id' => $id,
 
         ]);
 
-        return Inertia::render('Cart.jsx', [
-            'courses' => $courses,
+        return Inertia::render('Cart', [
+            'courses' => $course,
             'data' => $user_detail
         ]);
     }

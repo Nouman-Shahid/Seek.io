@@ -8,4 +8,5 @@ class Cart extends Model
 {
     protected $table = 'cart';
     protected $guarded = [];
+    public $timestamps = false;
 }
