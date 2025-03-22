@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
 class CartController extends Controller
@@ -15,27 +16,37 @@ class CartController extends Controller
     {
         $user = Auth::user();
 
-        $course = Course::find($id);
-        $user_detail = User::find($user->id);
-
-        // if (!$course) {
-        //     return response()->json(['error' => 'Course not found'], 404);
-        // }
-
-        // if (!$user_detail) {
-        //     return response()->json(['error' => 'User not found'], 404);
-        // }
-
-        // Add course to cart
-        $cartItems = Cart::create([
+        // Add course to cart 
+        $cartItem = Cart::firstOrCreate([
             'student_id' => $user->id,
             'course_id' => $id,
-
         ]);
+
+        return Redirect::route('cart');
+    }
+
+    public function getCart()
+    {
+        $user = Auth::user();
+
+        // Retrieve all courses in the cart 
+        $cartCourses = Cart::where('student_id', $user->id)->pluck('course_id');
+        // Fetch full course details for the courses in the cart
+        $course = Course::whereIn('id', $cartCourses)->get();
+
+        $allcourses = Course::all();
+
 
         return Inertia::render('Cart', [
             'courses' => $course,
-            'data' => $user_detail
+            'user' => $user,
+            'data' => $allcourses
         ]);
+    }
+
+    public function removeCourse($id)
+    {
+        Cart::where('course_id', $id)->delete();
+        return Redirect::route('cart');
     }
 }
