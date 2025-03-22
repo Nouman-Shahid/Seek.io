@@ -81,6 +81,6 @@ class CourseController extends Controller
             'module_name' => $request->module_name,
         ]);
 
-        return Redirect::to('/teacherdashboard');
+        return Redirect::to('/user_dashboard');
     }
 }

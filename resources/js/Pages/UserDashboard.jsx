@@ -6,15 +6,15 @@ import CourseCards from "@/Components/CourseCards";
 import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
 
-const TeacherDashboard = ({ info = {}, auth, course = [] }) => {
+const TeacherDashboard = ({ user = {}, auth, course = [] }) => {
     const [isEditing, setIsEditing] = useState(false);
 
     const { data, setData, patch, errors, processing } = useForm({
-        name: info.name,
-        profile_headline: info.profile_headline,
-        profile_about: info.profile_about,
-        profile_image: info.profile_image,
-        address: info.address,
+        name: user.name,
+        profile_headline: user.profile_headline,
+        profile_about: user.profile_about,
+        profile_image: user.profile_image,
+        address: user.address,
     });
 
     const submit = (e) => {
@@ -33,22 +33,31 @@ const TeacherDashboard = ({ info = {}, auth, course = [] }) => {
             >
                 <div className="flex justify-end">
                     {isEditing ? (
-                        <button
-                            type="submit" // Ensure it's a submit button
-                            onClick={(e) => {
-                                e.preventDefault(); // Prevent unwanted form submission
-                                submit(e); // Send data to backend
-                                setIsEditing(false); // Switch back to "Edit" mode
-                            }}
-                            className="bg-blue-500 text-white px-4 py-2 rounded-lg mb-4"
-                            disabled={processing}
-                        >
-                            Save
-                        </button>
+                        <div className="space-x-3 flex">
+                            <div
+                                onClick={() => setIsEditing(false)}
+                                className="bg-red-500 text-white px-4 py-2 rounded-lg mb-4 cursor-pointer"
+                                disabled={processing}
+                            >
+                                Cancel
+                            </div>
+                            <button
+                                type="submit"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    submit(e);
+                                    setIsEditing(false);
+                                }}
+                                className="bg-blue-600 text-white px-4 py-2 rounded-lg mb-4"
+                                disabled={processing}
+                            >
+                                Save
+                            </button>
+                        </div>
                     ) : (
                         <div
                             onClick={() => setIsEditing(true)}
-                            className="bg-blue-500 text-white px-4 py-2 rounded-lg mb-4 cursor-pointer"
+                            className="bg-green-600 text-white px-4 py-2 rounded-lg mb-4 cursor-pointer"
                             disabled={processing}
                         >
                             Edit Profile
@@ -167,7 +176,7 @@ const TeacherDashboard = ({ info = {}, auth, course = [] }) => {
                         </div>
 
                         <a
-                            href={`mailto:${info.email}`}
+                            href={`mailto:${user.email}`}
                             className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4 w-full text-center block"
                         >
                             Contact
@@ -193,21 +202,35 @@ const TeacherDashboard = ({ info = {}, auth, course = [] }) => {
                                 />
                             </>
                         ) : (
-                            <p className="text-gray-600">
+                            <pre className="text-gray-600 whitespace-pre-wrap break-words font-sans">
                                 {data.profile_about}
-                            </p>
+                            </pre>
                         )}
 
-                        {/* My Courses */}
-                        <div className="mb-6 flex items-center justify-between">
-                            <h2 className="text-xl font-bold mt-6 mb-4">
-                                My Courses
-                            </h2>{" "}
-                            <Link href={`/makecourse`}>
-                                <IoIosAddCircle className="size-[5vh] text-blue-600" />
-                            </Link>
-                        </div>
-                        <CourseCards info={course} auth={auth} />
+                        {user.role === "Teacher" ? (
+                            <>
+                                <div className="mb-6 flex items-center justify-between">
+                                    <h2 className="text-xl font-bold mt-6 mb-4">
+                                        My Courses
+                                    </h2>{" "}
+                                    <Link href={`/makecourse`}>
+                                        <IoIosAddCircle className="size-[5vh] text-blue-600" />
+                                    </Link>
+                                </div>
+                                <CourseCards data={course} auth={auth} />
+                            </>
+                        ) : (
+                            <>
+                                <div className="mb-6 flex items-center justify-between">
+                                    <h2 className="text-xl font-bold mt-6 mb-4">
+                                        Enrolled Courses
+                                    </h2>{" "}
+                                    {/* <Link href={`/makecourse`}>
+                                        <IoIosAddCircle className="size-[5vh] text-blue-600" />
+                                    </Link> */}
+                                </div>
+                            </>
+                        )}
                     </main>
                 </div>
                 {/* Sidebar */}

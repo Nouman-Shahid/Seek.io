@@ -80,7 +80,7 @@ const CourseCards = ({ auth, data = [] }) => {
                                             {!auth.user ||
                                             auth.user.role === "Student" ? (
                                                 <Link
-                                                    href={route("login")}
+                                                    href={`/course/id/${course.id}`}
                                                     className="px-3 py-2 bg-green-600 text-white rounded-md transition-all duration-300 hover:bg-green-700"
                                                 >
                                                     Enroll Courses

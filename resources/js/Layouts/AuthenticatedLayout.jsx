@@ -65,7 +65,7 @@ export default function AuthenticatedLayout({ header, children }) {
                             </Dropdown.Trigger>
 
                             <Dropdown.Content>
-                                <Dropdown.Link href={route("teacherdashboard")}>
+                                <Dropdown.Link href={route("user_dashboard")}>
                                     Profile
                                 </Dropdown.Link>
                                 <Dropdown.Link href={route("settings.edit")}>

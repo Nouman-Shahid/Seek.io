@@ -62,7 +62,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(TeacherMiddleware::class)->group(
     function () {
 
-        Route::get('/teacherdashboard',  [TeacherController::class, 'getTeacherDetails'])->name('teacherdashboard')->middleware('auth');
         // Dashboard Route
         Route::get('/makecourse', function () {
             return Inertia::render('MakeCourse');
@@ -86,6 +85,8 @@ Route::post('/set_user_details', [UserController::class, 'storeUserDetails'])->n
 
 
 Route::patch('/user_details_update', [UserController::class, 'updateUserDetails'])->name('user_details_update');
+
+Route::get('/user_dashboard',  [UserController::class, 'getTeacherDetails'])->name('user_dashboard')->middleware('auth');
 
 
 require __DIR__ . '/auth.php';

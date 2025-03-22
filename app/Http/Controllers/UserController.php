@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Redirect;
@@ -60,6 +61,18 @@ class UserController extends Controller
             'profile_about' => $request->profile_about,
             'profile_headline' => $request->profile_headline,
         ]);
-        return Redirect::to('/teacherdashboard');
+        return Redirect::to('/user_dashboard');
+    }
+
+    public function getTeacherDetails()
+    {
+        $user = Auth::user();
+        $data = User::where('id', $user->id)->first();
+        $courses = Course::where('course_teacher', $user->id)->get(); // Fix applied
+
+        return Inertia::render('UserDashboard', [
+            'user' => $data,
+            'course' => $courses
+        ]);
     }
 }

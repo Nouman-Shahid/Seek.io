@@ -29,7 +29,6 @@ export default function Navbar({ auth }) {
 
     return (
         <>
-            <Head title="Home" />
             <nav className="flex justify-between items-center p-4 bg-white shadow-md border-b">
                 <img src={logo} className="h-12" alt="Logo" />
                 <div className="flex space-x-6">
@@ -68,11 +67,7 @@ export default function Navbar({ auth }) {
 
                                 <Dropdown.Content className="relative right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
                                     <Dropdown.Link
-                                        href={
-                                            auth.user.role === "Teacher"
-                                                ? route("teacherdashboard")
-                                                : route("home")
-                                        }
+                                        href={route("user_dashboard")}
                                     >
                                         Profile
                                     </Dropdown.Link>
