@@ -23,12 +23,6 @@ const CourseDescription = ({ data = {}, auth, courses = [] }) => {
                             {auth.user.role === "Student" ? (
                                 <>
                                     <Link
-                                        href={`/course_exam/id/${data.id}`}
-                                        className="bg-green-500 text-white px-4 py-2 rounded-lg"
-                                    >
-                                        Enroll Now
-                                    </Link>
-                                    <Link
                                         href={`/add_to_cart/id/${data.id}`}
                                         className="bg-yellow-500 text-white px-4 py-2 rounded-lg"
                                     >

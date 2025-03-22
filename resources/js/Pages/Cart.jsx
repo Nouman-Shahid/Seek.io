@@ -3,7 +3,12 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link } from "@inertiajs/react";
 import React from "react";
 
-const Cart = ({ courses = [], user = {}, data = [] }) => {
+const Cart = ({ courses = [], data = [] }) => {
+    const totalAmount = courses.reduce(
+        (acc, item) => acc + Number(item.course_amount || 0),
+        0
+    );
+
     return (
         <AuthenticatedLayout>
             <Head title="Cart" />
@@ -17,11 +22,12 @@ const Cart = ({ courses = [], user = {}, data = [] }) => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                     <div className="lg:col-span-2 space-y-4">
-                        {courses ? (
+                        {courses && courses.length > 0 ? (
                             courses.map((item, idx) => (
-                                <div
+                                <Link
+                                    href={`/course/id/${item.id}`}
                                     key={idx}
-                                    className="flex flex-col sm:flex-row sm:items-center p-4 gap-4 shadow-lg"
+                                    className="flex flex-col sm:flex-row sm:items-center p-4 gap-4 shadow-lg border border-gray-200 rounded-lg"
                                 >
                                     <img
                                         src={item.course_image}
@@ -32,6 +38,16 @@ const Cart = ({ courses = [], user = {}, data = [] }) => {
                                         <h4 className="font-semibold text-base sm:text-lg">
                                             {item.course_title}
                                         </h4>
+                                        <p className="text-sm  text-gray-500">
+                                            By{" "}
+                                            <Link
+                                                href={`/user/${item.course_teacher}`}
+                                            >
+                                                <b className="underline">
+                                                    {item.name}
+                                                </b>
+                                            </Link>
+                                        </p>
                                         <div className="text-sm text-gray-500">
                                             ⭐ {item.course_rating} |
                                             Difficulty: {item.course_level}
@@ -43,20 +59,39 @@ const Cart = ({ courses = [], user = {}, data = [] }) => {
                                         </p>
                                         <Link
                                             href={`/remove_course/id/${item.id}`}
-                                            variant="destructive"
                                             className="mt-2 text-xs sm:text-sm bg-red-600 p-2 text-white rounded-md"
                                         >
                                             Remove
                                         </Link>
                                     </div>
-                                </div>
+                                </Link>
                             ))
                         ) : (
-                            <>No Courses in Cart</>
+                            <div className="flex flex-col items-center justify-center p-6 text-center bg-gray-100 rounded-lg shadow-md">
+                                <img
+                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDfFs6cFxfqoOOsG26k8nCOm9D9KAMNtT1nA&s"
+                                    alt="No Courses"
+                                    className="w-24 h-24 mb-4 rounded-full object-cover"
+                                />
+                                <h3 className="text-lg font-semibold text-gray-700">
+                                    No Courses Available
+                                </h3>
+                                <p className="text-gray-500 text-sm">
+                                    It looks like you haven’t enrolled in any
+                                    courses yet. Explore our catalog and start
+                                    learning today!
+                                </p>
+                                <Link
+                                    href="/explore"
+                                    className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                                >
+                                    Browse Courses
+                                </Link>
+                            </div>
                         )}
                     </div>
 
-                    <div className="bg-white border rounded-xl p-4 shadow-md h-fit">
+                    <div className="bg-white border rounded-xl p-4 shadow-md h-auto">
                         <h3 className="text-lg sm:text-xl font-semibold mb-3">
                             Coupon Code
                         </h3>
@@ -67,23 +102,30 @@ const Cart = ({ courses = [], user = {}, data = [] }) => {
                             />
                             <button>Apply</button>
                         </div>
-
                         <div className="space-y-2 text-sm">
                             <div className="flex justify-between">
                                 <span>Subtotal:</span>
-                                <span>PKR 999</span>
+                                <span>PKR {totalAmount.toLocaleString()}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span>Discount:</span>
-                                <span>- PKR 999</span>
+                                <span>- PKR 0</span>{" "}
                             </div>
                             <div className="flex justify-between font-semibold">
                                 <span>Total:</span>
-                                <span>PKR 999</span>
+                                <span>PKR {totalAmount.toLocaleString()}</span>
                             </div>
                         </div>
-
-                        <button className="mt-4">Check out</button>
+                        <div className="flex mt-5">
+                            {courses.length !== 0 && (
+                                <Link
+                                    href={`/remove_course`}
+                                    className=" w-full text-xs text-center sm:text-sm bg-blue-600 p-2 text-white rounded-md"
+                                >
+                                    Check out
+                                </Link>
+                            )}
+                        </div>
                     </div>
                 </div>
 

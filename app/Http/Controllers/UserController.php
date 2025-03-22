@@ -64,7 +64,7 @@ class UserController extends Controller
         return Redirect::to('/user_dashboard');
     }
 
-    public function getTeacherDetails()
+    public function getUserDetails()
     {
         $user = Auth::user();
         $data = User::where('id', $user->id)->first();
@@ -73,6 +73,17 @@ class UserController extends Controller
         return Inertia::render('UserDashboard', [
             'user' => $data,
             'course' => $courses
+        ]);
+    }
+
+    public function showUserProfile($id)
+    {
+        $user =  User::find($id);
+        $courses = Course::where('course_teacher', '=', $id)->get();
+
+        return Inertia::render('MemberProfile', [
+            'user' => $user,
+            'data' => $courses
         ]);
     }
 }

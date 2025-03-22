@@ -3,6 +3,7 @@ import logo from "../images/logo.png";
 import Dropdown from "@/Components/Dropdown";
 import NavLink from "@/Components/NavLink";
 import { useEffect } from "react";
+import { HiOutlineShoppingCart } from "react-icons/hi";
 
 export default function Navbar({ auth }) {
     const navLinks = [
@@ -47,23 +48,30 @@ export default function Navbar({ auth }) {
                         <div className=" sm:ms-6 sm:flex sm:items-center flex">
                             {/* Set relative here to fix dropdown positioning */}
                             <Dropdown>
-                                <Dropdown.Trigger>
-                                    <span className="inline-flex rounded-md">
-                                        {auth.user.profile_image ? (
-                                            <img
-                                                src={auth.user.profile_image}
-                                                className="cursor-pointer object-cover w-12 h-12 rounded-full"
-                                            />
-                                        ) : (
-                                            <button
-                                                type="button"
-                                                className="bg-orange-500 text-white font-bold w-10 h-10 flex items-center justify-center rounded-full"
-                                            >
-                                                {auth.user.name.charAt(0)}
-                                            </button>
-                                        )}
-                                    </span>
-                                </Dropdown.Trigger>
+                                <div className="flex items-center space-x-5">
+                                    <Link href={route("cart")}>
+                                        <HiOutlineShoppingCart className="size-6 text-gray-600" />
+                                    </Link>
+                                    <Dropdown.Trigger>
+                                        <span className="inline-flex rounded-md">
+                                            {auth.user.profile_image ? (
+                                                <img
+                                                    src={
+                                                        auth.user.profile_image
+                                                    }
+                                                    className="cursor-pointer object-cover w-12 h-12 rounded-full"
+                                                />
+                                            ) : (
+                                                <button
+                                                    type="button"
+                                                    className="bg-orange-500 text-white font-bold w-10 h-10 flex items-center justify-center rounded-full"
+                                                >
+                                                    {auth.user.name.charAt(0)}
+                                                </button>
+                                            )}
+                                        </span>
+                                    </Dropdown.Trigger>
+                                </div>
 
                                 <Dropdown.Content className="relative right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
                                     <Dropdown.Link

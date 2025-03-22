@@ -5,6 +5,7 @@ import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import { Link, usePage } from "@inertiajs/react";
 import { useState } from "react";
 import Footer from "@/Components/Footer";
+import { HiOutlineShoppingCart } from "react-icons/hi";
 
 export default function AuthenticatedLayout({ header, children }) {
     const navLinks = [
@@ -46,23 +47,28 @@ export default function AuthenticatedLayout({ header, children }) {
                 <div className="hidden sm:ms-6 sm:flex sm:items-center">
                     <div className="relative ms-3">
                         <Dropdown>
-                            <Dropdown.Trigger>
-                                <span className="inline-flex rounded-md">
-                                    {user.profile_image ? (
-                                        <img
-                                            src={user.profile_image}
-                                            className="cursor-pointer object-cover w-12 h-12 rounded-full"
-                                        />
-                                    ) : (
-                                        <button
-                                            type="button"
-                                            className="bg-orange-500 text-white font-bold w-10 h-10 flex items-center justify-center rounded-full"
-                                        >
-                                            {user.name.charAt(0)}
-                                        </button>
-                                    )}
-                                </span>
-                            </Dropdown.Trigger>
+                            <div className="flex items-center space-x-5">
+                                <Link href={route("cart")}>
+                                    <HiOutlineShoppingCart className="size-6 text-gray-600" />
+                                </Link>
+                                <Dropdown.Trigger>
+                                    <span className="inline-flex rounded-md">
+                                        {user.profile_image ? (
+                                            <img
+                                                src={user.profile_image}
+                                                className="cursor-pointer object-cover w-12 h-12 rounded-full"
+                                            />
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                className="bg-orange-500 text-white font-bold w-10 h-10 flex items-center justify-center rounded-full"
+                                            >
+                                                {user.name.charAt(0)}
+                                            </button>
+                                        )}
+                                    </span>
+                                </Dropdown.Trigger>
+                            </div>
 
                             <Dropdown.Content>
                                 <Dropdown.Link href={route("user_dashboard")}>

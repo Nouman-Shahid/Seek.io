@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
@@ -27,19 +28,21 @@ class CartController extends Controller
 
     public function getCart()
     {
-        $user = Auth::user();
 
-        // Retrieve all courses in the cart 
-        $cartCourses = Cart::where('student_id', $user->id)->pluck('course_id');
-        // Fetch full course details for the courses in the cart
-        $course = Course::whereIn('id', $cartCourses)->get();
+
+        $cartCourses = DB::table('cart')
+            ->join('course', 'cart.course_id', '=', 'course.id')
+            ->join('users', 'course.course_teacher', '=', 'users.id')
+            ->select('users.*', 'course.*')
+            ->get();
+
+
 
         $allcourses = Course::all();
 
 
         return Inertia::render('Cart', [
-            'courses' => $course,
-            'user' => $user,
+            'courses' => $cartCourses,
             'data' => $allcourses
         ]);
     }
