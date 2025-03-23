@@ -77,7 +77,7 @@ Route::middleware(TeacherMiddleware::class)->group(
 
 
 Route::post('search', [SearchController::class, 'search'])->name('search');
-
+Route::get('search/results', [SearchController::class, 'showResults'])->name('search.results');
 
 
 Route::get('/user_details', function () {

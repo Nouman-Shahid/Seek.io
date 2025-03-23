@@ -73,25 +73,28 @@ const SearchedResults = ({ results = [], count, auth }) => {
                                         </>
                                     ) : (
                                         // If it's a user
-                                        <>
+                                        <div className="w-[80%] h-28 bg-white rounded-xl shadow-lg p-4 flex items-center border border-gray-200">
                                             <img
                                                 src={item.profile_image}
                                                 alt={item.name}
-                                                className="w-20 h-20 rounded-full mx-auto mb-3"
+                                                className="w-16 h-16 rounded-full border-4 border-gray-300 shadow-md"
                                             />
-                                            <h3 className="text-lg font-semibold text-center">
-                                                {item.name}
-                                            </h3>
-                                            <p className="text-gray-500 text-center">
-                                                {item.profile_headline}
-                                            </p>
+                                            <div className="ml-4 flex-1">
+                                                <h3 className="text-lg font-bold text-gray-900">
+                                                    {item.name}
+                                                </h3>
+
+                                                <p className="mt-2 text-gray-500 text-sm line-clamp-2 overflow-hidden">
+                                                    {item.profile_headline}
+                                                </p>
+                                            </div>
                                             <Link
                                                 href={`/user/${item.id}`}
-                                                className="mt-4 w-full bg-gray-700 text-white py-2 rounded-lg hover:bg-gray-800"
+                                                className="ml-4 bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition duration-300 hover:bg-gray-900"
                                             >
-                                                View Profile
+                                                View
                                             </Link>
-                                        </>
+                                        </div>
                                     )}
                                 </div>
                             ))}

@@ -2,21 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Course;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 
 class SearchController extends Controller
 {
+    // Step 2.1: Process Search Input and Redirect to Results Page
     public function search(Request $request)
     {
         $validated = $request->validate([
             'searchdata' => 'required|string|max:100',
         ]);
 
-        $search = $validated['searchdata'];
+        return redirect()->route('search.results', ['query' => $validated['searchdata']]);
+    }
 
+    // Step 2.2: Fetch Results and Show Page
+    public function showResults(Request $request)
+    {
+        $search = $request->query('query', '');
+
+        if (!$search) {
+            return Inertia::render('SearchedResults', [
+                'results' => [],
+                'count' => 0,
+            ]);
+        }
+
+        // Query courses
         $courseQuery = DB::table('course')
             ->select(
                 'id',
@@ -28,21 +42,18 @@ class SearchController extends Controller
                 'course_category',
                 'course_rating',
                 'course_desc as description',
-                DB::raw("NULL as profile_image"), // Ensure column count matches
-                DB::raw("NULL as profile_headline"), // Ensure column count matches
-                DB::raw("NULL as email"), // Ensure column count matches
+                DB::raw("NULL as profile_image"),
+                DB::raw("NULL as profile_headline"),
+                DB::raw("NULL as email"),
                 DB::raw("'course' as type")
             )
             ->where(function ($query) use ($search) {
                 $query->where('course_title', 'like', "%{$search}%")
                     ->orWhere('module_name', 'like', "%{$search}%")
-                    ->orWhere('course_amount', 'like', "%{$search}%")
-                    ->orWhere('course_level', 'like', "%{$search}%")
-                    ->orWhere('course_category', 'like', "%{$search}%")
-                    ->orWhere('course_desc', 'like', "%{$search}%");
+                    ->orWhere('course_category', 'like', "%{$search}%");
             });
 
-        // Search for users
+        // Query users
         $userQuery = DB::table('users')
             ->select(
                 'id',
@@ -68,12 +79,10 @@ class SearchController extends Controller
         $results = $courseQuery->union($userQuery)->get();
         $count = $results->count();
 
-        return Inertia::render(
-            'SearchedResults',
-            [
-                'results' => $results,
-                'count' => $count,
-            ]
-        );
+        return Inertia::render('SearchedResults', [
+            'results' => $results,
+            'count' => $count,
+            'query' => $search, // Pass search query for UI use
+        ]);
     }
 }
