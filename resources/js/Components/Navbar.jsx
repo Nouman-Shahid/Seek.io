@@ -49,9 +49,15 @@ export default function Navbar({ auth }) {
                             {/* Set relative here to fix dropdown positioning */}
                             <Dropdown>
                                 <div className="flex items-center space-x-5">
-                                    <Link href={route("cart")}>
-                                        <HiOutlineShoppingCart className="size-6 text-gray-600" />
-                                    </Link>
+                                    {auth.user.role === "Teacher" ? (
+                                        <></>
+                                    ) : (
+                                        <>
+                                            <Link href={route("cart")}>
+                                                <HiOutlineShoppingCart className="size-6 text-gray-600" />
+                                            </Link>
+                                        </>
+                                    )}
                                     <Dropdown.Trigger>
                                         <span className="inline-flex rounded-md">
                                             {auth.user.profile_image ? (

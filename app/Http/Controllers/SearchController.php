@@ -17,7 +17,6 @@ class SearchController extends Controller
 
         $search = $validated['searchdata'];
 
-        // Search for courses
         $courseQuery = DB::table('course')
             ->select(
                 'id',
@@ -29,6 +28,9 @@ class SearchController extends Controller
                 'course_category',
                 'course_rating',
                 'course_desc as description',
+                DB::raw("NULL as profile_image"), // Ensure column count matches
+                DB::raw("NULL as profile_headline"), // Ensure column count matches
+                DB::raw("NULL as email"), // Ensure column count matches
                 DB::raw("'course' as type")
             )
             ->where(function ($query) use ($search) {
@@ -48,10 +50,13 @@ class SearchController extends Controller
                 DB::raw("NULL as module_name"),
                 DB::raw("NULL as price"),
                 DB::raw("NULL as course_level"),
-                DB::raw("NULL as course_category"),
-                DB::raw("NULL as description"),
-                DB::raw("NULL as rating"),
                 DB::raw("NULL as image"),
+                DB::raw("NULL as course_category"),
+                DB::raw("NULL as course_rating"),
+                DB::raw("NULL as description"),
+                'profile_image',
+                'profile_headline',
+                'email',
                 DB::raw("'user' as type")
             )
             ->where(function ($query) use ($search) {
@@ -63,9 +68,12 @@ class SearchController extends Controller
         $results = $courseQuery->union($userQuery)->get();
         $count = $results->count();
 
-        return Inertia::render('SearchedResults', [
-            'results' => $results,
-            'count' => $count,
-        ]);
+        return Inertia::render(
+            'SearchedResults',
+            [
+                'results' => $results,
+                'count' => $count,
+            ]
+        );
     }
 }

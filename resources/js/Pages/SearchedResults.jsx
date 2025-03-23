@@ -75,10 +75,7 @@ const SearchedResults = ({ results = [], count, auth }) => {
                                         // If it's a user
                                         <>
                                             <img
-                                                src={
-                                                    item.name ||
-                                                    "https://via.placeholder.com/100"
-                                                }
+                                                src={item.profile_image}
                                                 alt={item.name}
                                                 className="w-20 h-20 rounded-full mx-auto mb-3"
                                             />
@@ -86,11 +83,14 @@ const SearchedResults = ({ results = [], count, auth }) => {
                                                 {item.name}
                                             </h3>
                                             <p className="text-gray-500 text-center">
-                                                {item.email}
+                                                {item.profile_headline}
                                             </p>
-                                            <button className="mt-4 w-full bg-gray-700 text-white py-2 rounded-lg hover:bg-gray-800">
+                                            <Link
+                                                href={`/user/${item.id}`}
+                                                className="mt-4 w-full bg-gray-700 text-white py-2 rounded-lg hover:bg-gray-800"
+                                            >
                                                 View Profile
-                                            </button>
+                                            </Link>
                                         </>
                                     )}
                                 </div>

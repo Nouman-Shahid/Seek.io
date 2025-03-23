@@ -48,9 +48,15 @@ export default function AuthenticatedLayout({ header, children }) {
                     <div className="relative ms-3">
                         <Dropdown>
                             <div className="flex items-center space-x-5">
-                                <Link href={route("cart")}>
-                                    <HiOutlineShoppingCart className="size-6 text-gray-600" />
-                                </Link>
+                                {user.role === "Teacher" ? (
+                                    <></>
+                                ) : (
+                                    <>
+                                        <Link href={route("cart")}>
+                                            <HiOutlineShoppingCart className="size-6 text-gray-600" />
+                                        </Link>
+                                    </>
+                                )}
                                 <Dropdown.Trigger>
                                     <span className="inline-flex rounded-md">
                                         {user.profile_image ? (
