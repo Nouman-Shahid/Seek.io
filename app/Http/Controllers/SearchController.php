@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\DB;
 
 class SearchController extends Controller
 {
-    // Step 2.1: Process Search Input and Redirect to Results Page
     public function search(Request $request)
     {
         $validated = $request->validate([
@@ -18,7 +17,6 @@ class SearchController extends Controller
         return redirect()->route('search.results', ['query' => $validated['searchdata']]);
     }
 
-    // Step 2.2: Fetch Results and Show Page
     public function showResults(Request $request)
     {
         $search = $request->query('query', '');
@@ -82,7 +80,7 @@ class SearchController extends Controller
         return Inertia::render('SearchedResults', [
             'results' => $results,
             'count' => $count,
-            'query' => $search, // Pass search query for UI use
+            'query' => $search,
         ]);
     }
 }
