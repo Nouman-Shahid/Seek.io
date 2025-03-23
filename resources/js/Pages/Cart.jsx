@@ -16,10 +16,11 @@ const Cart = ({ courses = [], allcourses = [] }) => {
     );
 
     const discount = coupon?.discount || 0;
-    const totalAfterDiscount = totalAmount - (totalAmount * discount) / 100;
+    let totalAfterDiscount = totalAmount - (totalAmount * discount) / 100;
 
     const { data, setData, post, processing, errors } = useForm({
         coupon_code: "",
+        payment: totalAfterDiscount,
     });
 
     const handleChange = (e) => {
@@ -29,7 +30,9 @@ const Cart = ({ courses = [], allcourses = [] }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        post("/coupon_code");
+        console.log(totalAfterDiscount);
+
+        post("/coupon_code", { preserveScroll: true });
     };
 
     return (
@@ -43,7 +46,7 @@ const Cart = ({ courses = [], allcourses = [] }) => {
                     {courses.length} courses in your cart
                 </p>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6  ">
                     <div className="lg:col-span-2 space-y-4">
                         {courses && courses.length > 0 ? (
                             courses.map((item, idx) => (
@@ -178,16 +181,20 @@ const Cart = ({ courses = [], allcourses = [] }) => {
                                 </span>
                             </div>
                         </div>
-                        <div className="flex mt-5">
+                        <form
+                            action={route("checkout")}
+                            // method="POST"
+                            className="flex mt-5"
+                        >
                             {courses.length !== 0 && (
-                                <Link
-                                    href={`/remove_course`}
-                                    className=" w-full text-xs text-center sm:text-sm bg-blue-600 p-2 text-white rounded-md"
+                                <button
+                                    type="submit"
+                                    className="w-full text-xs text-center sm:text-sm bg-blue-600 p-2 text-white rounded-md"
                                 >
                                     Check out
-                                </Link>
+                                </button>
                             )}
-                        </div>
+                        </form>
                     </div>
                 </div>
 

@@ -5,6 +5,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseExamController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\StripeController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\BasicInfoMiddleware;
@@ -107,5 +108,9 @@ Route::get('/user/{id}', [UserController::class, 'showUserProfile'])->name('show
 
 Route::post('/coupon_code', [CartController::class, 'validateCoupon'])->name('coupon_code');
 Route::get('/remove_coupon', [CartController::class, 'removeCoupon'])->name('remove_coupon');
+
+
+Route::get('/checkout', [StripeController::class, 'checkout'])->name('checkout');
+Route::get('/checkout/success', [StripeController::class, 'success'])->name('success');
 
 require __DIR__ . '/auth.php';

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\Course;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,10 +31,12 @@ class CartController extends Controller
     public function getCart()
     {
 
+        $user = Auth::user();
 
         $cartCourses = DB::table('cart')
             ->join('course', 'cart.course_id', '=', 'course.id')
             ->join('users', 'course.course_teacher', '=', 'users.id')
+            ->where('cart.student_id', '=', $user->id)
             ->select('users.*', 'course.*')
             ->get();
 
@@ -56,8 +59,11 @@ class CartController extends Controller
 
     public function validateCoupon(Request $request)
     {
+        $user = Auth::user();
+
         $validated = $request->validate([
-            'coupon_code' => 'required|string|max:10'
+            'coupon_code' => 'required|string|max:10',
+            'payment' => 'required|numeric|min:0',
         ]);
 
         $coupon = DB::table('coupon_code')->where('code', $validated['coupon_code'])->first();
@@ -66,18 +72,33 @@ class CartController extends Controller
             return back()->withErrors(['coupon_code' => 'Invalid coupon code. Please try again.']);
         }
 
-        // Storing data in session 
+        // Store coupon details in session
         Session::put('coupon', [
             'code' => $coupon->code,
             'discount' => $coupon->discount
         ]);
 
-        return back();
+        // Store transaction details in database
+        Transaction::create([
+            'payment' => $validated['payment'], // totalAfterDiscount
+            'status' => 'Pending',
+            'student_id' => $user->id,
+            'code' => $coupon->code, // Store coupon code
+        ]);
+
+        return back()->with('success', 'Coupon applied successfully.');
     }
 
-    public function removeCoupon(Request $request)
+
+    public function removeCoupon()
     {
+        $user = Auth::user();
+
         Session::forget('coupon');
+
+        Transaction::where('student_id', $user->id)->delete();
+
+
         return back();
     }
 }
