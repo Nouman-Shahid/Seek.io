@@ -1,13 +1,36 @@
 import CourseCards from "@/Components/CourseCards";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, useForm, usePage } from "@inertiajs/react";
 import React from "react";
+import InputError from "@/Components/InputError";
+import TextInput from "@/Components/TextInput";
+import { TiDelete } from "react-icons/ti";
 
-const Cart = ({ courses = [], data = [] }) => {
+const Cart = ({ courses = [], allcourses = [] }) => {
+    const { props } = usePage();
+    const coupon = props.coupon || {};
+
     const totalAmount = courses.reduce(
         (acc, item) => acc + Number(item.course_amount || 0),
         0
     );
+
+    const discount = coupon?.discount || 0;
+    const totalAfterDiscount = totalAmount - (totalAmount * discount) / 100;
+
+    const { data, setData, post, processing, errors } = useForm({
+        coupon_code: "",
+    });
+
+    const handleChange = (e) => {
+        setData("coupon_code", e.target.value);
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        post("/coupon_code");
+    };
 
     return (
         <AuthenticatedLayout>
@@ -95,25 +118,64 @@ const Cart = ({ courses = [], data = [] }) => {
                         <h3 className="text-lg sm:text-xl font-semibold mb-3">
                             Coupon Code
                         </h3>
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mb-4">
-                            <input
-                                placeholder="Enter coupon"
-                                className="flex-grow"
+                        <form
+                            onSubmit={handleSubmit}
+                            className="flex flex-col sm:flex-row items-stretch sm:items-center mb-4"
+                        >
+                            <TextInput
+                                type="text"
+                                name="coupon_code"
+                                placeholder="Enter code"
+                                required
+                                value={data.coupon_code}
+                                onChange={handleChange}
+                                disabled={discount}
+                                className="flex-grow h-10 px-3 border border-gray-300 rounded-l-md border-r-0"
                             />
-                            <button>Apply</button>
-                        </div>
+
+                            <button
+                                className="bg-pink-600 text-white px-4 h-10 rounded-r-md"
+                                disabled={processing || discount}
+                            >
+                                Apply
+                            </button>
+                        </form>
+
                         <div className="space-y-2 text-sm">
+                            <InputError
+                                className="mt-2"
+                                message={errors.coupon_code}
+                            />
                             <div className="flex justify-between">
                                 <span>Subtotal:</span>
                                 <span>PKR {totalAmount.toLocaleString()}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span>Discount:</span>
-                                <span>- PKR 0</span>{" "}
+                                <span className="flex space-x-2 items-center ">
+                                    {discount ? (
+                                        <>
+                                            <p>
+                                                {discount
+                                                    ? `${discount}%`
+                                                    : "0%"}
+                                            </p>
+                                            <Link href="/remove_coupon">
+                                                <TiDelete className="text-red-600 size-6" />
+                                            </Link>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <p>0%</p>
+                                        </>
+                                    )}
+                                </span>
                             </div>
                             <div className="flex justify-between font-semibold">
                                 <span>Total:</span>
-                                <span>PKR {totalAmount.toLocaleString()}</span>
+                                <span>
+                                    PKR {totalAfterDiscount.toLocaleString()}
+                                </span>
                             </div>
                         </div>
                         <div className="flex mt-5">
@@ -133,7 +195,7 @@ const Cart = ({ courses = [], data = [] }) => {
                     <h3 className="text-xl sm:text-2xl font-bold mb-4">
                         You might also like
                     </h3>
-                    <CourseCards data={data} />
+                    <CourseCards data={allcourses} />
                 </div>
             </div>
         </AuthenticatedLayout>

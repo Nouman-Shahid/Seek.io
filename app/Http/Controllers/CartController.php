@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 
 class CartController extends Controller
@@ -43,7 +44,7 @@ class CartController extends Controller
 
         return Inertia::render('Cart', [
             'courses' => $cartCourses,
-            'data' => $allcourses
+            'allcourses' => $allcourses
         ]);
     }
 
@@ -51,5 +52,32 @@ class CartController extends Controller
     {
         Cart::where('course_id', $id)->delete();
         return Redirect::route('cart');
+    }
+
+    public function validateCoupon(Request $request)
+    {
+        $validated = $request->validate([
+            'coupon_code' => 'required|string|max:10'
+        ]);
+
+        $coupon = DB::table('coupon_code')->where('code', $validated['coupon_code'])->first();
+
+        if (!$coupon) {
+            return back()->withErrors(['coupon_code' => 'Invalid coupon code. Please try again.']);
+        }
+
+        // Storing data in session 
+        Session::put('coupon', [
+            'code' => $coupon->code,
+            'discount' => $coupon->discount
+        ]);
+
+        return back();
+    }
+
+    public function removeCoupon(Request $request)
+    {
+        Session::forget('coupon');
+        return back();
     }
 }

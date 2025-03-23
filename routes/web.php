@@ -105,5 +105,7 @@ Route::get("/remove_course/id/{id}", [CartController::class, 'removeCourse'])->n
 Route::get('/user/{id}', [UserController::class, 'showUserProfile'])->name('showUserProfile');
 
 
+Route::post('/coupon_code', [CartController::class, 'validateCoupon'])->name('coupon_code');
+Route::get('/remove_coupon', [CartController::class, 'removeCoupon'])->name('remove_coupon');
 
 require __DIR__ . '/auth.php';
