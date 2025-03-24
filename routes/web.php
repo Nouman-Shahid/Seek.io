@@ -60,7 +60,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 
-
 Route::middleware(TeacherMiddleware::class)->group(
     function () {
 
@@ -89,9 +88,6 @@ Route::post('/set_user_details', [UserController::class, 'storeUserDetails'])->n
 Route::patch('/user_details_update', [UserController::class, 'updateUserDetails'])->name('user_details_update');
 
 Route::get('/user_dashboard',  [UserController::class, 'getUserDetails'])->name('user_dashboard')->middleware('auth');
-
-
-
 
 
 
