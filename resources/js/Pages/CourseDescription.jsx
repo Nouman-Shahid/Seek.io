@@ -1,26 +1,29 @@
 import CourseCards from "@/Components/CourseCards";
+import InputError from "@/Components/InputError";
+import TextInput from "@/Components/TextInput";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, Link } from "@inertiajs/react";
+import { Textarea } from "@headlessui/react";
+import { Head, Link, useForm } from "@inertiajs/react";
 import React, { useState } from "react";
 import { FaPlus, FaCheckCircle, FaTimes } from "react-icons/fa";
+import { CiUnlock } from "react-icons/ci";
+import { CiLock } from "react-icons/ci";
+import { router } from "@inertiajs/react";
 
-const CourseDescription = ({ data = {}, auth, courses = [] }) => {
+const CourseDescription = ({
+    singleCourse = {},
+    auth,
+    courses = [],
+    chapters = [],
+}) => {
     const [showModal, setShowModal] = useState(false);
-    const [chapterTitle, setChapterTitle] = useState("");
-    const [chapterDesc, setChapterDesc] = useState("");
-    const [chapterVideo, setChapterVideo] = useState("");
-    const [isPreview, setIsPreview] = useState(false);
 
-    const handleAddChapter = (e) => {
-        e.preventDefault();
-        console.log("Chapter Added:", {
-            chapterTitle,
-            chapterDesc,
-            chapterVideo,
-            isPreview,
-        });
-        setShowModal(false);
-    };
+    const { data, setData, post, errors } = useForm({
+        chapterTitle: "",
+        chapterDesc: "",
+        chapterVideo: "",
+        isPreview: false,
+    });
 
     const handleVideoChange = (e) => {
         let url = e.target.value.trim();
@@ -28,7 +31,7 @@ const CourseDescription = ({ data = {}, auth, courses = [] }) => {
 
         if (url.includes("youtube.com") || url.includes("youtu.be")) {
             const match = url.match(
-                /(?:youtube\.com\/(?:.*v=|.*[?&]v=)|youtu.be\/)([^"&?\/\s]{11})/
+                /(?:youtube\.com\/(?:.*v=|.*[?&]v=)|youtu.be\/)([^"&?/\s]{11})/
             );
             if (match) {
                 embedUrl = `https://www.youtube.com/embed/${match[1]}`;
@@ -47,11 +50,20 @@ const CourseDescription = ({ data = {}, auth, courses = [] }) => {
         } else {
             const fileExtensions = [".mp4", ".webm", ".ogg"];
             if (fileExtensions.some((ext) => url.endsWith(ext))) {
-                embedUrl = url; // Direct video file
+                embedUrl = url;
             }
         }
 
-        setChapterVideo(embedUrl);
+        setData("chapterVideo", embedUrl);
+    };
+
+    const submit = (e) => {
+        e.preventDefault();
+
+        post(route("submit_course_chapter", { id: singleCourse.id }), {
+            preserveScroll: true,
+            onSuccess: () => setShowModal(false),
+        });
     };
 
     return (
@@ -62,36 +74,37 @@ const CourseDescription = ({ data = {}, auth, courses = [] }) => {
                 <div className="bg-white shadow-md p-8 rounded-2xl flex flex-col lg:flex-row items-center gap-8">
                     <div className="flex-1">
                         <h1 className="text-3xl font-bold text-gray-800">
-                            {data.course_title}
+                            {singleCourse.course_title}
                         </h1>
                         <p className="text-gray-600 mt-3 leading-relaxed">
-                            {data.course_desc}
+                            {singleCourse.course_desc}
                         </p>
                         <div className="mt-5 flex items-center gap-6">
                             <span className="font-sans">
-                                {data.course_amount === "free" ? (
+                                {singleCourse.course_amount === "free" ? (
                                     <p className="text-blue-600 font-bold">
                                         FREE
                                     </p>
                                 ) : (
                                     <p className="text-green-600 font-bold">
-                                        PKR {data.course_amount}
+                                        PKR {singleCourse.course_amount}
                                     </p>
                                 )}
                             </span>
                             {auth.user.role === "Student" ? (
                                 <Link
-                                    href={`/add_to_cart/id/${data.id}`}
+                                    href={`/add_to_cart/id/${singleCourse.id}`}
                                     className="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded-lg transition-all"
                                 >
                                     Add To Cart
                                 </Link>
                             ) : (
-                                auth.user?.id === data.course_teacher && (
+                                auth.user?.id ===
+                                    singleCourse.course_teacher && (
                                     <div className="flex space-x-4">
                                         <Link
                                             className="bg-indigo-600 flex items-center gap-2 text-white px-5 py-2 rounded-md hover:bg-indigo-700 transition-all"
-                                            href={`/course_exam/id/${data.id}`}
+                                            href={`/course_exam/id/${singleCourse.id}`}
                                         >
                                             Make Exam
                                         </Link>
@@ -101,8 +114,23 @@ const CourseDescription = ({ data = {}, auth, courses = [] }) => {
                                         >
                                             <FaPlus /> Add Chapter
                                         </button>
-                                        <button className="bg-green-600 flex items-center gap-2 text-white px-5 py-2 rounded-md hover:bg-green-700 transition-all">
-                                            <FaCheckCircle /> Publish
+                                        <button
+                                            onClick={() =>
+                                                router.post(
+                                                    `/publish_course/id/${singleCourse.id}`
+                                                )
+                                            }
+                                            disabled={chapters.length === 0}
+                                            className={`flex items-center gap-2 px-5 py-2 rounded-md transition-all ${
+                                                chapters.length > 0
+                                                    ? "bg-green-600 text-white hover:bg-green-700"
+                                                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                            }`}
+                                        >
+                                            <FaCheckCircle />{" "}
+                                            {chapters.length > 0
+                                                ? "Publish"
+                                                : "Cannot Publish"}
                                         </button>
                                     </div>
                                 )
@@ -110,7 +138,7 @@ const CourseDescription = ({ data = {}, auth, courses = [] }) => {
                         </div>
                     </div>
                     <img
-                        src={data.course_image}
+                        src={singleCourse.course_image}
                         alt="Course"
                         className="w-80 h-64 rounded-2xl object-cover shadow-lg"
                     />
@@ -120,33 +148,90 @@ const CourseDescription = ({ data = {}, auth, courses = [] }) => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="bg-gray-100 p-5 rounded-lg text-center shadow-sm">
                         <p className="font-bold text-gray-700">Instructor:</p>
-                        <p className="text-gray-600">{data.name}</p>
+                        <p className="text-gray-600">{singleCourse.name}</p>
                     </div>
                     <div className="bg-gray-100 p-5 rounded-lg text-center shadow-sm">
                         <p className="font-bold text-gray-700">Skill Level:</p>
-                        <p className="text-gray-600">{data.course_level}</p>
+                        <p className="text-gray-600">
+                            {singleCourse.course_level}
+                        </p>
                     </div>
                     <div className="bg-gray-100 p-5 rounded-lg text-center shadow-sm">
                         <p className="font-bold text-gray-700">
                             Time to Complete:
                         </p>
                         <p className="text-gray-600">
-                            {data.course_hours} hours
+                            {singleCourse.course_hours} hours
                         </p>
                     </div>
                 </div>
+
+                {chapters.map((item, index) => (
+                    <div
+                        key={index}
+                        className="flex items-start gap-6 p-4 h-64 border rounded-lg shadow-md bg-white"
+                    >
+                        {/* Left Side: Title, Description, and Actions */}
+                        <div className="flex-1 h-full flex flex-col justify-between">
+                            <div>
+                                <h2 className="text-lg font-semibold text-gray-900">
+                                    {item.title}
+                                </h2>
+                                <p className="text-gray-600 mt-1">
+                                    {item.desc}
+                                </p>
+                            </div>
+
+                            {/* Preview Status & Edit Button */}
+                            <div className="flex items-center justify-between border-t pt-2 mt-2">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm font-medium text-gray-700">
+                                        {item.preview === "1" ? (
+                                            <div className="flex items-center space-x-2">
+                                                <CiUnlock className="size-5" />
+                                                <p>Free Preview</p>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center space-x-2">
+                                                <CiLock className="size-5" />
+                                                <p>Locked</p>
+                                            </div>
+                                        )}
+                                    </span>
+                                </div>
+
+                                {/* Edit Button */}
+                                <Link className="bg-green-600 flex items-center gap-2 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-all">
+                                    Edit Chapter
+                                </Link>
+                            </div>
+                        </div>
+
+                        {/* Right Side: Video */}
+                        <div className="w-1/3">
+                            <iframe
+                                src={item.video}
+                                className="w-full h-40 md:h-56 border border-gray-300 rounded-md"
+                                allowFullScreen
+                            ></iframe>
+                        </div>
+                    </div>
+                ))}
 
                 {/* Related Courses */}
                 <div className="mt-10">
                     <h2 className="text-2xl font-bold text-gray-800 mb-4">
                         Related Courses
                     </h2>
-                    <CourseCards data={courses} auth={auth} />
+                    <CourseCards singleCourse={courses} auth={auth} />
                 </div>
             </div>
 
             {showModal && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                <form
+                    onSubmit={submit}
+                    className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+                >
                     <div className="bg-white p-6 rounded-lg shadow-xl w-[60vw] h-auto relative">
                         {/* Cross Button at Top-Right */}
                         <button
@@ -159,69 +244,91 @@ const CourseDescription = ({ data = {}, auth, courses = [] }) => {
                         <h2 className="text-2xl font-semibold text-gray-800 border-b pb-3">
                             Add Chapter
                         </h2>
-                        <form
-                            onSubmit={handleAddChapter}
-                            className="mt-5 flex space-x-6"
-                        >
+                        <div className="mt-5 flex space-x-6">
                             {/* Left Section - Form Inputs */}
                             <div className="flex flex-col w-1/2 space-y-4">
                                 <div>
                                     <label className="font-medium text-gray-700">
                                         Chapter Title
                                     </label>
-                                    <input
+                                    <TextInput
                                         type="text"
-                                        value={chapterTitle}
+                                        value={data.chapterTitle}
+                                        placeholder="Chapter Title"
                                         onChange={(e) =>
-                                            setChapterTitle(e.target.value)
+                                            setData(
+                                                "chapterTitle",
+                                                e.target.value
+                                            )
                                         }
                                         className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                                         required
                                     />
+                                    <InputError
+                                        message={errors.chapterTitle}
+                                        className="mt-2"
+                                    />{" "}
                                 </div>
 
                                 <div>
                                     <label className="font-medium text-gray-700">
                                         Chapter Description
                                     </label>
-                                    <textarea
-                                        value={chapterDesc}
+                                    <Textarea
+                                        value={data.chapterDesc}
+                                        placeholder="Chapter Description"
                                         onChange={(e) =>
-                                            setChapterDesc(e.target.value)
+                                            setData(
+                                                "chapterDesc",
+                                                e.target.value
+                                            )
                                         }
-                                        className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                        className="w-full mt-1 px-3 min-h-28 max-h-36 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                                         required
-                                    ></textarea>
+                                    ></Textarea>
+                                    <InputError
+                                        message={errors.chapterDesc}
+                                        className="mt-2"
+                                    />{" "}
                                 </div>
 
                                 <div>
                                     <label className="font-medium text-gray-700">
                                         Chapter Video URL
                                     </label>
-                                    <input
+                                    <TextInput
                                         type="text"
-                                        value={chapterVideo}
+                                        value={data.chapterVideo}
                                         onChange={handleVideoChange}
                                         className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                                         required
+                                        placeholder="Chapter Video URL"
                                     />
+                                    <InputError
+                                        message={errors.chapterVideo}
+                                        className="mt-2"
+                                    />{" "}
                                 </div>
                             </div>
 
                             {/* Right Section - Video Preview */}
                             <div className="w-1/2 flex flex-col items-center">
-                                {chapterVideo && (
+                                {data.chapterVideo && (
                                     <div className="w-full">
                                         <p className="font-medium text-gray-700 mb-2">
                                             Video Preview:
                                         </p>
-                                        {chapterVideo.includes("youtube.com") ||
-                                        chapterVideo.includes("facebook.com") ||
-                                        chapterVideo.includes(
+                                        {data.chapterVideo.includes(
+                                            "youtube.com"
+                                        ) ||
+                                        data.chapterVideo.includes(
+                                            "facebook.com"
+                                        ) ||
+                                        data.chapterVideo.includes(
                                             "drive.google.com"
                                         ) ? (
                                             <iframe
-                                                src={chapterVideo}
+                                                src={data.chapterVideo}
                                                 className="w-full h-56 border border-gray-300 rounded-md"
                                                 allowFullScreen
                                             ></iframe>
@@ -231,7 +338,7 @@ const CourseDescription = ({ data = {}, auth, courses = [] }) => {
                                                 className="w-full h-56 border border-gray-300 rounded-md"
                                             >
                                                 <source
-                                                    src={chapterVideo}
+                                                    src={data.chapterVideo}
                                                     type="video/mp4"
                                                 />
                                                 Your browser does not support
@@ -241,7 +348,7 @@ const CourseDescription = ({ data = {}, auth, courses = [] }) => {
                                     </div>
                                 )}
                             </div>
-                        </form>
+                        </div>
 
                         {/* Buttons */}
                         <div className="flex justify-end space-x-4 mt-6">
@@ -250,18 +357,19 @@ const CourseDescription = ({ data = {}, auth, courses = [] }) => {
                                 <label className="relative inline-flex items-center cursor-pointer">
                                     <input
                                         type="checkbox"
-                                        checked={isPreview}
-                                        value="true"
+                                        checked={data.isPreview}
                                         onChange={() => {
-                                            setIsPreview(!isPreview);
-                                            console.log(!isPreview);
+                                            setData(
+                                                "isPreview",
+                                                !data.isPreview
+                                            );
                                         }}
                                         className="sr-only peer"
                                     />
                                     <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-green-500 after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5"></div>
                                 </label>
                                 <span className="font-medium text-gray-700">
-                                    Enable Preview Mode
+                                    Enable Free Preview
                                 </span>
                             </div>
 
@@ -273,7 +381,7 @@ const CourseDescription = ({ data = {}, auth, courses = [] }) => {
                             </button>
                         </div>
                     </div>
-                </div>
+                </form>
             )}
         </AuthenticatedLayout>
     );

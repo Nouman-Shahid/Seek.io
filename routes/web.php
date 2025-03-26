@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\ChapterController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseExamController;
 use App\Http\Controllers\ProfileController;
@@ -108,5 +109,14 @@ Route::get('/remove_coupon', [CartController::class, 'removeCoupon'])->name('rem
 
 Route::get('/checkout', [StripeController::class, 'checkout'])->name('checkout');
 Route::get('/checkout/success', [StripeController::class, 'success'])->name('success');
+
+
+
+
+
+
+
+Route::post('add_course_chapter/id/{id}', [ChapterController::class, 'addChapter'])->name('submit_course_chapter');
+Route::post('publish_course/id/{id}', [CourseController::class, 'publishCourse'])->name('publish_course');
 
 require __DIR__ . '/auth.php';

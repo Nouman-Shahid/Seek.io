@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Chapter;
 use App\Models\Course;
 use App\Services\WebPurifyService;
 use Illuminate\Http\Request;
@@ -14,7 +15,7 @@ class CourseController extends Controller
 {
     public function getAllCourse()
     {
-        $courses = Course::all();
+        $courses = Course::where('publish', 'Published')->get();
 
         return Inertia::render('Welcome', [
             'data' => $courses,
@@ -30,12 +31,17 @@ class CourseController extends Controller
         $data = DB::table('course')
             ->join('users', 'course.course_teacher', '=', 'users.id')
             ->where('course.id', $id)
+            ->where('course.publish', 'Published')
             ->select('users.*', 'course.*')
             ->first();
 
+        $chapters = Chapter::where('course_id', $id)->get();
+
+
         return Inertia::render('CourseDescription', [
             'courses' => $courses,
-            'data' => $data
+            'singleCourse' => $data,
+            'chapters' => $chapters
         ]);
     }
 
@@ -78,5 +84,21 @@ class CourseController extends Controller
 
 
         return Redirect::to('/user_dashboard');
+    }
+
+
+
+
+
+
+
+
+    public function publishCourse($id)
+    {
+        Course::where('id', $id)->update([
+            'publish' => 'Published'
+        ]);
+
+        return back();
     }
 }
