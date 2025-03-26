@@ -68,44 +68,6 @@ const CourseDescription = ({ data = {}, auth, courses = [] }) => {
                     </div>
                 </div>
 
-                {/* Reviews Section */}
-                {/* <div className="mt-8">
-                    <h2 className="text-xl font-bold">Learner Reviews</h2>
-                    <div className="flex items-center mt-2">
-                        <span className="text-2xl font-bold">
-                            {data.course_rating}
-                        </span>
-                        <div className="flex text-yellow-500 ml-2">
-                            {[...Array(5)].map((_, i) => (
-                                <FaStar
-                                    key={i}
-                                    className={
-                                        i < data.course_rating
-                                            ? "text-yellow-500"
-                                            : "text-gray-400"
-                                    }
-                                />
-                            ))}
-                        </div>
-                    </div>
-                    {/* Individual Reviews 
-                    <div className="mt-4 space-y-4">
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                            <p className="font-bold">Anonymous User</p>
-                            <p className="text-gray-600">
-                                This course made me understand all concepts
-                                easily.
-                            </p>
-                        </div>
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                            <p className="font-bold">Anonymous User</p>
-                            <p className="text-gray-600">
-                                A great investment. I learned a lot from it.
-                            </p>
-                        </div>
-                    </div>
-                </div> */}
-
                 {/* Related Courses */}
                 <div className="mt-8">
                     <h2 className="text-xl font-bold">Related Courses</h2>
