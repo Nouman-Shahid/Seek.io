@@ -12,9 +12,9 @@ const CourseDescription = ({ data = {}, auth, courses = [] }) => {
                 {/* Course Header */}
                 <div className="bg-blue-100 p-6 rounded-xl flex flex-col lg:flex-row items-center gap-6">
                     <div className="flex-1">
-                        <h1 className="text-2xl font-bold">
+                        <p className="text-2xl font-bold">
                             {data.course_title}
-                        </h1>
+                        </p>
                         <p className="text-gray-600 mt-2">{data.course_desc}</p>
                         <div className="mt-4 flex gap-4">
                             <span className="text-green-600 font-bold text-xl">
