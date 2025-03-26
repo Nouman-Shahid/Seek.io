@@ -50,16 +50,13 @@ class CourseController extends Controller
     public function submitCourse(Request $request)
     {
         $request->validate([
-            'course_title' => 'required|string|max:255',
-            'course_desc' => 'required|string|max:255',
-            'course_category' => 'required|string',
+            'course_title' => 'required|string|min:10|max:255',
+            'course_desc' => 'required|string|min:20|max:255',
+            'course_category' => 'required|string|in:It,Business,Science,Engineering,Humanities,Other',
             'course_hours' => 'required|integer',
-            'course_level' => 'required|string',
+            'course_level' => 'required|string|in:Easy,Hard,Medium',
             'course_amount' => 'required|string',
             'course_image' => 'required|string|max:51200',
-            'content_media' => 'required|string|max:1048576',
-            'content_desc' => 'required|string',
-            'module_name' => 'required|string',
         ]);
 
         $user = Auth::user();
@@ -75,11 +72,10 @@ class CourseController extends Controller
             'course_hours' => $request->course_hours,
             'course_level' => $request->course_level,
             'course_image' => $request->course_image,
-            'content_media' => $request->content_media,
-            'content_desc' => $request->content_desc,
             'course_amount' => $request->course_amount,
-            'module_name' => $request->module_name,
         ]);
+
+
 
         return Redirect::to('/user_dashboard');
     }

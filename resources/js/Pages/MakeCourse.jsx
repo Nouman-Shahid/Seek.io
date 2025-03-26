@@ -3,17 +3,12 @@ import { motion } from "framer-motion";
 import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
-import { useForm } from "@inertiajs/react";
+import { Head, useForm } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import Free from "../images/assets/Free.png";
 import Paid from "../images/assets/Paid.png";
 
-const steps = [
-    "Course Information",
-    "Course Content",
-    "Pricing",
-    "Terms & Conditions",
-];
+const steps = ["Course Information", "Pricing", "Terms & Conditions"];
 
 const MakeCourse = () => {
     const [step, setStep] = useState(0);
@@ -25,9 +20,6 @@ const MakeCourse = () => {
         course_level: "",
         course_amount: "",
         course_image: null,
-        content_media: null,
-        module_name: "",
-        content_desc: "",
         terms_accepted: false,
     });
 
@@ -65,6 +57,7 @@ const MakeCourse = () => {
 
     return (
         <AuthenticatedLayout>
+            <Head title="Make Course" />
             <div className="flex justify-center w-full items-center min-h-screen  bg-gray-100">
                 <div className="w-full sm:w-8/12 lg:max-w-4xl p-8 bg-white rounded-lg shadow-lg">
                     <div className="flex justify-between mb-6">
@@ -89,7 +82,7 @@ const MakeCourse = () => {
                                     {/* Line Between Steps */}
                                     {index < steps.length - 1 && (
                                         <motion.div
-                                            className={`absolute top-1/2 right-12 left-12 w-[22vh] h-1 transition-all duration-300 
+                                            className={`absolute top-1/2 right-12 left-12 w-[16.7vw] h-1 transition-all duration-300 
                                             ${
                                                 index < step
                                                     ? "bg-blue-500"
@@ -153,7 +146,7 @@ const MakeCourse = () => {
                                                 <option value="" disabled>
                                                     Select course category
                                                 </option>
-                                                <option value="IT">
+                                                <option value="It">
                                                     Information Technology
                                                 </option>
                                                 <option value="Business">
@@ -167,6 +160,9 @@ const MakeCourse = () => {
                                                 </option>
                                                 <option value="Humanities">
                                                     Humanities
+                                                </option>
+                                                <option value="Other">
+                                                    Other
                                                 </option>
                                             </select>
                                             <InputError
@@ -232,11 +228,11 @@ const MakeCourse = () => {
                                             <option value="" disabled>
                                                 Select course level
                                             </option>
-                                            <option value="easy">Easy</option>
-                                            <option value="medium">
+                                            <option value="Easy">Easy</option>
+                                            <option value="Medium">
                                                 Medium
                                             </option>
-                                            <option value="hard">Hard</option>
+                                            <option value="Hard">Hard</option>
                                         </select>
                                         <InputError
                                             message={errors.course_level}
@@ -272,74 +268,6 @@ const MakeCourse = () => {
                         )}
 
                         {step === 1 && (
-                            <div className="flex justify-between items-baseline h-[65vh] shadow-lg rounded-lg p-8">
-                                <div className="flex flex-col w-[55%]">
-                                    <div>
-                                        <InputLabel
-                                            htmlFor="module_name"
-                                            value="Module Name"
-                                        />
-                                        <TextInput
-                                            id="module_name"
-                                            name="module_name"
-                                            value={data.module_name}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                            isFocused={true}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                        <InputError
-                                            message={errors.module_name}
-                                            className="mt-2"
-                                        />
-                                    </div>
-
-                                    <div className="mt-6">
-                                        <InputLabel
-                                            htmlFor="content_desc"
-                                            value="Course Content"
-                                        />
-                                        <textarea
-                                            id="content_desc"
-                                            name="content_desc"
-                                            value={data.content_desc}
-                                            className="w-full min-h-64 max-h-36 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                        <InputError
-                                            message={errors.content_desc}
-                                            className="mt-2"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className=" flex flex-col  w-[40%]">
-                                    <InputLabel
-                                        htmlFor="content_media"
-                                        value="Content Media Url"
-                                    />
-                                    <TextInput
-                                        id="content_media"
-                                        name="content_media"
-                                        value={data.content_media}
-                                        className="w-full  border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                    <img
-                                        src={data.content_media}
-                                        className="my-4"
-                                    />{" "}
-                                    <InputError
-                                        message={errors.content_media}
-                                        className="mt-2"
-                                    />
-                                </div>
-                            </div>
-                        )}
-
-                        {step === 2 && (
                             <div className="h-[65vh] flex flex-col space-y-8  shadow-lg rounded-lg">
                                 <h2 className="text-3xl font-semibold text-gray-800 text-center">
                                     Choose Your Course Pricing
@@ -417,6 +345,7 @@ const MakeCourse = () => {
                                                 <TextInput
                                                     id="course_amount"
                                                     name="course_amount"
+                                                    required
                                                     type="number"
                                                     value={
                                                         data.course_amount ===
@@ -436,6 +365,12 @@ const MakeCourse = () => {
                                                         data.course_amount ===
                                                         "free"
                                                     }
+                                                />
+                                                <InputError
+                                                    message={
+                                                        errors.course_amount
+                                                    }
+                                                    className="mt-2"
                                                 />
                                             </div>
                                         </div>
@@ -461,7 +396,7 @@ const MakeCourse = () => {
                             </div>
                         )}
 
-                        {step === 3 && (
+                        {step === 2 && (
                             <div className="h-[65vh] flex flex-col justify-between p-6 bg-white shadow-lg rounded-lg">
                                 {/* Title */}
                                 <h2 className="text-3xl font-bold text-gray-800 text-center mb-6">
