@@ -74,9 +74,19 @@ const CourseCards = ({ auth, data = [] }) => {
                                             {course.course_desc}
                                         </p>
                                         <div className="flex justify-between items-center">
-                                            <p className="text-green-600 font-bold font-sans">
-                                                PKR {course.course_amount}
-                                            </p>
+                                            <span className="font-sans">
+                                                {course.course_amount ===
+                                                "free" ? (
+                                                    <p className="text-blue-600 font-bold">
+                                                        FREE
+                                                    </p>
+                                                ) : (
+                                                    <p className="text-green-600 font-bold ">
+                                                        PKR{" "}
+                                                        {course.course_amount}
+                                                    </p>
+                                                )}
+                                            </span>
                                             <Link
                                                 href={`/course/id/${course.id}`}
                                                 className="px-3 py-2 bg-green-600 text-white rounded-md transition-all duration-300 hover:bg-green-700"
@@ -97,6 +107,7 @@ const CourseCards = ({ auth, data = [] }) => {
             </div>
             {canScrollLeft && (
                 <button
+                    type="button"
                     onClick={scrollLeft}
                     className="absolute top-1/2 left-2 transform -translate-y-1/2 rounded-full shadow-lg hover:bg-blue-600 transition"
                 >
@@ -105,6 +116,7 @@ const CourseCards = ({ auth, data = [] }) => {
             )}
             {canScrollRight && (
                 <button
+                    type="button"
                     onClick={scrollRight}
                     className="absolute top-1/2 right-2 transform -translate-y-1/2  rounded-full shadow-lg hover:bg-blue-600 transition"
                 >
