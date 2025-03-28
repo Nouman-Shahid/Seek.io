@@ -67,7 +67,7 @@ const CourseCards = ({ auth, data = [] }) => {
                                         alt={course.course_title}
                                     />
 
-                                    {auth.user?.id === course.course_teacher &&
+                                    {auth?.user?.id === course.course_teacher &&
                                         (course.publish ? (
                                             <span className="absolute top-3 right-3 bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md">
                                                 Published

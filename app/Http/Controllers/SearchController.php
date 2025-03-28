@@ -33,7 +33,6 @@ class SearchController extends Controller
             ->select(
                 'id',
                 'course_title as name',
-                'module_name',
                 'course_amount as price',
                 'course_level',
                 'course_image as image',
@@ -47,7 +46,6 @@ class SearchController extends Controller
             )
             ->where(function ($query) use ($search) {
                 $query->where('course_title', 'like', "%{$search}%")
-                    ->orWhere('module_name', 'like', "%{$search}%")
                     ->orWhere('course_category', 'like', "%{$search}%");
             });
 
@@ -56,7 +54,6 @@ class SearchController extends Controller
             ->select(
                 'id',
                 'name',
-                DB::raw("NULL as module_name"),
                 DB::raw("NULL as price"),
                 DB::raw("NULL as course_level"),
                 DB::raw("NULL as image"),

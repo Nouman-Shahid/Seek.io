@@ -93,9 +93,9 @@ Route::get('/user_dashboard',  [UserController::class, 'getUserDetails'])->name(
 
 
 
-Route::get('/add_to_cart/id/{id}', [CartController::class, 'addToCart'])->name('add_to_cart');
+Route::get('/add_to_cart/id/{id}', [CartController::class, 'addToCart'])->name('add_to_cart')->middleware('auth');
 
-Route::get('/cart', [CartController::class, 'getCart'])->name('cart');
+Route::get('/cart', [CartController::class, 'getCart'])->name('cart')->middleware('auth');
 
 Route::get("/remove_course/id/{id}", [CartController::class, 'removeCourse'])->name('remove_course');
 

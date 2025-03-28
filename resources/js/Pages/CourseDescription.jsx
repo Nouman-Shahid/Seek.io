@@ -9,6 +9,8 @@ import { FaPlus, FaCheckCircle, FaTimes } from "react-icons/fa";
 import { CiUnlock } from "react-icons/ci";
 import { CiLock } from "react-icons/ci";
 import { router } from "@inertiajs/react";
+import Navbar from "@/Components/Navbar";
+import Footer from "@/Components/Footer";
 
 const MAX_CHAR = 300;
 
@@ -69,7 +71,8 @@ const CourseDescription = ({
     };
 
     return (
-        <AuthenticatedLayout>
+        <>
+            <Navbar auth={auth} />
             <Head title="Course Description" />
             <div className="pt-20 max-w-6xl mx-auto p-6 space-y-6">
                 {/* Course Header */}
@@ -96,7 +99,7 @@ const CourseDescription = ({
                                     </p>
                                 )}
                             </span>
-                            {auth.user.role === "Student" ? (
+                            {auth?.user?.role !== "Teacher" ? (
                                 <Link
                                     href={`/add_to_cart/id/${singleCourse.id}`}
                                     className="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded-lg transition-all"
@@ -219,7 +222,7 @@ const CourseDescription = ({
                                 </div>
 
                                 {/* Edit Button */}
-                                {auth.user.role === "Student"
+                                {auth?.user?.role === "Student"
                                     ? ""
                                     : auth.user?.id ===
                                           singleCourse.course_teacher && (
@@ -427,7 +430,9 @@ const CourseDescription = ({
                     </div>
                 </form>
             )}
-        </AuthenticatedLayout>
+
+            <Footer />
+        </>
     );
 };
 

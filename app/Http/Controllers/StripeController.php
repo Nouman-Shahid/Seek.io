@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\Course;
+use App\Models\Enrollments;
+use App\Models\Payment;
 use Stripe\Stripe;
 use Inertia\Inertia;
 use Inertia\Controller;
@@ -37,8 +39,8 @@ class StripeController extends Controller
                         'currency' => 'pkr',
                         'product_data' => [
                             'name' => $course->course_title,
-                            'description' => $course->course_desc ?? '',
-                            'images' => [$course->course_image ?? 'https://via.placeholder.com/150'],
+                            'description' => $course->course_desc,
+                            // 'images' => [$course->course_image],
                         ],
                         'unit_amount' => $course->course_amount * 100,
                     ],
@@ -64,15 +66,40 @@ class StripeController extends Controller
 
     public function success()
     {
-        // $product = HotelDeals::find($productId);
-        // $user = Auth::user();
+        $user = Auth::user();
 
-        // // Create a new booked hotel record
-        // $bookedhotel = BookedHotels::create([
-        //     'user_id' => $user->id,
-        //     'hotel_id' => $productId,
-        // ]);
+        $cartItems = Cart::where('student_id', $user->id)->get();
 
-        return Inertia::render('PaymentSuccess');
+        if ($cartItems->isEmpty()) {
+            return redirect()->route('dashboard')->with('error', 'Your cart is empty.');
+        }
+
+        $courses = Course::whereIn('id', $cartItems->pluck('course_id'))->get();
+
+        // Calculating total courses amount
+        $totalAmount = $courses->sum('course_amount');
+
+        // Enrolling the student 
+        foreach ($cartItems as $cartItem) {
+            Enrollments::create([
+                'student_id' => $user->id,
+                'course_id' => $cartItem->course_id,
+            ]);
+        }
+
+        // Get all course names
+        $courseNames = $courses->pluck('course_title')->implode(', ');
+
+        // Storing payment record
+        Payment::create([
+            'student_id' => $user->id,
+            'amount' => $totalAmount,
+            'details' => "{$user->name} paid for courses: {$courseNames}",
+        ]);
+
+
+        Cart::where('student_id', $user->id)->delete();
+
+        return Inertia::render('PaymentSuccess', ['totalAmount' => $totalAmount]);
     }
 }
