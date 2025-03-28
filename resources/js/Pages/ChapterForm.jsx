@@ -8,6 +8,8 @@ import { FaTimes } from "react-icons/fa";
 const MAX_CHAR = 300;
 
 const ChapterForm = ({ showModal, setShowModal, singleCourse = {} }) => {
+    const [isEditing, setIsEditing] = useState(false);
+
     const { data, setData, post, errors } = useForm({
         chapterTitle: "",
         chapterDesc: "",
