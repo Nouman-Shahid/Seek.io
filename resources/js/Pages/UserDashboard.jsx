@@ -6,7 +6,12 @@ import CourseCards from "@/Components/CourseCards";
 import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
 
-const TeacherDashboard = ({ user = {}, auth, course = [] }) => {
+const TeacherDashboard = ({
+    user = {},
+    auth,
+    coursesAsTeacher = [],
+    coursesAsStudent = [],
+}) => {
     const [isEditing, setIsEditing] = useState(false);
 
     const { data, setData, patch, errors, processing } = useForm({
@@ -217,7 +222,10 @@ const TeacherDashboard = ({ user = {}, auth, course = [] }) => {
                                         <IoIosAddCircle className="size-[5vh] text-blue-600" />
                                     </Link>
                                 </div>
-                                <CourseCards data={course} auth={auth} />
+                                <CourseCards
+                                    data={coursesAsTeacher}
+                                    auth={auth}
+                                />
                             </>
                         ) : (
                             <>
@@ -225,10 +233,8 @@ const TeacherDashboard = ({ user = {}, auth, course = [] }) => {
                                     <h2 className="text-xl font-bold mt-6 mb-4">
                                         Enrolled Courses
                                     </h2>{" "}
-                                    {/* <Link href={`/makecourse`}>
-                                        <IoIosAddCircle className="size-[5vh] text-blue-600" />
-                                    </Link> */}
                                 </div>
+                                <CourseCards data={coursesAsStudent} />
                             </>
                         )}
                     </main>

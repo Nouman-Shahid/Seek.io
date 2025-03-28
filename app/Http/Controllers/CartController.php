@@ -42,12 +42,12 @@ class CartController extends Controller
 
 
 
-        $allcourses = Course::all();
+        $courses = Course::where('publish', 'Published')->get();
 
 
         return Inertia::render('Cart', [
             'courses' => $cartCourses,
-            'allcourses' => $allcourses
+            'allcourses' => $courses
         ]);
     }
 

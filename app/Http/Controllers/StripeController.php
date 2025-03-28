@@ -8,8 +8,8 @@ use App\Models\Enrollments;
 use App\Models\Payment;
 use Stripe\Stripe;
 use Inertia\Inertia;
-use Inertia\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Stripe\Checkout\Session;
 use Illuminate\Http\Request;
 
@@ -17,10 +17,6 @@ class StripeController extends Controller
 {
     public function checkout(Request $request)
     {
-        // $validatedData = $request->validate([
-        //     'total_after_discount' => 'required|numeric|min:1',
-        // ]);
-
         Stripe::setApiKey(config('stripe.sk'));
 
         $cartItems = Cart::where('student_id', Auth::id())->get();
@@ -40,46 +36,59 @@ class StripeController extends Controller
                         'product_data' => [
                             'name' => $course->course_title,
                             'description' => $course->course_desc,
-                            // 'images' => [$course->course_image],
                         ],
-                        'unit_amount' => $course->course_amount * 100,
+                        'unit_amount' => $course->course_amount * 100, // Convert to cents
                     ],
                     'quantity' => 1,
                 ];
             }
         }
 
-        // Get the total after discount from the frontend
-        // $totalAfterDiscount = $validatedData['total_after_discount'] * 100; // Convert to cents
-
-        // Create Stripe checkout session
+        // Create Stripe checkout session with correct success URL
         $session = Session::create([
             'payment_method_types' => ['card'],
             'line_items' => $lineItems,
             'mode' => 'payment',
-            'success_url' => route('success'),
+            'success_url' => route('success') . '?session_id={CHECKOUT_SESSION_ID}', // Ensure session_id is included
+            'cancel_url' => route('cart'),
         ]);
 
         return redirect($session->url);
     }
 
-
-    public function success()
+    public function success(Request $request)
     {
-        $user = Auth::user();
+        Stripe::setApiKey(config('stripe.sk'));
 
-        $cartItems = Cart::where('student_id', $user->id)->get();
+        $sessionId = $request->query('session_id');
+        Log::info('Received session ID:', ['session_id' => $sessionId]);
 
-        if ($cartItems->isEmpty()) {
-            return redirect()->route('dashboard')->with('error', 'Your cart is empty.');
+        if (!$sessionId) {
+            Log::error('Missing session ID');
+            return redirect()->route('user_dashboard')->with('error', 'Invalid payment session.');
         }
+
+        // Retrieve session details
+        $session = Session::retrieve($sessionId);
+        Log::info('Stripe session details:', ['session' => $session]);
+
+        // Ensure payment is successful
+        if ($session->payment_status !== 'paid') {
+            Log::error('Payment verification failed', ['status' => $session->payment_status]);
+            return redirect()->route('home')->with('error', 'Payment verification failed.');
+        }
+
+        $user = Auth::user();
+        $cartItems = Cart::where('student_id', $user->id)->get();
 
         $courses = Course::whereIn('id', $cartItems->pluck('course_id'))->get();
 
-        // Calculating total courses amount
-        $totalAmount = $courses->sum('course_amount');
 
-        // Enrolling the student 
+        if ($cartItems->isEmpty()) {
+            Log::warning('Cart is empty after payment');
+            return redirect()->route('dashboard')->with('error', 'Your cart is empty.');
+        }
+
         foreach ($cartItems as $cartItem) {
             Enrollments::create([
                 'student_id' => $user->id,
@@ -87,19 +96,19 @@ class StripeController extends Controller
             ]);
         }
 
-        // Get all course names
-        $courseNames = $courses->pluck('course_title')->implode(', ');
+        $totalAmount = $cartItems->sum(fn($item) => Course::find($item->course_id)->course_amount);
 
-        // Storing payment record
         Payment::create([
             'student_id' => $user->id,
             'amount' => $totalAmount,
-            'details' => "{$user->name} paid for courses: {$courseNames}",
+            'details' => "{$user->name} paid for courses: " . $courses->pluck('course_title')->implode(', '),
         ]);
-
 
         Cart::where('student_id', $user->id)->delete();
 
-        return Inertia::render('PaymentSuccess', ['totalAmount' => $totalAmount]);
+        Log::info('Payment and enrollment successful, redirecting to success page');
+
+        // Redirect properly
+        return redirect()->route('success')->with('totalAmount', $totalAmount);
     }
 }

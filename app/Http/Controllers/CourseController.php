@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Chapter;
 use App\Models\Course;
+use App\Models\Enrollments;
 use App\Services\WebPurifyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,8 +26,9 @@ class CourseController extends Controller
 
     public function getSingleCourse(string $id)
     {
+        $user = Auth::user();
 
-        $courses = Course::all();
+        $courses = Course::where('publish', 'Published')->get();
 
         $data = DB::table('course')
             ->join('users', 'course.course_teacher', '=', 'users.id')
@@ -36,11 +38,17 @@ class CourseController extends Controller
 
         $chapters = Chapter::where('course_id', $id)->get();
 
+        $isEnrolled = Enrollments::where('student_id', $user->id)
+            ->where('course_id', $id)
+            ->first();
+
+
 
         return Inertia::render('CourseDescription', [
             'courses' => $courses,
             'singleCourse' => $data,
-            'chapters' => $chapters
+            'chapters' => $chapters,
+            'isEnrolled' => $isEnrolled
         ]);
     }
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -67,15 +68,26 @@ class UserController extends Controller
     public function getUserDetails()
     {
         $user = Auth::user();
-        $data = User::where('id', $user->id)->first();
-        $courses = Course::where('course_teacher', $user->id)->get(); // Fix applied
+
+        // Fetch user details
+        $data = User::find($user->id);
+
+        // Fetch courses if user is a teacher
+        $courses = Course::where('course_teacher', $user->id)->get();
+
+        // Fetch enrolled courses if user is a student
+        $enrolledCourses = DB::table('enrollments')
+            ->join('course', 'enrollments.course_id', '=', 'course.id')
+            ->where('enrollments.student_id', $user->id)
+            ->select('course.*')
+            ->get();
 
         return Inertia::render('UserDashboard', [
             'user' => $data,
-            'course' => $courses
+            'coursesAsTeacher' => $courses,
+            'coursesAsStudent' => $enrolledCourses
         ]);
     }
-
     public function showUserProfile($id)
     {
         $user =  User::find($id);
