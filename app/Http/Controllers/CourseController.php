@@ -56,7 +56,7 @@ class CourseController extends Controller
     {
         $request->validate([
             'course_title' => 'required|string|min:10|max:255',
-            'course_desc' => 'required|string|min:20|max:255',
+            'course_desc' => 'required|string|min:20|max:500',
             'course_category' => 'required|string|in:It,Business,Science,Engineering,Humanities,Other',
             'course_hours' => 'required|integer',
             'course_level' => 'required|string|in:Easy,Hard,Medium',

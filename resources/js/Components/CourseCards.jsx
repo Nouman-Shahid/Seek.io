@@ -60,19 +60,38 @@ const CourseCards = ({ auth, data = [] }) => {
                                 key={course.id}
                                 className="w-[25vw] flex-shrink-0 snap-center p-2"
                             >
-                                <div className="w-full  bg-white border border-gray-200 rounded-lg  hover:shadow-xl transition-all duration-300">
+                                <div className="w-full bg-white border border-gray-200 rounded-lg hover:shadow-xl transition-all duration-300 relative">
                                     <img
                                         className="rounded-t-lg w-full h-60 object-cover"
                                         src={course.course_image}
                                         alt={course.course_title}
                                     />
+
+                                    {auth.user?.id === course.course_teacher &&
+                                        (course.publish ? (
+                                            <span className="absolute top-3 right-3 bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md">
+                                                Published
+                                            </span>
+                                        ) : (
+                                            <span className="absolute top-3 right-3 bg-yellow-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md">
+                                                Draft
+                                            </span>
+                                        ))}
+
+                                    {/* Course Details */}
                                     <div className="p-5 flex flex-col justify-between h-[28vh]">
                                         <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
                                             {course.course_title}
                                         </h5>
                                         <p className="mb-3 text-gray-700 flex-grow">
-                                            {course.course_desc}
+                                            {course.course_desc.length > 70
+                                                ? course.course_desc.substring(
+                                                      0,
+                                                      70
+                                                  ) + "...."
+                                                : course.course_desc}
                                         </p>
+
                                         <div className="flex justify-between items-center">
                                             <span className="font-sans">
                                                 {course.course_amount ===
@@ -81,7 +100,7 @@ const CourseCards = ({ auth, data = [] }) => {
                                                         FREE
                                                     </p>
                                                 ) : (
-                                                    <p className="text-green-600 font-bold ">
+                                                    <p className="text-green-600 font-bold">
                                                         PKR{" "}
                                                         {course.course_amount}
                                                     </p>

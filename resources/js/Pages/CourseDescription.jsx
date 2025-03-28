@@ -10,6 +10,8 @@ import { CiUnlock } from "react-icons/ci";
 import { CiLock } from "react-icons/ci";
 import { router } from "@inertiajs/react";
 
+const MAX_CHAR = 300;
+
 const CourseDescription = ({
     singleCourse = {},
     auth,
@@ -124,15 +126,25 @@ const CourseDescription = ({
                                                     `/publish_course/id/${singleCourse.id}`
                                                 )
                                             }
-                                            disabled={chapters.length === 0}
+                                            disabled={
+                                                singleCourse.publish ===
+                                                    "Published" ||
+                                                chapters.length === 0
+                                            }
                                             className={`flex items-center gap-2 px-5 py-2 rounded-md transition-all ${
-                                                chapters.length > 0
+                                                singleCourse.publish ===
+                                                "Published"
+                                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                                    : chapters.length > 0
                                                     ? "bg-green-600 text-white hover:bg-green-700"
                                                     : "bg-gray-300 text-gray-500 cursor-not-allowed"
                                             }`}
                                         >
-                                            <FaCheckCircle />{" "}
-                                            {chapters.length > 0
+                                            <FaCheckCircle />
+                                            {singleCourse.publish ===
+                                            "Published"
+                                                ? "Published"
+                                                : chapters.length > 0
                                                 ? "Publish"
                                                 : "Cannot Publish"}
                                         </button>
@@ -298,19 +310,30 @@ const CourseDescription = ({
                                     <Textarea
                                         value={data.chapterDesc}
                                         placeholder="Chapter Description"
-                                        onChange={(e) =>
-                                            setData(
-                                                "chapterDesc",
-                                                e.target.value
-                                            )
-                                        }
+                                        onChange={(e) => {
+                                            if (
+                                                e.target.value.length <=
+                                                MAX_CHAR
+                                            ) {
+                                                setData(
+                                                    "chapterDesc",
+                                                    e.target.value
+                                                );
+                                            }
+                                        }}
                                         className="w-full mt-1 px-3 min-h-28 max-h-36 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                                         required
                                     ></Textarea>
+
+                                    <div className="text-right text-sm text-gray-500 mt-1">
+                                        {data.chapterDesc.length}/{MAX_CHAR}{" "}
+                                        characters
+                                    </div>
+
                                     <InputError
                                         message={errors.chapterDesc}
                                         className="mt-2"
-                                    />{" "}
+                                    />
                                 </div>
 
                                 <div>

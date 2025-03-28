@@ -11,7 +11,7 @@ class ChapterController extends Controller
     {
         $validated = $request->validate([
             'chapterTitle' => 'required|string|min:3|max:255',
-            'chapterDesc' => 'required|string|min:20|max:255',
+            'chapterDesc' => 'required|string|min:20|max:300',
             'chapterVideo' => 'required|url',
             'isPreview' => 'boolean',
         ]);
