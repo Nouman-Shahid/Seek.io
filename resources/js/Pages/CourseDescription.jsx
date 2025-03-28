@@ -74,20 +74,23 @@ const CourseDescription = ({
                 <div className="bg-white shadow-md p-8 rounded-2xl flex flex-col lg:flex-row items-center gap-8">
                     <div className="flex-1">
                         <h1 className="text-3xl font-bold text-gray-800">
-                            {singleCourse.course_title}
+                            {singleCourse && singleCourse.course_title}
                         </h1>
                         <p className="text-gray-600 mt-3 leading-relaxed">
-                            {singleCourse.course_desc}
+                            {singleCourse && singleCourse.course_desc}
                         </p>
                         <div className="mt-5 flex items-center gap-6">
                             <span className="font-sans">
-                                {singleCourse.course_amount === "free" ? (
+                                {singleCourse &&
+                                singleCourse.course_amount === "free" ? (
                                     <p className="text-blue-600 font-bold">
                                         FREE
                                     </p>
                                 ) : (
                                     <p className="text-green-600 font-bold">
-                                        PKR {singleCourse.course_amount}
+                                        PKR{" "}
+                                        {singleCourse &&
+                                            singleCourse.course_amount}
                                     </p>
                                 )}
                             </span>
@@ -99,6 +102,7 @@ const CourseDescription = ({
                                     Add To Cart
                                 </Link>
                             ) : (
+                                singleCourse &&
                                 auth.user?.id ===
                                     singleCourse.course_teacher && (
                                     <div className="flex space-x-4">
@@ -138,7 +142,7 @@ const CourseDescription = ({
                         </div>
                     </div>
                     <img
-                        src={singleCourse.course_image}
+                        src={singleCourse && singleCourse.course_image}
                         alt="Course"
                         className="w-80 h-64 rounded-2xl object-cover shadow-lg"
                     />
@@ -148,12 +152,14 @@ const CourseDescription = ({
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="bg-gray-100 p-5 rounded-lg text-center shadow-sm">
                         <p className="font-bold text-gray-700">Instructor:</p>
-                        <p className="text-gray-600">{singleCourse.name}</p>
+                        <p className="text-gray-600">
+                            {singleCourse && singleCourse.name}
+                        </p>
                     </div>
                     <div className="bg-gray-100 p-5 rounded-lg text-center shadow-sm">
                         <p className="font-bold text-gray-700">Skill Level:</p>
                         <p className="text-gray-600">
-                            {singleCourse.course_level}
+                            {singleCourse && singleCourse.course_level}
                         </p>
                     </div>
                     <div className="bg-gray-100 p-5 rounded-lg text-center shadow-sm">
@@ -161,7 +167,7 @@ const CourseDescription = ({
                             Time to Complete:
                         </p>
                         <p className="text-gray-600">
-                            {singleCourse.course_hours} hours
+                            {singleCourse && singleCourse.course_hours} hours
                         </p>
                     </div>
                 </div>
@@ -201,19 +207,34 @@ const CourseDescription = ({
                                 </div>
 
                                 {/* Edit Button */}
-                                <Link className="bg-green-600 flex items-center gap-2 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-all">
-                                    Edit Chapter
-                                </Link>
+                                {auth.user.role === "Student"
+                                    ? ""
+                                    : auth.user?.id ===
+                                          singleCourse.course_teacher && (
+                                          <Link className="bg-green-600 flex items-center gap-2 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-all">
+                                              Edit Chapter
+                                          </Link>
+                                      )}
                             </div>
                         </div>
 
                         {/* Right Side: Video */}
                         <div className="w-1/3">
-                            <iframe
-                                src={item.video}
-                                className="w-full h-40 md:h-56 border border-gray-300 rounded-md"
-                                allowFullScreen
-                            ></iframe>
+                            {auth.user?.id !== singleCourse.course_teacher &&
+                            item.preview === "0" ? (
+                                <video
+                                    controls
+                                    className="w-full h-56 border border-gray-300 rounded-md"
+                                >
+                                    Your browser does not support this video.
+                                </video>
+                            ) : (
+                                <iframe
+                                    src={item.video}
+                                    className="w-full h-40 md:h-56 border border-gray-300 rounded-md"
+                                    allowFullScreen
+                                ></iframe>
+                            )}
                         </div>
                     </div>
                 ))}

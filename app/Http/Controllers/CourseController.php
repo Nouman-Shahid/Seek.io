@@ -31,7 +31,6 @@ class CourseController extends Controller
         $data = DB::table('course')
             ->join('users', 'course.course_teacher', '=', 'users.id')
             ->where('course.id', $id)
-            ->where('course.publish', 'Published')
             ->select('users.*', 'course.*')
             ->first();
 
