@@ -1,6 +1,6 @@
 import CourseCards from "@/Components/CourseCards";
 import { Head, Link } from "@inertiajs/react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaPlus, FaCheckCircle } from "react-icons/fa";
 import { CiUnlock } from "react-icons/ci";
 import { CiLock } from "react-icons/ci";
@@ -17,7 +17,12 @@ const CourseDescription = ({
     isEnrolled = {},
 }) => {
     const [showModal, setShowModal] = useState(false);
-
+    const [selectedChapter, setSelectedChapter] = useState(null);
+    useEffect(() => {
+        if (chapters.length > 0) {
+            setSelectedChapter(chapters[0]);
+        }
+    }, [chapters]);
     return (
         <>
             <Navbar auth={auth} />
@@ -149,74 +154,111 @@ const CourseDescription = ({
                 </div>
 
                 {/* Chapters Details */}
-                {chapters.map((item, index) => (
-                    <div
-                        key={index}
-                        className="flex items-start gap-6 p-4 h-64 border rounded-lg shadow-md bg-white"
-                    >
-                        {/* Left Side: Title, Description, and Actions */}
-                        <div className="flex-1 h-full flex flex-col justify-between">
-                            <div>
-                                <h2 className="text-lg font-semibold text-gray-900">
-                                    {item.title}
-                                </h2>
-                                <p className="text-gray-600 mt-1">
-                                    {item.desc}
-                                </p>
-                            </div>
+                <div className="flex gap-8 mt-12">
+                    {/* Sidebar */}
+                    <aside className="w-1/4 bg-white rounded-2xl shadow-md border p-4 space-y-6 h-fit">
+                        {/* Course Material */}
+                        <div className="p-4 border-b">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                                Course Chapters
+                            </h3>
+                            <ul className="space-y-4 text-blue-600  list-decimal list-insie ">
+                                {chapters.map((item) => (
+                                    <li
+                                        key={item.id}
+                                        className="hover:underline w-full"
+                                    >
+                                        <button
+                                            onClick={() =>
+                                                setSelectedChapter(item)
+                                            }
+                                            className="w-full text-left"
+                                        >
+                                            {item.title}
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
 
-                            {/* Preview Status & Edit Button */}
-                            <div className="flex items-center justify-between border-t pt-2 mt-2">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm font-medium text-gray-700">
-                                        {isEnrolled?.course_id ===
-                                        singleCourse?.id ? null : item.preview ===
-                                          "1" ? (
-                                            <div className="flex items-center space-x-2">
-                                                <CiUnlock className="size-5" />
-                                                <p>Free Preview</p>
-                                            </div>
-                                        ) : (
-                                            <div className="flex items-center space-x-2">
-                                                <CiLock className="size-5" />
-                                                <p>Locked</p>
-                                            </div>
-                                        )}
-                                    </span>
+                        {/* Additional Sections */}
+                        {["Assignments", "Exams", "Grades"].map(
+                            (section, index) => (
+                                <div key={index} className="p-4 border-b">
+                                    <h3 className="text-lg font-semibold text-gray-800">
+                                        Course {section}
+                                    </h3>
+                                    <p className="text-gray-600 text-sm">
+                                        {section === "Assignments"
+                                            ? "Assignments will be shared weekly."
+                                            : section === "Exams"
+                                            ? "MCQs and Project-based exams."
+                                            : "Grades will be shared after evaluations."}
+                                    </p>
+                                </div>
+                            )
+                        )}
+                    </aside>
+
+                    {/* Main Content */}
+                    <main className="w-3/4 bg-white p-6 rounded-lg shadow-md border">
+                        {selectedChapter ? (
+                            <>
+                                <div className="flex items-center justify-between">
+                                    <h2 className="text-2xl font-bold text-blue-700 border-b pb-4">
+                                        {selectedChapter.title}
+                                    </h2>
+                                    {isEnrolled?.course_id ===
+                                        singleCourse?.id && (
+                                        <button
+                                            className="bg-blue-500 px-3 py-2 rounded-md text-white"
+                                            // onClick={handleMarkAsComplete}
+                                        >
+                                            Mark as Complete
+                                        </button>
+                                    )}
+                                </div>
+                                <p className="text-gray-700 mt-4">
+                                    {selectedChapter.desc}
+                                </p>
+
+                                {/* Video or Locked Content */}
+                                <div className="mt-6">
+                                    {auth?.user?.id !==
+                                        singleCourse?.course_teacher &&
+                                    selectedChapter.preview === "0" &&
+                                    (!isEnrolled ||
+                                        isEnrolled?.course_id !==
+                                            singleCourse?.id) ? (
+                                        <div className="flex items-center space-x-2 text-red-600">
+                                            <CiLock className="size-5" />
+                                            <p>Locked</p>
+                                        </div>
+                                    ) : (
+                                        <iframe
+                                            src={selectedChapter.video}
+                                            className="w-full h-40 md:h-96 border border-gray-300 rounded-md"
+                                            allowFullScreen
+                                        ></iframe>
+                                    )}
                                 </div>
 
-                                {auth?.user?.role === "Student"
-                                    ? ""
-                                    : auth.user?.id ===
-                                          singleCourse.course_teacher && (
-                                          <Link className="bg-green-600 flex items-center gap-2 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-all">
-                                              Edit Chapter
-                                          </Link>
-                                      )}
+                                {/* Edit Chapter Button (For Teachers) */}
+                                {auth?.user?.role !== "Student" &&
+                                    auth.user?.id ===
+                                        singleCourse?.course_teacher && (
+                                        <button className="mt-4 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                                            Edit Chapter
+                                        </button>
+                                    )}
+                            </>
+                        ) : (
+                            <div className="text-center text-gray-600">
+                                Select a chapter to view details.
                             </div>
-                        </div>
-
-                        <div className="w-1/3">
-                            {auth.user?.id !== singleCourse.course_teacher &&
-                            item.preview === "0" &&
-                            (!isEnrolled ||
-                                isEnrolled?.course_id !== singleCourse?.id) ? (
-                                <video
-                                    controls
-                                    className="w-full h-56 border border-gray-300 rounded-md"
-                                >
-                                    Your browser does not support this video.
-                                </video>
-                            ) : (
-                                <iframe
-                                    src={item.video}
-                                    className="w-full h-40 md:h-56 border border-gray-300 rounded-md"
-                                    allowFullScreen
-                                ></iframe>
-                            )}
-                        </div>
-                    </div>
-                ))}
+                        )}
+                    </main>
+                </div>
 
                 {/* Related Courses */}
                 <div>
