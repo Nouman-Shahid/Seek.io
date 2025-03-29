@@ -29,5 +29,14 @@ class AppServiceProvider extends ServiceProvider
                 return Session::get('coupon', null);
             },
         ]);
+
+        Inertia::share([
+            'flash' => function () {
+                return [
+                    'success' => Session::get('success'),
+                    'error' => Session::get('error'),
+                ];
+            }
+        ]);
     }
 }

@@ -6,6 +6,8 @@ use App\Models\Cart;
 use App\Models\Course;
 use App\Models\Enrollments;
 use App\Models\Payment;
+use App\Models\TeacherWallet;
+use Illuminate\Support\Facades\DB;
 use Stripe\Stripe;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -56,59 +58,73 @@ class StripeController extends Controller
         return redirect($session->url);
     }
 
+
     public function success(Request $request)
     {
         Stripe::setApiKey(config('stripe.sk'));
 
         $sessionId = $request->query('session_id');
-        Log::info('Received session ID:', ['session_id' => $sessionId]);
 
         if (!$sessionId) {
-            Log::error('Missing session ID');
             return redirect()->route('user_dashboard')->with('error', 'Invalid payment session.');
         }
 
         // Retrieve session details
         $session = Session::retrieve($sessionId);
-        Log::info('Stripe session details:', ['session' => $session]);
 
-        // Ensure payment is successful
         if ($session->payment_status !== 'paid') {
-            Log::error('Payment verification failed', ['status' => $session->payment_status]);
             return redirect()->route('home')->with('error', 'Payment verification failed.');
         }
 
         $user = Auth::user();
         $cartItems = Cart::where('student_id', $user->id)->get();
 
-        $courses = Course::whereIn('id', $cartItems->pluck('course_id'))->get();
-
-
         if ($cartItems->isEmpty()) {
-            Log::warning('Cart is empty after payment');
             return redirect()->route('dashboard')->with('error', 'Your cart is empty.');
         }
 
+        // Enroll students and get total amount per teacher
+        $teacherEarnings = [];
+
         foreach ($cartItems as $cartItem) {
-            Enrollments::create([
-                'student_id' => $user->id,
-                'course_id' => $cartItem->course_id,
-            ]);
+            $course = Course::find($cartItem->course_id);
+            if ($course) {
+                // Store teacher earnings
+                if (!isset($teacherEarnings[$course->course_teacher])) {
+                    $teacherEarnings[$course->course_teacher] = 0;
+                }
+                $teacherEarnings[$course->course_teacher] += (float) $course->course_amount;
+
+                // Enroll student
+                Enrollments::create([
+                    'student_id' => $user->id,
+                    'course_id' => $cartItem->course_id,
+                ]);
+            }
         }
 
-        $totalAmount = $cartItems->sum(fn($item) => Course::find($item->course_id)->course_amount);
+        // Store payment record
+        $totalAmount = array_sum($teacherEarnings);
 
         Payment::create([
             'student_id' => $user->id,
             'amount' => $totalAmount,
-            'details' => "{$user->name} paid for courses: " . $courses->pluck('course_title')->implode(', '),
+            'details' => "{$user->name} paid for courses: " . $cartItems->pluck('course_id')->implode(', '),
         ]);
 
+        // Update teacher wallets
+        foreach ($teacherEarnings as $teacherId => $amount) {
+            $wallet = TeacherWallet::firstOrCreate(
+                ['teacher_id' => $teacherId],
+                ['total_amount' => 0] // Default value if new record
+            );
+
+            $wallet->increment('total_amount', $amount);
+        }
+
+        // Clear the cart
         Cart::where('student_id', $user->id)->delete();
 
-        Log::info('Payment and enrollment successful, redirecting to success page');
-
-        // Redirect properly
         return redirect()->route('success')->with('totalAmount', $totalAmount);
     }
 }

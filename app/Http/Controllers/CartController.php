@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\Course;
+use App\Models\Enrollments;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -19,14 +20,23 @@ class CartController extends Controller
     {
         $user = Auth::user();
 
-        // Add course to cart 
-        $cartItem = Cart::firstOrCreate([
+        // Checkinguser shoulnt be already enroll in same course
+        $isEnrolled = Enrollments::where('student_id', $user->id)
+            ->where('course_id', $id)
+            ->exists();
+
+        if ($isEnrolled) {
+            return Redirect::route('cart')->with('error', 'You are already enrolled in this course.');
+        }
+
+        Cart::firstOrCreate([
             'student_id' => $user->id,
             'course_id' => $id,
         ]);
 
-        return Redirect::route('cart');
+        return Redirect::route('cart')->with('success', 'Course added to cart successfully.');
     }
+
 
     public function getCart()
     {

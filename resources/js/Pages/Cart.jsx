@@ -6,7 +6,7 @@ import InputError from "@/Components/InputError";
 import TextInput from "@/Components/TextInput";
 import { TiDelete } from "react-icons/ti";
 
-const Cart = ({ courses = [], allcourses = [] }) => {
+const Cart = ({ courses = [], allcourses = [], flash }) => {
     const { props } = usePage();
     const coupon = props.coupon || {};
 
@@ -102,11 +102,19 @@ const Cart = ({ courses = [], allcourses = [] }) => {
                                 <h3 className="text-lg font-semibold text-gray-700">
                                     No Courses Available
                                 </h3>
-                                <p className="text-gray-500 text-sm">
-                                    It looks like you haven’t enrolled in any
-                                    courses yet. Explore our catalog and start
-                                    learning today!
-                                </p>
+                                <div>
+                                    {flash.error ? (
+                                        <p className="text-gray-500 text-md">
+                                            {flash.error}
+                                        </p>
+                                    ) : (
+                                        <p className="text-gray-500 text-md">
+                                            It looks like you haven’t added any
+                                            courses yet. Explore our catalog and
+                                            start learning today!
+                                        </p>
+                                    )}
+                                </div>
                                 <Link
                                     href="/explore"
                                     className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"

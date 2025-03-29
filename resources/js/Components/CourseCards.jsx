@@ -95,7 +95,7 @@ const CourseCards = ({ auth, data = [] }) => {
                                         <div className="flex justify-between items-center">
                                             <span className="font-sans">
                                                 {course.course_amount ===
-                                                "free" ? (
+                                                "0" ? (
                                                     <p className="text-blue-600 font-bold">
                                                         FREE
                                                     </p>
@@ -148,6 +148,7 @@ const CourseCards = ({ auth, data = [] }) => {
                 }).map((_, index) => (
                     <button
                         key={index}
+                        type="button"
                         onClick={() => {
                             if (carouselRef.current) {
                                 carouselRef.current.scrollTo({

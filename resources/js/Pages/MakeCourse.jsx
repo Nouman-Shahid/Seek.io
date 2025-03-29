@@ -277,7 +277,7 @@ const MakeCourse = () => {
                                     {/* Free Option */}
                                     <div
                                         className={`flex items-center justify-between border-2 rounded-lg p-6 transition-all duration-300 ${
-                                            data.course_amount === "free"
+                                            data.course_amount === "0"
                                                 ? "border-green-500"
                                                 : "border-gray-300"
                                         } hover:border-green-500`}
@@ -302,12 +302,10 @@ const MakeCourse = () => {
                                         <input
                                             type="radio"
                                             name="course_amount"
-                                            value="free"
-                                            checked={
-                                                data.course_amount === "free"
-                                            }
+                                            value="0"
+                                            checked={data.course_amount === "0"}
                                             onChange={() =>
-                                                setData("course_amount", "free")
+                                                setData("course_amount", "0")
                                             }
                                             className="size-6 accent-green-500 cursor-pointer"
                                         />
@@ -316,7 +314,7 @@ const MakeCourse = () => {
                                     {/* Paid Option */}
                                     <div
                                         className={`flex items-center justify-between border-2 rounded-lg p-6 transition-all duration-300 ${
-                                            data.course_amount !== "free"
+                                            data.course_amount !== "0"
                                                 ? "border-blue-500"
                                                 : "border-gray-300"
                                         } hover:border-blue-500`}
@@ -349,7 +347,7 @@ const MakeCourse = () => {
                                                     type="number"
                                                     value={
                                                         data.course_amount ===
-                                                        "free"
+                                                        "0"
                                                             ? ""
                                                             : data.course_amount
                                                     }
@@ -363,7 +361,7 @@ const MakeCourse = () => {
                                                     placeholder="Enter Amount"
                                                     disabled={
                                                         data.course_amount ===
-                                                        "free"
+                                                        "0"
                                                     }
                                                 />
                                                 <InputError
@@ -379,13 +377,11 @@ const MakeCourse = () => {
                                             type="radio"
                                             name="course_amount"
                                             value={
-                                                data.course_amount === "free"
+                                                data.course_amount === "0"
                                                     ? ""
                                                     : data.course_amount
                                             }
-                                            checked={
-                                                data.course_amount !== "free"
-                                            }
+                                            checked={data.course_amount !== "0"}
                                             onChange={() =>
                                                 setData("course_amount", "")
                                             }
