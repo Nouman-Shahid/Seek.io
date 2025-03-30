@@ -230,14 +230,23 @@ const CourseDescription = ({
                                     (!isEnrolled ||
                                         isEnrolled?.course_id !==
                                             singleCourse?.id) ? (
-                                        <div className="flex items-center space-x-2 text-red-600">
+                                        <div className="flex items-center space-x-3 text-red-600 bg-red-100 p-3 rounded-lg">
                                             <CiLock className="size-5" />
-                                            <p>Locked</p>
+                                            <div>
+                                                <p className="font-semibold">
+                                                    Access Restricted
+                                                </p>
+                                                <p className="text-sm">
+                                                    This chapter is locked.
+                                                    Enroll in the course to
+                                                    unlock full access.
+                                                </p>
+                                            </div>
                                         </div>
                                     ) : (
                                         <iframe
                                             src={selectedChapter.video}
-                                            className="w-full h-40 md:h-96 border border-gray-300 rounded-md"
+                                            className="w-full h-40 md:h-96 border border-gray-300 rounded-md shadow-sm"
                                             allowFullScreen
                                         ></iframe>
                                     )}

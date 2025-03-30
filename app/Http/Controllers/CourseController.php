@@ -38,11 +38,9 @@ class CourseController extends Controller
 
         $chapters = Chapter::where('course_id', $id)->get();
 
-        $isEnrolled = Enrollments::where('student_id', $user->id)
+        $isEnrolled = $user ? Enrollments::where('student_id', $user->id)
             ->where('course_id', $id)
-            ->first();
-
-
+            ->first() : null;
 
         return Inertia::render('CourseDescription', [
             'courses' => $courses,
