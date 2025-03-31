@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Chapter;
+use App\Models\ChapterCompletion;
 use App\Models\Course;
 use App\Models\Enrollments;
 use App\Services\WebPurifyService;
@@ -42,11 +43,23 @@ class CourseController extends Controller
             ->where('course_id', $id)
             ->first() : null;
 
+        $completedChapters = [];
+        if ($user) {
+            $completedChapters = ChapterCompletion::where('student_id', $user->id)
+                ->whereIn('chapter_id', $chapters->pluck('id'))
+                ->where('status', 'Completed')
+                ->pluck('chapter_id')
+                ->toArray();
+        }
+
+
+
         return Inertia::render('CourseDescription', [
             'courses' => $courses,
             'singleCourse' => $data,
             'chapters' => $chapters,
-            'isEnrolled' => $isEnrolled
+            'isEnrolled' => $isEnrolled,
+            'completedChapters' => $completedChapters
         ]);
     }
 

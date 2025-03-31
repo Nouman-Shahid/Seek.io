@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\ChapterCompletionController;
 use App\Http\Controllers\ChapterController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseExamController;
@@ -118,5 +119,9 @@ Route::get('/checkout/success', [StripeController::class, 'success'])->name('suc
 
 Route::post('add_course_chapter/id/{id}', [ChapterController::class, 'addChapter'])->name('submit_course_chapter');
 Route::post('publish_course/id/{id}', [CourseController::class, 'publishCourse'])->name('publish_course');
+
+
+
+Route::get('chapter_complete/id/{id}', [ChapterCompletionController::class, 'markComplete'])->name('chapter_complete');
 
 require __DIR__ . '/auth.php';

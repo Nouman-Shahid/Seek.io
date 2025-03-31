@@ -15,6 +15,7 @@ const CourseDescription = ({
     courses = [],
     chapters = [],
     isEnrolled = {},
+    completedChapters = [],
 }) => {
     const [showModal, setShowModal] = useState(false);
     const [selectedChapter, setSelectedChapter] = useState(null);
@@ -38,8 +39,17 @@ const CourseDescription = ({
                         <p className="text-gray-600 mt-3 leading-relaxed">
                             {singleCourse && singleCourse.course_desc}
                         </p>
+                        <p className="text-gray-600 mt-5">
+                            Course by:{" "}
+                            <Link
+                                href={`/user/${singleCourse.course_teacher}`}
+                                className=" hover:underline font-bold "
+                            >
+                                {singleCourse && singleCourse.name}
+                            </Link>
+                        </p>
                         <div className="mt-5 flex items-center gap-6">
-                            <span className="font-sans">
+                            {/* <span className="font-sans">
                                 {singleCourse &&
                                 singleCourse.course_amount === "free" ? (
                                     <p className="text-blue-600 font-bold">
@@ -52,7 +62,7 @@ const CourseDescription = ({
                                             singleCourse.course_amount}
                                     </p>
                                 )}
-                            </span>
+                            </span> */}
                             {auth?.user?.role !== "Teacher" ? (
                                 isEnrolled?.course_id === singleCourse?.id ? (
                                     <button
@@ -132,10 +142,10 @@ const CourseDescription = ({
                 {/* Course Details */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="bg-gray-100 p-5 rounded-lg text-center shadow-sm">
-                        <p className="font-bold text-gray-700">Instructor:</p>
-                        <p className="text-gray-600">
-                            {singleCourse && singleCourse.name}
-                        </p>
+                        <p className="font-bold text-gray-700">Rating:</p>
+                        <div className="text-gray-600">
+                            {singleCourse && singleCourse.course_rating}
+                        </div>
                     </div>
                     <div className="bg-gray-100 p-5 rounded-lg text-center shadow-sm">
                         <p className="font-bold text-gray-700">Skill Level:</p>
@@ -204,25 +214,45 @@ const CourseDescription = ({
                     <main className="w-3/4 bg-white p-6 rounded-lg shadow-md border">
                         {selectedChapter ? (
                             <>
-                                <div className="flex items-center justify-between">
-                                    <h2 className="text-2xl font-bold text-blue-700 border-b pb-4">
-                                        {selectedChapter.title}
-                                    </h2>
+                                {/* Chapter Header */}
+                                <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg shadow-sm">
+                                    <div className="w-full">
+                                        <h2 className="text-2xl font-bold text-blue-700 border-b-2 border-blue-300 pb-2">
+                                            {selectedChapter.title}
+                                        </h2>
+                                        {isEnrolled?.course_id !==
+                                            singleCourse?.id &&
+                                        selectedChapter.preview !== "0" ? (
+                                            <p className="text-sm text-gray-600 mt-2 italic">
+                                                This chapter is available as a
+                                                free preview.
+                                            </p>
+                                        ) : null}
+                                    </div>
                                     {isEnrolled?.course_id ===
-                                        singleCourse?.id && (
-                                        <button
-                                            className="bg-blue-500 px-3 py-2 rounded-md text-white"
-                                            // onClick={handleMarkAsComplete}
-                                        >
-                                            Mark as Complete
-                                        </button>
-                                    )}
+                                        singleCourse?.id &&
+                                        (!completedChapters.includes(
+                                            Number(selectedChapter?.id)
+                                        ) ? (
+                                            <Link
+                                                href={`/chapter_complete/id/${selectedChapter.id}`}
+                                                className="bg-blue-600 text-white px-4 py-2 rounded-md"
+                                            >
+                                                Mark as Complete
+                                            </Link>
+                                        ) : (
+                                            <p className="text-green-600 font-bold">
+                                                Completed
+                                            </p>
+                                        ))}
                                 </div>
-                                <p className="text-gray-700 mt-4">
+
+                                {/* Chapter Description */}
+                                <p className="text-gray-700 mt-4 leading-relaxed">
                                     {selectedChapter.desc}
                                 </p>
 
-                                {/* Video or Locked Content */}
+                                {/* Video Section */}
                                 <div className="mt-6">
                                     {auth?.user?.id !==
                                         singleCourse?.course_teacher &&
@@ -252,7 +282,7 @@ const CourseDescription = ({
                                     )}
                                 </div>
 
-                                {/* Edit Chapter Button (For Teachers) */}
+                                {/* Edit Button (Only for Teachers) */}
                                 {auth?.user?.role !== "Student" &&
                                     auth.user?.id ===
                                         singleCourse?.course_teacher && (
