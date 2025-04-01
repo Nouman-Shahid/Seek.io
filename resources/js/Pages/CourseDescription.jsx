@@ -188,7 +188,10 @@ const CourseDescription = ({
                         {/* Course Material */}
                         <div
                             className={`p-4 ${
-                                auth.user.role === "Teacher" ? "" : " border-b"
+                                auth.user.role === "Teacher" ||
+                                isEnrolled?.course_id !== singleCourse?.id
+                                    ? ""
+                                    : " border-b"
                             }`}
                         >
                             <div className="flex justify-between">
@@ -232,6 +235,7 @@ const CourseDescription = ({
 
                         {/* Additional Sections */}
                         {auth.user.role !== "Teacher" &&
+                            isEnrolled.course_id === singleCourse.id &&
                             [
                                 "Chapters Completed",
                                 "Course Exam",
@@ -307,9 +311,10 @@ const CourseDescription = ({
                                         <h2 className="text-2xl font-bold text-blue-700 border-b-2 border-blue-300 pb-2">
                                             {selectedChapter.title}
                                         </h2>
-                                        {isEnrolled?.course_id !==
-                                            singleCourse?.id &&
-                                        selectedChapter.preview !== "0" ? (
+                                        {isEnrolled?.course_id ===
+                                        singleCourse?.id ? (
+                                            ""
+                                        ) : selectedChapter.preview !== "0" ? (
                                             <div className="text-md text-green-500 mt-2 font-bold flex items-center space-x-1">
                                                 <CiUnlock />
                                                 <p> Free Preview</p>

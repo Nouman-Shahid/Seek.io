@@ -126,6 +126,10 @@ Route::get('chapter_complete/id/{id}', [ChapterCompletionController::class, 'mar
 
 
 
+Route::get('/payout_&_earnings/id/{id}', [TeacherController::class, 'teacherWithdrawl'])->name('teacherWithdrawl');
+
+
+
 Route::get('/course_exam', function () {
     return Inertia::render('CourseExam');
 })->name('course_exam');

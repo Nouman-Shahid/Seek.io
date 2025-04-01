@@ -70,8 +70,8 @@ const TeacherDashboard = ({
                     )}
                 </div>
 
-                <div className="flex">
-                    <aside className="w-full lg:w-1/4 max-h-[100vh] bg-gray-100 p-4 rounded-xl shadow-md flex flex-col justify-between items-center text-center">
+                <div className="flex space-x-5">
+                    <aside className="w-full lg:w-1/4 h-[60vh]  p-4 rounded-xl shadow-lg flex flex-col justify-between items-center text-center">
                         <div className="flex-col flex w-full items-center">
                             {isEditing ? (
                                 <>
@@ -149,7 +149,9 @@ const TeacherDashboard = ({
                                     />
                                 </>
                             ) : (
-                                <p className="text-gray-600">{data.address}</p>
+                                <p className="text-gray-600 font-bold">
+                                    {data.address}
+                                </p>
                             )}
 
                             {isEditing ? (
@@ -174,22 +176,30 @@ const TeacherDashboard = ({
                                     />
                                 </>
                             ) : (
-                                <p className="text-gray-600">
+                                <p className="text-gray-600 my-3">
                                     {data.profile_headline}
                                 </p>
                             )}
                         </div>
 
-                        <a
-                            href={`mailto:${user.email}`}
-                            className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4 w-full text-center block"
-                        >
-                            Contact
-                        </a>
+                        {auth.user.role !== "Teacher" ? (
+                            <a
+                                href={`mailto:${user.email}`}
+                                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mt-4 w-full text-center block"
+                            >
+                                Contact
+                            </a>
+                        ) : (
+                            <Link
+                                href={`/payout_&_earnings/id/${auth.user.id}`}
+                                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mt-4 w-full text-center block"
+                            >
+                                Payouts & Earnings
+                            </Link>
+                        )}
                     </aside>
 
-                    {/* Main Content */}
-                    <main className="w-full lg:w-3/4 p-6 ">
+                    <main className="w-full lg:w-3/4 p-6 shadow-lg rounded-lg ">
                         <h1 className="text-2xl font-bold ">About me</h1>
                         {isEditing ? (
                             <>
@@ -239,7 +249,6 @@ const TeacherDashboard = ({
                         )}
                     </main>
                 </div>
-                {/* Sidebar */}
             </form>
         </AuthenticatedLayout>
     );

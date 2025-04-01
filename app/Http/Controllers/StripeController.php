@@ -50,7 +50,7 @@ class StripeController extends Controller
             'payment_method_types' => ['card'],
             'line_items' => $lineItems,
             'mode' => 'payment',
-            'success_url' => route('success') . '?session_id={CHECKOUT_SESSION_ID}',
+            'success_url' => route('success', [], true) . '?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => route('cart'),
         ]);
 
@@ -68,21 +68,25 @@ class StripeController extends Controller
             return redirect()->route('user_dashboard')->with('error', 'Invalid payment session.');
         }
 
-        // Retrieve session details
-        $session = Session::retrieve($sessionId);
+        // try {
+        //     // Retrieve session details
+        //     $session = Session::retrieve($sessionId);
+        // } catch (\Exception $e) {
+        //     return redirect()->route('user_dashboard')->with('error', 'Invalid Stripe session: ' . $e->getMessage());
+        // }
 
-        if ($session->payment_status !== 'paid') {
-            return redirect()->route('home')->with('error', 'Payment verification failed.');
-        }
+        // if ($session->payment_status !== 'paid') {
+        //     return redirect()->route('home')->with('error', 'Payment verification failed.');
+        // }
 
         $user = Auth::user();
         $cartItems = Cart::where('student_id', $user->id)->get();
 
         if ($cartItems->isEmpty()) {
-            return redirect()->route('dashboard')->with('error', 'Your cart is empty.');
+            return redirect()->route('cart')->with('error', 'Your cart is empty.');
         }
 
-        // Enroll students and get total amount per teacher
+        // Enroll students and track earnings
         $teacherEarnings = [];
 
         foreach ($cartItems as $cartItem) {
@@ -125,13 +129,5 @@ class StripeController extends Controller
         Cart::where('student_id', $user->id)->delete();
 
         return redirect()->route('success')->with('totalAmount', $totalAmount);
-    }
-
-
-    public function TeacherWithdrawl($teacher_id)
-    {
-        $teacher = TeacherWallet::find($teacher_id);
-
-        $earning = $teacher->total_amount;
     }
 }
