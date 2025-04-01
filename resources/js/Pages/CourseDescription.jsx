@@ -1,14 +1,15 @@
 import CourseCards from "@/Components/CourseCards";
 import { Head, Link } from "@inertiajs/react";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FaPlus, FaCheckCircle } from "react-icons/fa";
-import { CiUnlock } from "react-icons/ci";
 import { CiLock } from "react-icons/ci";
+import { CiUnlock } from "react-icons/ci";
 import { router } from "@inertiajs/react";
 import Navbar from "@/Components/Navbar";
 import Footer from "@/Components/Footer";
 import ChapterForm from "./ChapterForm";
-
+import ReactConfetti from "react-confetti";
+import CompletionAudio from "../Audio/course_completion.mp3";
 const CourseDescription = ({
     singleCourse = {},
     auth,
@@ -19,11 +20,36 @@ const CourseDescription = ({
 }) => {
     const [showModal, setShowModal] = useState(false);
     const [selectedChapter, setSelectedChapter] = useState(null);
+    const [showConfetti, setShowConfetti] = useState(false);
+
     useEffect(() => {
         if (chapters.length > 0) {
             setSelectedChapter(chapters[0]);
         }
     }, [chapters]);
+
+    useEffect(() => {
+        const courseKey = `${singleCourse.id}-${auth.user.id}`;
+        const hasSeenConfetti = localStorage.getItem(courseKey);
+
+        if (
+            completedChapters.length === chapters.length &&
+            completedChapters.length > 0 &&
+            !hasSeenConfetti
+        ) {
+            setShowConfetti(true);
+            const audio = new Audio(CompletionAudio);
+            audio.play().catch((err) => console.log("Autoplay blocked:", err));
+            localStorage.setItem(courseKey, "true");
+            setTimeout(() => setShowConfetti(false), 10000);
+        }
+    }, [
+        completedChapters.length,
+        chapters.length,
+        singleCourse.id,
+        auth.user.id,
+    ]);
+
     return (
         <>
             <Navbar auth={auth} />
@@ -31,7 +57,7 @@ const CourseDescription = ({
             <div className="pt-20 max-w-6xl mx-auto p-6 space-y-6">
                 {/* Course Header */}
 
-                <div className="bg-white shadow-md p-8 rounded-2xl flex flex-col lg:flex-row items-center gap-8">
+                <div className="bg-gray-50  shadow-md p-8 rounded-2xl flex flex-col lg:flex-row items-center gap-8">
                     <div className="flex-1">
                         <h1 className="text-3xl font-bold text-gray-800">
                             {singleCourse && singleCourse.course_title}
@@ -90,14 +116,6 @@ const CourseDescription = ({
                                         >
                                             Make Exam
                                         </Link>
-                                        <button
-                                            onClick={() => {
-                                                setShowModal(true);
-                                            }}
-                                            className="bg-blue-600 flex items-center gap-2 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition-all"
-                                        >
-                                            <FaPlus /> Add Chapter
-                                        </button>
 
                                         <button
                                             onClick={() =>
@@ -166,25 +184,46 @@ const CourseDescription = ({
                 {/* Chapters Details */}
                 <div className="flex gap-8 mt-12">
                     {/* Sidebar */}
-                    <aside className="w-1/4 bg-white rounded-2xl shadow-md border p-4 space-y-6 h-fit">
+                    <aside className="w-1/3 bg-white rounded-2xl shadow-md border p-4 space-y-6 h-fit">
                         {/* Course Material */}
-                        <div className="p-4 border-b">
-                            <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                                Course Chapters
-                            </h3>
-                            <ul className="space-y-4 text-blue-600  list-decimal list-insie ">
-                                {chapters.map((item) => (
-                                    <li
-                                        key={item.id}
-                                        className="hover:underline w-full"
+                        <div
+                            className={`p-4 ${
+                                auth.user.role === "Teacher" ? "" : " border-b"
+                            }`}
+                        >
+                            <div className="flex justify-between">
+                                <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                                    Course Chapters
+                                </h3>
+                                {singleCourse.course_teacher ===
+                                    auth.user.id && (
+                                    <button
+                                        onClick={() => {
+                                            setShowModal(true);
+                                        }}
+                                        className="bg-blue-600 flex items-center size-6 justify-center text-white rounded-full hover:bg-blue-700 transition-all"
                                     >
+                                        <FaPlus />
+                                    </button>
+                                )}
+                            </div>
+                            <ul className="space-y-2  text-blue-700">
+                                {chapters.map((item, index) => (
+                                    <li key={item.id} className="w-full">
                                         <button
                                             onClick={() =>
                                                 setSelectedChapter(item)
                                             }
-                                            className="w-full text-left"
+                                            className="flex items-center justify-center gap-3 text-gray-800 font-medium bg-gray-50 border  px-4 py-3 rounded-lg shadow-md w-full text-left hover:bg-blue-100 transition duration-200"
                                         >
-                                            {item.title}
+                                            <div className="flex w-full space-x-2">
+                                                <span className="font-semibold ">
+                                                    {index + 1}.
+                                                </span>
+                                                <span className="truncate flex">
+                                                    {item.title}
+                                                </span>
+                                            </div>
                                         </button>
                                     </li>
                                 ))}
@@ -192,22 +231,70 @@ const CourseDescription = ({
                         </div>
 
                         {/* Additional Sections */}
-                        {["Assignments", "Exams", "Grades"].map(
-                            (section, index) => (
-                                <div key={index} className="p-4 border-b">
+                        {auth.user.role !== "Teacher" &&
+                            [
+                                "Chapters Completed",
+                                "Course Exam",
+                                "Course Grades",
+                            ].map((items, index) => (
+                                <div
+                                    key={index}
+                                    className="p-4 border-b flex flex-col space-y-5"
+                                >
                                     <h3 className="text-lg font-semibold text-gray-800">
-                                        Course {section}
+                                        {items}
                                     </h3>
                                     <p className="text-gray-600 text-sm">
-                                        {section === "Assignments"
-                                            ? "Assignments will be shared weekly."
-                                            : section === "Exams"
-                                            ? "MCQs and Project-based exams."
-                                            : "Grades will be shared after evaluations."}
+                                        {items === "Chapters Completed" ? (
+                                            <div className="flex items-center justify-center gap-3 text-gray-800 font-medium bg-gray-50 border  px-4 py-3 rounded-lg shadow-md">
+                                                <FaCheckCircle className="text-green-500 size-5" />
+                                                {showConfetti && (
+                                                    <>
+                                                        <ReactConfetti className="h-[200vh] w-full" />
+                                                    </>
+                                                )}
+
+                                                <p>
+                                                    <span className="text-green-600">
+                                                        {
+                                                            completedChapters.length
+                                                        }
+                                                    </span>{" "}
+                                                    / {chapters.length}
+                                                </p>
+                                            </div>
+                                        ) : items === "Course Exam" ? (
+                                            <>
+                                                {completedChapters.length ===
+                                                    chapters.length &&
+                                                isEnrolled?.course_id ===
+                                                    singleCourse?.id ? (
+                                                    <Link
+                                                        // href={`/exam/id/${singleCourse.id}`}
+                                                        href={`/course_exam`}
+                                                        className="bg-green-600 w-60 text-center text-white px-4 py-2 rounded-md"
+                                                    >
+                                                        Give Exam
+                                                    </Link>
+                                                ) : (
+                                                    <div className="flex items-center justify-center gap-3 text-gray-800 font-medium bg-gray-50 border px-4 py-3 rounded-lg shadow-md">
+                                                        <span className="text-gray-700">
+                                                            <span className="text-blue-600 font-semibold">
+                                                                📚 Complete
+                                                                Chapters
+                                                            </span>{" "}
+                                                            inorder to unlock
+                                                            exams.
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </>
+                                        ) : (
+                                            "Grades will be shared after evaluations."
+                                        )}
                                     </p>
                                 </div>
-                            )
-                        )}
+                            ))}
                     </aside>
 
                     {/* Main Content */}
@@ -223,11 +310,16 @@ const CourseDescription = ({
                                         {isEnrolled?.course_id !==
                                             singleCourse?.id &&
                                         selectedChapter.preview !== "0" ? (
-                                            <p className="text-sm text-gray-600 mt-2 italic">
-                                                This chapter is available as a
-                                                free preview.
-                                            </p>
-                                        ) : null}
+                                            <div className="text-md text-green-500 mt-2 font-bold flex items-center space-x-1">
+                                                <CiUnlock />
+                                                <p> Free Preview</p>
+                                            </div>
+                                        ) : (
+                                            <div className="text-md text-red-700 mt-2 font-bold flex items-center space-x-1">
+                                                <CiLock />
+                                                <p> Paid Access</p>
+                                            </div>
+                                        )}
                                     </div>
                                     {isEnrolled?.course_id ===
                                         singleCourse?.id &&
@@ -236,7 +328,7 @@ const CourseDescription = ({
                                         ) ? (
                                             <Link
                                                 href={`/chapter_complete/id/${selectedChapter.id}`}
-                                                className="bg-blue-600 text-white px-4 py-2 rounded-md"
+                                                className="bg-blue-600 w-60 text-center text-white px-4 py-2 rounded-md"
                                             >
                                                 Mark as Complete
                                             </Link>
@@ -283,13 +375,18 @@ const CourseDescription = ({
                                 </div>
 
                                 {/* Edit Button (Only for Teachers) */}
-                                {auth?.user?.role !== "Student" &&
-                                    auth.user?.id ===
-                                        singleCourse?.course_teacher && (
-                                        <button className="mt-4 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
-                                            Edit Chapter
-                                        </button>
-                                    )}
+                                <div className="flex mt-4">
+                                    {auth?.user?.role !== "Student" &&
+                                        auth.user?.id ===
+                                            singleCourse?.course_teacher && (
+                                            <Link
+                                                href={`/edit_chapter/id/${selectedChapter.id}`}
+                                                className=" bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+                                            >
+                                                Edit Chapter
+                                            </Link>
+                                        )}
+                                </div>
                             </>
                         ) : (
                             <div className="text-center text-gray-600">

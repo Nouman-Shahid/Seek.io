@@ -48,9 +48,11 @@ class CourseController extends Controller
             $completedChapters = ChapterCompletion::where('student_id', $user->id)
                 ->whereIn('chapter_id', $chapters->pluck('id'))
                 ->where('status', 'Completed')
+                ->orderBy('id', direction: 'desc')
                 ->pluck('chapter_id')
                 ->toArray();
         }
+
 
 
 

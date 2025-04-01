@@ -124,4 +124,11 @@ Route::post('publish_course/id/{id}', [CourseController::class, 'publishCourse']
 
 Route::get('chapter_complete/id/{id}', [ChapterCompletionController::class, 'markComplete'])->name('chapter_complete');
 
+
+
+Route::get('/course_exam', function () {
+    return Inertia::render('CourseExam');
+})->name('course_exam');
+
+
 require __DIR__ . '/auth.php';

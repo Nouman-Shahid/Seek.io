@@ -39,19 +39,18 @@ class StripeController extends Controller
                             'name' => $course->course_title,
                             'description' => $course->course_desc,
                         ],
-                        'unit_amount' => $course->course_amount * 100, // Convert to cents
+                        'unit_amount' => $course->course_amount * 100,
                     ],
                     'quantity' => 1,
                 ];
             }
         }
 
-        // Create Stripe checkout session with correct success URL
         $session = Session::create([
             'payment_method_types' => ['card'],
             'line_items' => $lineItems,
             'mode' => 'payment',
-            'success_url' => route('success') . '?session_id={CHECKOUT_SESSION_ID}', // Ensure session_id is included
+            'success_url' => route('success') . '?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => route('cart'),
         ]);
 
@@ -126,5 +125,13 @@ class StripeController extends Controller
         Cart::where('student_id', $user->id)->delete();
 
         return redirect()->route('success')->with('totalAmount', $totalAmount);
+    }
+
+
+    public function TeacherWithdrawl($teacher_id)
+    {
+        $teacher = TeacherWallet::find($teacher_id);
+
+        $earning = $teacher->total_amount;
     }
 }
