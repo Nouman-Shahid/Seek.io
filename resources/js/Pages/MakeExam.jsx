@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { useForm } from "@inertiajs/react";
+import { Head, useForm } from "@inertiajs/react";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 
 export default function MakeExam() {
-    const [showForm, setShowForm] = useState(false);
+    const [openIndex, setOpenIndex] = useState(null);
     const { data, setData, post, reset } = useForm({
         questions: [],
         question: "",
@@ -11,7 +12,6 @@ export default function MakeExam() {
         marks: "1",
     });
 
-    // Handle input changes
     const handleChange = (e, index = null) => {
         if (index !== null) {
             let newOptions = [...data.options];
@@ -22,7 +22,6 @@ export default function MakeExam() {
         }
     };
 
-    // Handle form submission
     const handleSubmit = (e) => {
         e.preventDefault();
         setData("questions", [
@@ -34,69 +33,83 @@ export default function MakeExam() {
                 marks: data.marks,
             },
         ]);
-        reset("question", "options", "correctAnswer", "marks"); // Reset form fields
-        setShowForm(false);
+        reset("question", "options", "correctAnswer", "marks");
+        setOpenIndex(null);
     };
 
     const saveExam = () => {
         // post(route("exams.store"));
     };
 
+    const toggleAccordion = (index) => {
+        setOpenIndex(openIndex === index ? null : index);
+    };
+
     return (
-        <div className="p-6 max-w-3xl mx-auto">
-            <h1 className="text-2xl font-bold">Create Exam</h1>
+        <AuthenticatedLayout>
+            <Head title="Make-Exam" />
 
-            <div className="flex justify-between my-4">
-                <button
-                    onClick={() => setShowForm(true)}
-                    className="bg-green-500 text-white px-4 py-2 rounded-md"
-                >
-                    Add Question
-                </button>
-                <button
-                    onClick={saveExam}
-                    className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                >
-                    Save Exam
-                </button>
-            </div>
+            <div className="p-6 max-w-3xl mx-auto min-h-screen">
+                <h1 className="text-2xl font-bold">Create Exam</h1>
 
-            {/* Question List */}
-            <div className="space-y-4">
-                {data.questions.map((q, i) => (
-                    <div
-                        key={i}
-                        className="border p-4 rounded-md bg-white shadow-md"
+                <div className="flex justify-between my-4">
+                    <button
+                        onClick={() => setOpenIndex("new")}
+                        className="bg-green-500 text-white px-4 py-2 rounded-md"
                     >
-                        <h2 className="font-semibold">
-                            {i + 1}. {q.question}
-                        </h2>
-                        <div className="grid grid-cols-2 gap-2 mt-2">
-                            {q.options.map((opt, idx) => (
-                                <div
-                                    key={idx}
-                                    className={`p-2 border rounded-md ${
-                                        opt === q.correctAnswer
-                                            ? "bg-green-100 border-green-500"
-                                            : "border-gray-300"
-                                    }`}
-                                >
-                                    {String.fromCharCode(65 + idx)}) {opt}
-                                </div>
-                            ))}
-                        </div>
-                        <p className="text-gray-600 mt-2">
-                            <b>Right Answer:</b> {q.correctAnswer} |{" "}
-                            <b>Marks:</b> {q.marks}
-                        </p>
-                    </div>
-                ))}
-            </div>
+                        Add Question
+                    </button>
+                    <button
+                        onClick={saveExam}
+                        className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                    >
+                        Save Exam
+                    </button>
+                </div>
 
-            {/* Question Form */}
-            {showForm && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white p-6 rounded-md shadow-md w-96">
+                {/* Question List */}
+                <div className="space-y-4">
+                    {data.questions.map((q, i) => (
+                        <div
+                            key={i}
+                            className="border rounded-md bg-white shadow-md"
+                        >
+                            <button
+                                className="w-full text-left p-4 font-semibold bg-gray-200"
+                                onClick={() => toggleAccordion(i)}
+                            >
+                                {i + 1}. {q.question}
+                            </button>
+                            {openIndex === i && (
+                                <div className="p-4 border-t">
+                                    <div className="grid grid-cols-2 gap-2 mt-2">
+                                        {q.options.map((opt, idx) => (
+                                            <div
+                                                key={idx}
+                                                className={`p-2 border rounded-md ${
+                                                    opt === q.correctAnswer
+                                                        ? "bg-green-100 border-green-500"
+                                                        : "border-gray-300"
+                                                }`}
+                                            >
+                                                {String.fromCharCode(65 + idx)}){" "}
+                                                {opt}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <p className="text-gray-600 mt-2">
+                                        <b>Right Answer:</b> {q.correctAnswer} |{" "}
+                                        <b>Marks:</b> {q.marks}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+
+                {/* Question Form */}
+                {openIndex === "new" && (
+                    <div className="border p-4 mt-4 rounded-md bg-white shadow-md">
                         <h2 className="text-xl font-bold">Add Question</h2>
                         <form onSubmit={handleSubmit}>
                             <textarea
@@ -144,7 +157,7 @@ export default function MakeExam() {
                             <div className="flex justify-end mt-4">
                                 <button
                                     type="button"
-                                    onClick={() => setShowForm(false)}
+                                    onClick={() => setOpenIndex(null)}
                                     className="bg-gray-400 text-white px-4 py-2 rounded-md mr-2"
                                 >
                                     Cancel
@@ -158,8 +171,8 @@ export default function MakeExam() {
                             </div>
                         </form>
                     </div>
-                </div>
-            )}
-        </div>
+                )}
+            </div>
+        </AuthenticatedLayout>
     );
 }
