@@ -22,7 +22,7 @@ class UserController extends Controller
             'profile_image' => 'required|string|max:500',
             'location' => 'required|string|max:500',
             'profile_about' => 'required|string|max:500',
-            'profile_headline' => 'required|string|max:500',
+            'profile_headline' => 'required|string|max:400',
         ]);
 
 

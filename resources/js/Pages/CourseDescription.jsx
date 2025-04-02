@@ -29,7 +29,7 @@ const CourseDescription = ({
     }, [chapters]);
 
     useEffect(() => {
-        const courseKey = `${singleCourse.id}-${auth.user.id}`;
+        const courseKey = `${singleCourse.id}-${auth?.user?.id}`;
         const hasSeenConfetti = localStorage.getItem(courseKey);
 
         if (
@@ -47,7 +47,7 @@ const CourseDescription = ({
         completedChapters.length,
         chapters.length,
         singleCourse.id,
-        auth.user.id,
+        auth?.user?.id,
     ]);
 
     return (
@@ -188,7 +188,7 @@ const CourseDescription = ({
                         {/* Course Material */}
                         <div
                             className={`p-4 ${
-                                auth.user.role === "Teacher" ||
+                                auth?.user?.role === "Teacher" ||
                                 isEnrolled?.course_id !== singleCourse?.id
                                     ? ""
                                     : " border-b"
@@ -199,7 +199,7 @@ const CourseDescription = ({
                                     Course Chapters
                                 </h3>
                                 {singleCourse.course_teacher ===
-                                    auth.user.id && (
+                                    auth?.user?.id && (
                                     <button
                                         onClick={() => {
                                             setShowModal(true);
@@ -234,8 +234,8 @@ const CourseDescription = ({
                         </div>
 
                         {/* Additional Sections */}
-                        {auth.user.role !== "Teacher" &&
-                            isEnrolled.course_id === singleCourse.id &&
+                        {auth?.user?.role !== "Teacher" &&
+                            isEnrolled?.course_id === singleCourse.id &&
                             [
                                 "Chapters Completed",
                                 "Course Exam",
