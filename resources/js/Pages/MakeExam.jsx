@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Head, useForm } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 
-export default function MakeExam() {
+export default function MakeExam({ course, exam_questions }) {
     const [openIndex, setOpenIndex] = useState(null);
     const { data, setData, post, reset } = useForm({
         questions: [],
@@ -35,10 +35,11 @@ export default function MakeExam() {
         ]);
         reset("question", "options", "correctAnswer", "marks");
         setOpenIndex(null);
+        post(`/exam_question/store/${course.id}`);
     };
 
     const saveExam = () => {
-        // post(route("exams.store"));
+        // post(`/exam_question/store/${course.id}`);
     };
 
     const toggleAccordion = (index) => {
