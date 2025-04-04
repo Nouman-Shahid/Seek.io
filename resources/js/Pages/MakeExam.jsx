@@ -1,5 +1,5 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, useForm } from "@inertiajs/react";
+import { Head, Link, useForm } from "@inertiajs/react";
 import React, { useState } from "react";
 import ExamForm from "./ExamForm";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa"; // Import icons
@@ -46,27 +46,39 @@ const MakeExam = ({ course, questions }) => {
         <AuthenticatedLayout>
             <Head title="Make Exam" />
 
-            <div className="flex flex-col w-screen min-h-screen ">
-                {/* Page Header */}
-                <div className="bg-blue-600 text-white py-12 px-6 text-center">
-                    <h1 className="text-4xl font-bold">Create & Manage Exam</h1>
-                    <p className="text-lg mt-2 opacity-90">
-                        Add, edit, and review questions for {course.name}
-                    </p>
-                </div>
-
+            <div className="flex w-full min-h-screen  ">
                 {/* Main Content */}
-                <div className="w-[80%] mx-auto my-20 p-8 bg-white shadow-lg rounded-lg ">
+                <div className="w-[70%] mx-auto my-20 p-8 bg-white shadow-lg rounded-lg ">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-2xl font-bold text-gray-800">
                             Exam Questions
+                            {questions.length >= 5 ? (
+                                ""
+                            ) : (
+                                <span className="text-red-500 text-sm mx-3">
+                                    {" "}
+                                    (At least 5 questions in order to save the
+                                    exam)
+                                </span>
+                            )}
                         </h2>
-                        <button
-                            onClick={() => setShowModal(true)}
-                            className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-all shadow-md"
-                        >
-                            + Add New Question
-                        </button>
+                        <div className="flex space-x-2">
+                            <button
+                                onClick={() => setShowModal(true)}
+                                className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-all shadow-md"
+                            >
+                                + Add New Question
+                            </button>
+                            {questions.length >= 5 ? (
+                                <Link className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-all shadow-md">
+                                    Save Exam
+                                </Link>
+                            ) : (
+                                <p className="px-6 py-3 bg-gray-300 text-black font-semibold rounded-md transition-all shadow-md cursor-not-allowed">
+                                    Save Exam
+                                </p>
+                            )}
+                        </div>
                     </div>
 
                     {/* Questions List - Accordion */}
@@ -97,7 +109,7 @@ const MakeExam = ({ course, questions }) => {
                                     {/* Accordion Body (Options) */}
                                     {openQuestionId === question.id && (
                                         <div className="p-4 bg-white border-t border-gray-200">
-                                            <ol className="space-y-2">
+                                            <ol className="space-y-2 list-decimal">
                                                 {question.options.map(
                                                     (option) => (
                                                         <li
@@ -145,6 +157,8 @@ const MakeExam = ({ course, questions }) => {
                         </p>
                     )}
                 </div>
+
+                <div className="flex w-[20%] bg-blue-500 "></div>
             </div>
 
             <ExamForm

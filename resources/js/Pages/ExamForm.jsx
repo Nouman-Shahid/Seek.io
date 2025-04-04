@@ -4,7 +4,7 @@ import InputError from "@/Components/InputError";
 import { useForm } from "@inertiajs/react";
 
 const ExamForm = ({ course, showModal, setShowModal }) => {
-    const { data, setData, post, errors, reset } = useForm({
+    const { data, setData, post, errors, reset, processing } = useForm({
         question: "",
         options: ["", "", "", ""],
         correctAnswerIndex: null,
@@ -132,9 +132,12 @@ const ExamForm = ({ course, showModal, setShowModal }) => {
                         <div className="flex justify-end">
                             <button
                                 type="submit"
+                                disabled={processing}
                                 className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-all font-semibold"
                             >
-                                Submit Question
+                                {processing
+                                    ? "Submitting..."
+                                    : "Submit Question"}
                             </button>
                         </div>
                     </div>
