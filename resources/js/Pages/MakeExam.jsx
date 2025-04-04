@@ -2,10 +2,13 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, useForm } from "@inertiajs/react";
 import React, { useState } from "react";
 import ExamForm from "./ExamForm";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa"; // Import icons
 
 const MakeExam = ({ course, questions }) => {
     const [showModal, setShowModal] = useState(false);
     const [editModal, setEditModal] = useState(false);
+    const [openQuestionId, setOpenQuestionId] = useState(null);
+
     const [currentQuestion, setCurrentQuestion] = useState(null);
     const { data, setData, post, processing } = useForm({
         question_id: "",
@@ -13,6 +16,10 @@ const MakeExam = ({ course, questions }) => {
         options: [],
         correctAnswerIndex: null,
     });
+
+    const toggleAccordion = (id) => {
+        setOpenQuestionId(openQuestionId === id ? null : id);
+    };
 
     const handleEdit = (question) => {
         setCurrentQuestion(question);
@@ -39,60 +46,105 @@ const MakeExam = ({ course, questions }) => {
         <AuthenticatedLayout>
             <Head title="Make Exam" />
 
-            <div className="flex min-h-screen items-center justify-center">
-                <button
-                    onClick={() => setShowModal(true)}
-                    className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-all shadow-md"
-                >
-                    Make Exam
-                </button>
-            </div>
-
-            {/* Exam Questions */}
-            <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
-                <h2 className="text-2xl font-bold mb-6 text-gray-800">
-                    Exam Questions
-                </h2>
-                {questions.length > 0 ? (
-                    questions.map((question) => (
-                        <div key={question.id} className="mb-6 border-b pb-4">
-                            <div className="flex justify-between items-center">
-                                <h3 className="text-lg font-semibold text-gray-700">
-                                    {question.question_text}
-                                </h3>
-                                <button
-                                    onClick={() => handleEdit(question)}
-                                    className="px-3 py-1 bg-yellow-500 text-white rounded-md text-sm hover:bg-yellow-600"
-                                >
-                                    Edit
-                                </button>
-                            </div>
-                            <ol className="mt-3 space-y-2">
-                                {question.options.map((option, index) => (
-                                    <li
-                                        key={option.id}
-                                        className="flex items-center"
-                                    >
-                                        <input
-                                            type="radio"
-                                            name={`question_${question.id}`}
-                                            disabled
-                                            checked={option.is_correct}
-                                            className="mr-2"
-                                        />
-                                        <span className="text-gray-700">
-                                            {option.option_text}
-                                        </span>
-                                    </li>
-                                ))}
-                            </ol>
-                        </div>
-                    ))
-                ) : (
-                    <p className="text-gray-500">
-                        No questions available for this exam.
+            <div className="flex flex-col w-screen min-h-screen ">
+                {/* Page Header */}
+                <div className="bg-blue-600 text-white py-12 px-6 text-center">
+                    <h1 className="text-4xl font-bold">Create & Manage Exam</h1>
+                    <p className="text-lg mt-2 opacity-90">
+                        Add, edit, and review questions for {course.name}
                     </p>
-                )}
+                </div>
+
+                {/* Main Content */}
+                <div className="w-[80%] mx-auto my-20 p-8 bg-white shadow-lg rounded-lg ">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-2xl font-bold text-gray-800">
+                            Exam Questions
+                        </h2>
+                        <button
+                            onClick={() => setShowModal(true)}
+                            className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-all shadow-md"
+                        >
+                            + Add New Question
+                        </button>
+                    </div>
+
+                    {/* Questions List - Accordion */}
+                    {questions.length > 0 ? (
+                        <div className="space-y-4">
+                            {questions.map((question) => (
+                                <div
+                                    key={question.id}
+                                    className="border border-gray-200 rounded-lg shadow-sm transition-all"
+                                >
+                                    {/* Accordion Header */}
+                                    <div
+                                        className="flex justify-between items-center bg-gray-100 p-4 rounded-t-lg cursor-pointer hover:bg-gray-200"
+                                        onClick={() =>
+                                            toggleAccordion(question.id)
+                                        }
+                                    >
+                                        <h3 className="text-lg font-semibold text-gray-700">
+                                            {question.question_text}
+                                        </h3>
+                                        {openQuestionId === question.id ? (
+                                            <FaChevronUp className="text-gray-600" />
+                                        ) : (
+                                            <FaChevronDown className="text-gray-600" />
+                                        )}
+                                    </div>
+
+                                    {/* Accordion Body (Options) */}
+                                    {openQuestionId === question.id && (
+                                        <div className="p-4 bg-white border-t border-gray-200">
+                                            <ol className="space-y-2">
+                                                {question.options.map(
+                                                    (option) => (
+                                                        <li
+                                                            key={option.id}
+                                                            className={`flex items-center px-3 py-2 rounded-md ${
+                                                                option.is_correct
+                                                                    ? "bg-green-100 text-green-800"
+                                                                    : "bg-gray-100 text-gray-700"
+                                                            }`}
+                                                        >
+                                                            <input
+                                                                type="radio"
+                                                                name={`question_${question.id}`}
+                                                                disabled
+                                                                checked={
+                                                                    option.is_correct
+                                                                }
+                                                                className="mr-2"
+                                                            />
+                                                            {option.option_text}
+                                                        </li>
+                                                    )
+                                                )}
+                                            </ol>
+
+                                            {/* Edit Button */}
+                                            <div className="text-right mt-3">
+                                                <button
+                                                    onClick={() =>
+                                                        handleEdit(question)
+                                                    }
+                                                    className="px-4 py-2 bg-yellow-500 text-white rounded-md text-sm hover:bg-yellow-600"
+                                                >
+                                                    Edit
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-gray-500 text-center">
+                            No questions available for this exam.
+                        </p>
+                    )}
+                </div>
             </div>
 
             <ExamForm
