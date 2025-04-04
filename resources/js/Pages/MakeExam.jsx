@@ -70,7 +70,10 @@ const MakeExam = ({ course, questions }) => {
                                 + Add New Question
                             </button>
                             {questions.length >= 5 ? (
-                                <Link className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-all shadow-md">
+                                <Link
+                                    href=""
+                                    className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-all shadow-md"
+                                >
                                     Save Exam
                                 </Link>
                             ) : (
@@ -84,7 +87,7 @@ const MakeExam = ({ course, questions }) => {
                     {/* Questions List - Accordion */}
                     {questions.length > 0 ? (
                         <div className="space-y-4">
-                            {questions.map((question) => (
+                            {questions.map((question, index) => (
                                 <div
                                     key={question.id}
                                     className="border border-gray-200 rounded-lg shadow-sm transition-all"
@@ -97,6 +100,7 @@ const MakeExam = ({ course, questions }) => {
                                         }
                                     >
                                         <h3 className="text-lg font-semibold text-gray-700">
+                                            {index + 1}.{" "}
                                             {question.question_text}
                                         </h3>
                                         {openQuestionId === question.id ? (
