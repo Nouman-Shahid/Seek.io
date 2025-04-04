@@ -34,8 +34,8 @@ Route::get('/faq', function () {
 Route::get('/course/id/{id}', action: [CourseController::class, 'getSingleCourse']);
 
 Route::get('/course_exam/id/{id}', action: [CourseExamController::class, 'getExamPage']);
-Route::get('/exam_question/get/{id}', [CourseExamController::class, 'getQuestions']);
-Route::post('/exam_question/store/{id}', [CourseExamController::class, 'storeQuestions']);
+Route::post('/exam_question/store/{id}', [CourseExamController::class, 'storeQuestion']);
+Route::post('/exam_question/update/{id}', [CourseExamController::class, 'updateQuestion']);
 
 
 

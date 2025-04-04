@@ -9,63 +9,91 @@ use Inertia\Inertia;
 
 class CourseExamController extends Controller
 {
+
     public function getExamPage($id)
     {
-        // Get the course data
-        $course = Course::find($id);
+        $course = Course::findOrFail($id);
 
-        if (!$course) {
-            return abort(404, 'Course not found.');
-        }
-
-        // Get the questions associated with the course/exam
         $questions = DB::table('exam_questions')
-            ->join('question_options', 'exam_questions.id', '=', 'question_options.question_id')
             ->where('course_id', $id)
-            ->select('question_options.*', 'exam_questions.*')
-            ->get();
+            ->select('id', 'question_text', 'marks')
+            ->get()
+            ->map(function ($question) {
+                $question->options = DB::table('question_options')
+                    ->where('question_id', $question->id)
+                    ->select('id', 'option_text', 'is_correct')
+                    ->get();
+                return $question;
+            });
 
-        // Return the MakeExam page with the questions data
         return Inertia::render('MakeExam', [
-            'course' => $course, // Passing course data
-            'exam_questions' => $questions, // Passing questions data
+            'course' => $course,
+            'questions' => $questions
         ]);
     }
 
-    public function getQuestions($id)
-    {
-        $questions = DB::table('exam_questions')
-            ->where('exam_id', $id)
-            ->get();
 
-        return response()->json(['questions' => $questions]);
-    }
 
-    public function storeQuestions(Request $request, $id)
+    public function storeQuestion(Request $request, $id)
     {
         $request->validate([
-            'question' => 'required|string|min:10|max:250',
-            'options' => 'required|array|min:4|max:4',
-            'correctAnswer' => 'required|string|max:250',
-            'marks' => 'required|integer|min:1|max:10',
+            'question' => 'required|string|min:5|max:250',
+            'options' => 'required|array|min:4',
+            'options.*' => 'required|string|min:1|max:250',
+            'correctAnswerIndex' => 'required|integer|min:0|max:3',
         ]);
 
-        $question_id = DB::table('exam_questions')->insertGetId([
+        $question = DB::table('exam_questions')->insertGetId([
             'course_id' => $id,
             'question_text' => $request->question,
-            'marks' => $request->marks,
-            'created_at' => now()
+            'marks' => 1,
+            'created_at' => now(),
         ]);
 
-        foreach ($request->options as $option) {
+        if (!$question) {
+            return back()->with('error', 'Failed to insert question.');
+        }
+
+        foreach ($request->options as $index => $optionText) {
             DB::table('question_options')->insert([
-                'question_id' => $question_id,
-                'option_text' => $option,
-                'is_correct' => ($option == $request->correctAnswer) ? 1 : 0,
-                'created_at' => now()
+                'question_id' => $question,
+                'option_text' => $optionText,
+                'is_correct' => $index == $request->correctAnswerIndex,
+                'created_at' => now(),
             ]);
         }
 
-        return back();
+        return back()->with('success', 'Question added successfully!');
+    }
+
+
+
+    public function updateQuestion(Request $request, $id)
+    {
+        $request->validate([
+            'question_text' => 'required|string|min:5|max:250',
+            'options' => 'required|array|min:2',
+            'correctAnswerIndex' => 'required|integer',
+        ]);
+
+        DB::table('exam_questions')
+            ->where('id', $id)
+            ->update(['question_text' => $request->question_text]);
+
+        $existingOptions = DB::table('question_options')
+            ->where('question_id', $id)
+            ->orderBy('id')
+            ->get();
+
+        foreach ($existingOptions as $index => $option) {
+            DB::table('question_options')
+                ->where('id', $option->id)
+                ->update([
+                    'option_text' => $request->options[$index],
+                    'is_correct' => ($index == $request->correctAnswerIndex) ? 1 : 0,
+                ]);
+        }
+
+        return back()->with('success', 'Question updated successfully!');
     }
 }
