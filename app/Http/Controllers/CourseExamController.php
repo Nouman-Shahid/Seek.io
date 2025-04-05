@@ -127,4 +127,40 @@ class CourseExamController extends Controller
 
         return back()->with('message', 'Exam saved successfully!');
     }
+
+
+
+    public function getExamInfo($id)
+    {
+        $exam = CourseExam::where('course_id', "=", $id)->first();
+
+        $course = Course::find($id);
+
+        return Inertia::render('ExamInstructions', ['exam' => $exam, 'course' => $course]);
+    }
+
+    public function exam($id)
+    {
+        $course = Course::find($id);
+
+        // Fetch all questions related to this course
+        $questions = DB::table('exam_questions')
+            ->where('course_id', $id)
+            ->get();
+
+        // Fetch options for each question
+        $questionsWithOptions = $questions->map(function ($question) {
+            $options = DB::table('question_options')
+                ->where('question_id', $question->id)
+                ->get();
+
+            $question->options = $options;
+            return $question;
+        });
+
+        return Inertia::render('CourseExam', [
+            'course' => $course,
+            'questions' => $questionsWithOptions,
+        ]);
+    }
 }

@@ -12,6 +12,7 @@ use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\BasicInfoMiddleware;
 use App\Http\Middleware\TeacherMiddleware;
+use App\Models\CourseExam;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -134,9 +135,9 @@ Route::get('/payout_&_earnings/id/{id}', [TeacherController::class, 'teacherWith
 
 
 
-Route::get('/course_exam', function () {
-    return Inertia::render('CourseExam');
-})->name('course_exam');
+Route::get('/exam_instructions/{id}', [CourseExamController::class, 'getExamInfo']);
 
+
+Route::get('/exam/id/{id}', [CourseExamController::class, 'exam']);
 
 require __DIR__ . '/auth.php';

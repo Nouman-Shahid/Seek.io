@@ -275,7 +275,7 @@ const CourseDescription = ({
                                                     singleCourse?.id ? (
                                                     <Link
                                                         // href={`/exam/id/${singleCourse.id}`}
-                                                        href={`/course_exam`}
+                                                        href={`/exam_instructions/${singleCourse.id}`}
                                                         className="bg-green-600 w-60 text-center text-white px-4 py-2 rounded-md"
                                                     >
                                                         Give Exam
