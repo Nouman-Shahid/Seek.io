@@ -33,10 +33,12 @@ Route::get('/faq', function () {
 
 Route::get('/course/id/{id}', action: [CourseController::class, 'getSingleCourse']);
 
-Route::get('/course_exam/id/{id}', action: [CourseExamController::class, 'getExamPage']);
+Route::get('/course_exam/id/{id}', [CourseExamController::class, 'getExamPage']);
 Route::post('/exam_question/store/{id}', [CourseExamController::class, 'storeQuestion']);
 Route::post('/exam_question/update/{id}', [CourseExamController::class, 'updateQuestion']);
+Route::get('/exam_question/delete/{id}', [CourseExamController::class, 'deleteQuestion']);
 
+Route::get('/save_exam/id/{id}', [CourseExamController::class, 'saveExam']);
 
 
 Route::middleware(['auth', 'verified'])->group(function () {

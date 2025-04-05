@@ -8,6 +8,7 @@ const MakeExam = ({ course, questions }) => {
     const [showModal, setShowModal] = useState(false);
     const [editModal, setEditModal] = useState(false);
     const [openQuestionId, setOpenQuestionId] = useState(null);
+    const [isSaving, setIsSaving] = useState(false);
 
     const [currentQuestion, setCurrentQuestion] = useState(null);
     const { data, setData, post, processing } = useForm({
@@ -71,10 +72,26 @@ const MakeExam = ({ course, questions }) => {
                             </button>
                             {questions.length >= 5 ? (
                                 <Link
-                                    href=""
-                                    className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-all shadow-md"
+                                    href={
+                                        isSaving
+                                            ? "#"
+                                            : `/save_exam/id/${course.id}`
+                                    }
+                                    preserveScroll
+                                    className={`px-6 py-3 font-semibold rounded-md transition-all shadow-md ${
+                                        isSaving
+                                            ? "bg-gray-400 cursor-not-allowed"
+                                            : "bg-green-500 text-white hover:bg-green-600"
+                                    }`}
+                                    onClick={(e) => {
+                                        if (isSaving) {
+                                            e.preventDefault(); // prevent navigation
+                                        } else {
+                                            setIsSaving(true);
+                                        }
+                                    }}
                                 >
-                                    Save Exam
+                                    {isSaving ? "Saving..." : "Save Exam"}
                                 </Link>
                             ) : (
                                 <p className="px-6 py-3 bg-gray-300 text-black font-semibold rounded-md transition-all shadow-md cursor-not-allowed">
@@ -139,8 +156,14 @@ const MakeExam = ({ course, questions }) => {
                                                 )}
                                             </ol>
 
-                                            {/* Edit Button */}
-                                            <div className="text-right mt-3">
+                                            {/* Action Button */}
+                                            <div className="text-right mt-3 space-x-2">
+                                                <Link
+                                                    href={`/exam_question/delete/${question.id}`}
+                                                    className="px-4 py-2 bg-red-500 text-white rounded-md text-sm hover:bg-red-600"
+                                                >
+                                                    Delete
+                                                </Link>
                                                 <button
                                                     onClick={() =>
                                                         handleEdit(question)
@@ -162,7 +185,7 @@ const MakeExam = ({ course, questions }) => {
                     )}
                 </div>
 
-                <div className="flex w-[20%] bg-blue-500 "></div>
+                <div className="flex w-[20%] bg-blue-200 "></div>
             </div>
 
             <ExamForm

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\CourseExam;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -95,5 +96,35 @@ class CourseExamController extends Controller
         }
 
         return back()->with('success', 'Question updated successfully!');
+    }
+
+    public function deleteQuestion($id)
+    {
+        DB::table('exam_questions')->where('id', $id)->delete();
+
+        return back();
+    }
+
+
+    public function saveExam($id)
+    {
+        $questionCount = DB::table('exam_questions')->where('course_id', $id)->count();
+
+        $exam = CourseExam::where('course_id', $id)->first();
+
+        if ($exam) {
+            $exam->update([
+                'exam_time' => $questionCount,
+            ]);
+        } else {
+            CourseExam::create([
+                'course_id' => $id,
+                'exam_time' => $questionCount,
+                'isPublished' => 'Published',
+                'created_at' => now()
+            ]);
+        }
+
+        return back()->with('message', 'Exam saved successfully!');
     }
 }

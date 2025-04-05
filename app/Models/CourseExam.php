@@ -8,4 +8,5 @@ class CourseExam extends Model
 {
     protected $table = 'course_exam';
     protected $guarded = [];
+    public $timestamps = false;
 }
