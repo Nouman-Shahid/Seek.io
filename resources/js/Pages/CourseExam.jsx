@@ -1,51 +1,49 @@
 import React, { useState, useEffect } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import { useForm } from "@inertiajs/react";
 
 const CourseExam = ({ course, questions }) => {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [answers, setAnswers] = useState([]);
     const [timeLeft, setTimeLeft] = useState(0);
     const [examCancelled, setExamCancelled] = useState(false);
 
-    const totalExamTime = questions.length * 60; // Total time in seconds
+    // Initialize with proper array structure and type safety
+    const { data, setData, post, processing, errors } = useForm({
+        answers: Array.isArray(questions)
+            ? questions.map((question) => ({
+                  questionId: question.id,
+                  selectedOption: null,
+              }))
+            : [],
+    });
+
+    const totalExamTime = questions.length * 60;
     const storageKey = "examStartTime";
 
-    // Function to calculate the remaining time
     const calculateTimeLeft = () => {
-        // Retrieve the saved exam start time from localStorage
         let examStartTime = localStorage.getItem(storageKey);
-
-        // If no start time is set, initialize the exam start time
         if (!examStartTime) {
-            examStartTime = Date.now().toString(); // Save current timestamp as start time
+            examStartTime = Date.now().toString();
             localStorage.setItem(storageKey, examStartTime);
         }
-
-        // Calculate elapsed time since the exam started (in seconds)
         const elapsed = Math.floor(
             (Date.now() - parseInt(examStartTime)) / 1000
         );
-        const remaining = totalExamTime - elapsed;
-        return Math.max(remaining, 0); // Ensure time doesn't go negative
+        return Math.max(totalExamTime - elapsed, 0);
     };
 
     useEffect(() => {
-        // Initialize the time
         setTimeLeft(calculateTimeLeft());
 
-        // Timer countdown logic
         const interval = setInterval(() => {
             const time = calculateTimeLeft();
             setTimeLeft(time);
-
-            // If time is up, submit the exam
             if (time <= 0) {
                 clearInterval(interval);
                 handleSubmitExam();
             }
         }, 1000);
 
-        // Handle visibility change (e.g., when the user switches tabs)
         const handleVisibilityChange = () => {
             if (document.hidden) {
                 handleCancelExam();
@@ -54,7 +52,6 @@ const CourseExam = ({ course, questions }) => {
 
         document.addEventListener("visibilitychange", handleVisibilityChange);
 
-        // Cleanup function to clear the interval when the component is unmounted
         return () => {
             clearInterval(interval);
             document.removeEventListener(
@@ -62,21 +59,18 @@ const CourseExam = ({ course, questions }) => {
                 handleVisibilityChange
             );
         };
-    }, [questions.length]); // Re-run when the number of questions changes
+    }, [questions.length]);
 
-    const handleOptionChange = (e, questionId) => {
-        const updatedAnswers = [...answers];
-        const answerIndex = updatedAnswers.findIndex(
-            (answer) => answer.questionId === questionId
-        );
-
-        if (answerIndex === -1) {
-            updatedAnswers.push({ questionId, answer: e.target.value });
-        } else {
-            updatedAnswers[answerIndex].answer = e.target.value;
-        }
-
-        setAnswers(updatedAnswers);
+    const handleOptionChange = (questionId, optionId) => {
+        setData("answers", (prevAnswers) => {
+            // Ensure we're always working with an array
+            const safeAnswers = Array.isArray(prevAnswers) ? prevAnswers : [];
+            return safeAnswers.map((answer) =>
+                answer.questionId === questionId
+                    ? { ...answer, selectedOption: optionId }
+                    : answer
+            );
+        });
     };
 
     const handleNextQuestion = () => {
@@ -92,18 +86,20 @@ const CourseExam = ({ course, questions }) => {
     };
 
     const handleSubmitExam = () => {
-        alert("Exam submitted successfully!");
-        localStorage.removeItem("examStartTime"); // Reset only on submit
-        // Submit logic here (send answers to backend)
-        window.location.href = "/dashboard";
+        post(route("exams.submit", course.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                localStorage.removeItem(storageKey);
+            },
+        });
     };
 
     const handleCancelExam = () => {
         if (!examCancelled) {
             alert("Exam cancelled due to tab switch.");
             setExamCancelled(true);
-            localStorage.removeItem("examStartTime");
-            window.location.href = "/dashboard"; // Redirect user
+            localStorage.removeItem(storageKey);
+            window.location.href = "/dashboard";
         }
     };
 
@@ -113,75 +109,96 @@ const CourseExam = ({ course, questions }) => {
         return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
     };
 
+    const currentQuestion = questions[currentQuestionIndex];
+
+    // Safely get the current answer with multiple fallbacks
+    const currentAnswer = (() => {
+        try {
+            if (!Array.isArray(data.answers)) return null;
+            const answer = data.answers.find(
+                (a) => a?.questionId === currentQuestion.id
+            );
+            return answer?.selectedOption ?? null;
+        } catch (error) {
+            console.error("Error finding answer:", error);
+            return null;
+        }
+    })();
+
     return (
         <AuthenticatedLayout>
             <div className="flex min-h-screen flex-col p-8">
-                <div className="flex justify-between items-center">
-                    <p className="text-lg font-bold">
+                <div className="flex justify-between items-center mb-8">
+                    <h1 className="text-2xl font-bold text-gray-900">
                         {course.course_title} Exam
-                    </p>
-                    <p className="text-red-500 font-bold">
-                        Timer: {formatTime(timeLeft)}
-                    </p>
+                    </h1>
+                    <div className="text-red-500 font-bold text-lg">
+                        Time Remaining: {formatTime(timeLeft)}
+                    </div>
                 </div>
 
-                <div className="question-container mt-4">
-                    <p className="font-semibold">
-                        {questions[currentQuestionIndex].question_text}
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                    <h2 className="text-xl font-semibold mb-4">
+                        Question {currentQuestionIndex + 1} of{" "}
+                        {questions.length}
+                    </h2>
+                    <p className="mb-6 text-lg">
+                        {currentQuestion.question_text}
                     </p>
-                    <form className="mt-2">
-                        {questions[currentQuestionIndex].options.map(
-                            (option, index) => (
-                                <div key={index} className="mb-2">
-                                    <label>
-                                        <input
-                                            type="radio"
-                                            name={`question-${questions[currentQuestionIndex].id}`}
-                                            value={option.id}
-                                            checked={answers.some(
-                                                (answer) =>
-                                                    answer.questionId ===
-                                                        questions[
-                                                            currentQuestionIndex
-                                                        ].id &&
-                                                    answer.answer === option.id
-                                            )}
-                                            onChange={(e) =>
-                                                handleOptionChange(
-                                                    e,
-                                                    questions[
-                                                        currentQuestionIndex
-                                                    ].id
-                                                )
-                                            }
-                                        />
-                                        {option.option_text}
-                                    </label>
-                                </div>
-                            )
-                        )}
-                    </form>
+
+                    <div className="space-y-3">
+                        {currentQuestion.options.map((option) => (
+                            <div key={option.id} className="flex items-center">
+                                <input
+                                    type="radio"
+                                    id={`option-${currentQuestion.id}-${option.id}`}
+                                    name={`question-${currentQuestion.id}`}
+                                    value={option.id}
+                                    checked={currentAnswer === option.id}
+                                    onChange={() =>
+                                        handleOptionChange(
+                                            currentQuestion.id,
+                                            option.id
+                                        )
+                                    }
+                                    className="h-5 w-5 text-blue-600 focus:ring-blue-500"
+                                />
+                                <label
+                                    htmlFor={`option-${currentQuestion.id}-${option.id}`}
+                                    className="ml-3 block text-md text-gray-700"
+                                >
+                                    {option.option_text}
+                                </label>
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
-                <div className="navigation-buttons mt-4 flex justify-between">
+                <div className="mt-8 flex justify-between">
                     <button
                         onClick={handlePreviousQuestion}
-                        className="px-4 py-2 bg-gray-300 rounded"
                         disabled={currentQuestionIndex === 0}
+                        className={`px-6 py-2 rounded-md ${
+                            currentQuestionIndex === 0
+                                ? "bg-gray-300 cursor-not-allowed"
+                                : "bg-blue-600 hover:bg-blue-700 text-white"
+                        }`}
                     >
                         Previous
                     </button>
+
                     {currentQuestionIndex === questions.length - 1 ? (
                         <button
                             onClick={handleSubmitExam}
-                            className="px-4 py-2 bg-green-500 text-white rounded"
+                            disabled={processing}
+                            className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
                         >
-                            Submit Exam
+                            {processing ? "Submitting..." : "Submit Exam"}
                         </button>
                     ) : (
                         <button
                             onClick={handleNextQuestion}
-                            className="px-4 py-2 bg-blue-500 text-white rounded"
+                            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                         >
                             Next
                         </button>

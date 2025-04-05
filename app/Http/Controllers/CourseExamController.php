@@ -163,4 +163,47 @@ class CourseExamController extends Controller
             'questions' => $questionsWithOptions,
         ]);
     }
+
+
+    // CourseExamController.php
+
+    public function submit(Request $request, $courseId)
+    {
+        $request->validate([
+            'answers' => 'required|array',
+            'answers.*.questionId' => 'required|integer|exists:exam_questions,id',
+            'answers.*.answer' => 'required|integer|exists:question_options,id',
+        ]);
+
+        $correctAnswers = DB::table('exam_questions')
+            ->where('course_id', $courseId)
+            ->select('id')
+            ->get()
+            ->mapWithKeys(function ($question) {
+                $correctOption = DB::table('question_options')
+                    ->where('question_id', $question->id)
+                    ->where('is_correct', 1)
+                    ->first();
+                return [$question->id => $correctOption->id];
+            });
+
+        $score = 0;
+        foreach ($request->answers as $answer) {
+            if (
+                isset($correctAnswers[$answer['questionId']]) &&
+                $correctAnswers[$answer['questionId']] == $answer['answer']
+            ) {
+                $score++;
+            }
+        }
+
+        // Save exam results to database if needed
+        // auth()->user()->examResults()->create([...]);
+
+        return back()->with([
+            'score' => $score,
+            'total' => count($correctAnswers),
+            'message' => "Exam submitted! Your score is: {$score}/" . count($correctAnswers),
+        ]);
+    }
 }
