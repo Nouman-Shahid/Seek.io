@@ -7,7 +7,6 @@ const CourseExam = ({ course, questions }) => {
     const [timeLeft, setTimeLeft] = useState(0);
     const [examCancelled, setExamCancelled] = useState(false);
 
-    // Initialize with proper array structure and type safety
     const { data, setData, post, processing, errors } = useForm({
         answers: Array.isArray(questions)
             ? questions.map((question) => ({
@@ -63,7 +62,6 @@ const CourseExam = ({ course, questions }) => {
 
     const handleOptionChange = (questionId, optionId) => {
         setData("answers", (prevAnswers) => {
-            // Ensure we're always working with an array
             const safeAnswers = Array.isArray(prevAnswers) ? prevAnswers : [];
             return safeAnswers.map((answer) =>
                 answer.questionId === questionId
@@ -111,7 +109,6 @@ const CourseExam = ({ course, questions }) => {
 
     const currentQuestion = questions[currentQuestionIndex];
 
-    // Safely get the current answer with multiple fallbacks
     const currentAnswer = (() => {
         try {
             if (!Array.isArray(data.answers)) return null;
