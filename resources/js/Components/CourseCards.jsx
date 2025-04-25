@@ -81,13 +81,18 @@ const CourseCards = ({ auth, data = [] }) => {
                                     {/* Course Details */}
                                     <div className="p-5 flex flex-col justify-between h-[28vh]">
                                         <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
-                                            {course.course_title}
+                                            {course.course_title.length > 45
+                                                ? course.course_title.substring(
+                                                      0,
+                                                      45
+                                                  ) + "...."
+                                                : course.course_title}
                                         </h5>
                                         <p className="mb-3 text-gray-700 flex-grow">
-                                            {course.course_desc.length > 70
+                                            {course.course_desc.length > 80
                                                 ? course.course_desc.substring(
                                                       0,
-                                                      70
+                                                      80
                                                   ) + "...."
                                                 : course.course_desc}
                                         </p>
