@@ -205,7 +205,7 @@ class CourseExamController extends Controller
         //     'created_at' => now(),
         // ]);
 
-        dd($score);
+        // dd($score);
 
         return redirect()->route('dashboard')->with('success', "You scored $score point(s)!");
     }

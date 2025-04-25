@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { useForm } from "@inertiajs/react";
+import { Head, useForm } from "@inertiajs/react";
 import image from "../images/assets/aboutImage1.png";
 
 const CourseExam = ({ course, questions }) => {
@@ -47,18 +47,17 @@ const CourseExam = ({ course, questions }) => {
 
     return (
         <AuthenticatedLayout>
+            <Head title="Exam" />
             <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 p-6">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-3xl font-bold text-blue-700">
                         {course.course_title} Exam
                     </h1>
-                    {/* Future Timer Here */}
                 </div>
 
                 {/* Main Content */}
                 <div className="bg-white shadow-xl rounded-3xl overflow-hidden flex flex-col md:flex-row">
-                    {/* Left - Question */}
                     <div className="flex-1 p-8 flex flex-col justify-between">
                         <div>
                             <h2 className="text-lg text-indigo-600 font-semibold mb-4">
@@ -78,7 +77,6 @@ const CourseExam = ({ course, questions }) => {
                         </div>
                     </div>
 
-                    {/* Right - Options */}
                     <div className="bg-gray-50 w-full md:w-[40%] p-8 flex flex-col justify-center">
                         <p className="uppercase tracking-widest text-xs text-gray-400 mb-4">
                             Choose one
@@ -117,7 +115,6 @@ const CourseExam = ({ course, questions }) => {
                     </div>
                 </div>
 
-                {/* Navigation Buttons */}
                 <div className="flex justify-end items-center gap-4 mt-10">
                     <button
                         onClick={handlePreviousQuestion}
