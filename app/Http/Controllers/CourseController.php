@@ -76,13 +76,13 @@ class CourseController extends Controller
     public function submitCourse(Request $request)
     {
         $request->validate([
-            'course_title' => 'required|string|min:10|max:255',
-            'course_desc' => 'required|string|min:20|max:500',
+            'course_title' => 'required|string|min:10',
+            'course_desc' => 'required|string|min:20',
             'course_category' => 'required|string|in:It,Business,Science,Engineering,Humanities,Other',
             'course_hours' => 'required|integer',
             'course_level' => 'required|string|in:Easy,Hard,Medium',
             'course_amount' => 'required|string',
-            'course_image' => 'required|string|max:51200',
+            'course_image' => 'required|string',
         ]);
 
         $user = Auth::user();
