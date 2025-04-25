@@ -61,7 +61,7 @@ const Cart = ({ courses = [], allcourses = [], flash }) => {
                                         className="w-16 h-16 rounded-md mx-auto sm:mx-0"
                                     />
                                     <div className="flex-grow">
-                                        <h4 className="font-semibold text-base sm:text-lg">
+                                        <h4 className="font-semibold text-base sm:text-lg ">
                                             {item.course_title}
                                         </h4>
                                         <p className="text-sm  text-gray-500">
@@ -79,8 +79,8 @@ const Cart = ({ courses = [], allcourses = [], flash }) => {
                                             Difficulty: {item.course_level}
                                         </div>
                                     </div>
-                                    <div className="flex flex-col items-start sm:items-end">
-                                        <p className="font-semibold text-red-500">
+                                    <div className="flex flex-col items-start sm:items-end w-[20%] ">
+                                        <p className="font-semibold text-red-500 ">
                                             PKR {item.course_amount}
                                         </p>
                                         <Link

@@ -34,7 +34,7 @@ class CartController extends Controller
             'course_id' => $id,
         ]);
 
-        return Redirect::route('cart')->with('success', 'Course added to cart successfully.');
+        return Redirect::back();
     }
 
 

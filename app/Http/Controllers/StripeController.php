@@ -37,7 +37,6 @@ class StripeController extends Controller
                         'currency' => 'pkr',
                         'product_data' => [
                             'name' => $course->course_title,
-                            'description' => $course->course_desc,
                         ],
                         'unit_amount' => $course->course_amount * 100,
                     ],
