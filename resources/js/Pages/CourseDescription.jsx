@@ -296,7 +296,7 @@ const CourseDescription = ({
                                                                 📚 Complete
                                                                 Chapters
                                                             </span>{" "}
-                                                            inorder to unlock
+                                                            in order to unlock
                                                             exams.
                                                         </span>
                                                     </div>

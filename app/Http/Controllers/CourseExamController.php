@@ -136,6 +136,9 @@ class CourseExamController extends Controller
 
         $course = Course::find($id);
 
+        // dd($exam, $course); // or Log::info($exam);
+
+
         return Inertia::render('ExamInstructions', ['exam' => $exam, 'course' => $course]);
     }
 
@@ -169,8 +172,41 @@ class CourseExamController extends Controller
 
     public function submit(Request $request, $courseId)
     {
+        $answers = $request->input('answers');
 
+        if (!is_array($answers)) {
+            return back()->with('error', 'Invalid answers format.');
+        }
 
-        return back();
+        $score = 0;
+
+        foreach ($answers as $answer) {
+            $questionId = $answer['questionId'];
+            $selectedOptionId = $answer['selectedOption'];
+
+            if (!$selectedOptionId) continue;
+
+            $isCorrect = DB::table('question_options')
+                ->where('question_id', $questionId)
+                ->where('id', $selectedOptionId)
+                ->where('is_correct', true)
+                ->exists();
+
+            if ($isCorrect) {
+                $score++;
+            }
+        }
+
+        // Optionally store the score in a results table
+        // DB::table('exam_results')->insert([
+        //     'user_id' => auth()->id(),
+        //     'course_id' => $courseId,
+        //     'score' => $score,
+        //     'created_at' => now(),
+        // ]);
+
+        dd($score);
+
+        return redirect()->route('dashboard')->with('success', "You scored $score point(s)!");
     }
 }

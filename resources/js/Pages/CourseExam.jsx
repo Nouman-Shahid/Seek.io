@@ -1,74 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { useForm } from "@inertiajs/react";
+import image from "../images/assets/aboutImage1.png";
 
 const CourseExam = ({ course, questions }) => {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [timeLeft, setTimeLeft] = useState(0);
-    const [examCancelled, setExamCancelled] = useState(false);
 
-    const { data, setData, post, processing, errors } = useForm({
-        answers: Array.isArray(questions)
-            ? questions.map((question) => ({
-                  questionId: question.id,
-                  selectedOption: null,
-              }))
-            : [],
+    const { data, setData, post, processing } = useForm({
+        answers: questions.map((q) => ({
+            questionId: q.id,
+            selectedOption: null,
+        })),
     });
 
-    const totalExamTime = questions.length * 60;
-    const storageKey = "examStartTime";
-
-    const calculateTimeLeft = () => {
-        let examStartTime = localStorage.getItem(storageKey);
-        if (!examStartTime) {
-            examStartTime = Date.now().toString();
-            localStorage.setItem(storageKey, examStartTime);
-        }
-        const elapsed = Math.floor(
-            (Date.now() - parseInt(examStartTime)) / 1000
-        );
-        return Math.max(totalExamTime - elapsed, 0);
-    };
-
-    useEffect(() => {
-        setTimeLeft(calculateTimeLeft());
-
-        const interval = setInterval(() => {
-            const time = calculateTimeLeft();
-            setTimeLeft(time);
-            if (time <= 0) {
-                clearInterval(interval);
-                handleSubmitExam();
-            }
-        }, 1000);
-
-        const handleVisibilityChange = () => {
-            if (document.hidden) {
-                handleCancelExam();
-            }
-        };
-
-        document.addEventListener("visibilitychange", handleVisibilityChange);
-
-        return () => {
-            clearInterval(interval);
-            document.removeEventListener(
-                "visibilitychange",
-                handleVisibilityChange
-            );
-        };
-    }, [questions.length]);
-
     const handleOptionChange = (questionId, optionId) => {
-        setData("answers", (prevAnswers) => {
-            const safeAnswers = Array.isArray(prevAnswers) ? prevAnswers : [];
-            return safeAnswers.map((answer) =>
-                answer.questionId === questionId
-                    ? { ...answer, selectedOption: optionId }
-                    : answer
-            );
-        });
+        setData((prevData) => ({
+            ...prevData,
+            answers: prevData.answers.map((a) =>
+                a.questionId === questionId
+                    ? { ...a, selectedOption: optionId }
+                    : a
+            ),
+        }));
     };
 
     const handleNextQuestion = () => {
@@ -84,101 +37,95 @@ const CourseExam = ({ course, questions }) => {
     };
 
     const handleSubmitExam = () => {
-        post(route("exams.submit", course.id), {
-            preserveScroll: true,
-            onSuccess: () => {
-                localStorage.removeItem(storageKey);
-            },
-        });
-    };
-
-    const handleCancelExam = () => {
-        if (!examCancelled) {
-            alert("Exam cancelled due to tab switch.");
-            setExamCancelled(true);
-            localStorage.removeItem(storageKey);
-            window.location.href = "/dashboard";
-        }
-    };
-
-    const formatTime = (seconds) => {
-        const minutes = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
+        post(route("exams.submit", course.id));
     };
 
     const currentQuestion = questions[currentQuestionIndex];
-
-    const currentAnswer = (() => {
-        try {
-            if (!Array.isArray(data.answers)) return null;
-            const answer = data.answers.find(
-                (a) => a?.questionId === currentQuestion.id
-            );
-            return answer?.selectedOption ?? null;
-        } catch (error) {
-            console.error("Error finding answer:", error);
-            return null;
-        }
-    })();
+    const currentAnswer = data.answers.find(
+        (a) => a.questionId === currentQuestion.id
+    )?.selectedOption;
 
     return (
         <AuthenticatedLayout>
-            <div className="flex min-h-screen flex-col p-8">
+            <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 p-6">
+                {/* Header */}
                 <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-2xl font-bold text-gray-900">
+                    <h1 className="text-3xl font-bold text-blue-700">
                         {course.course_title} Exam
                     </h1>
-                    <div className="text-red-500 font-bold text-lg">
-                        Time Remaining: {formatTime(timeLeft)}
+                    {/* Future Timer Here */}
+                </div>
+
+                {/* Main Content */}
+                <div className="bg-white shadow-xl rounded-3xl overflow-hidden flex flex-col md:flex-row">
+                    {/* Left - Question */}
+                    <div className="flex-1 p-8 flex flex-col justify-between">
+                        <div>
+                            <h2 className="text-lg text-indigo-600 font-semibold mb-4">
+                                Question {currentQuestionIndex + 1} of{" "}
+                                {questions.length}
+                            </h2>
+                            <p className="text-gray-700 text-xl font-medium mb-6 leading-relaxed">
+                                Q. {currentQuestion.question_text}
+                            </p>
+                        </div>
+                        <div className="hidden md:block">
+                            <img
+                                src={image}
+                                alt="Exam"
+                                className="rounded-2xl w-full max-w-md mx-auto mt-8"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Right - Options */}
+                    <div className="bg-gray-50 w-full md:w-[40%] p-8 flex flex-col justify-center">
+                        <p className="uppercase tracking-widest text-xs text-gray-400 mb-4">
+                            Choose one
+                        </p>
+                        <div className="space-y-4">
+                            {currentQuestion.options.map((option) => {
+                                const isSelected = currentAnswer === option.id;
+                                return (
+                                    <label
+                                        key={option.id}
+                                        className={`flex items-center border-2 p-4 rounded-2xl cursor-pointer transition-all ${
+                                            isSelected
+                                                ? "border-green-500 bg-green-50"
+                                                : "border-gray-300 hover:border-blue-400 hover:bg-blue-50"
+                                        }`}
+                                    >
+                                        <input
+                                            type="radio"
+                                            name={`question-${currentQuestion.id}`}
+                                            checked={isSelected}
+                                            onChange={() =>
+                                                handleOptionChange(
+                                                    currentQuestion.id,
+                                                    option.id
+                                                )
+                                            }
+                                            className="mr-4 w-5 h-5 text-green-500 accent-green-600"
+                                        />
+                                        <span className="text-gray-700 font-medium text-sm md:text-base">
+                                            {option.option_text}
+                                        </span>
+                                    </label>
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-xl font-semibold mb-4">
-                        Question {currentQuestionIndex + 1} of{" "}
-                        {questions.length}
-                    </h2>
-                    <p className="mb-6 text-lg">
-                        {currentQuestion.question_text}
-                    </p>
-
-                    <div className="space-y-3">
-                        {currentQuestion.options.map((option) => (
-                            <div key={option.id} className="flex items-center">
-                                <input
-                                    type="radio"
-                                    id={`option-${currentQuestion.id}-${option.id}`}
-                                    name={`question-${currentQuestion.id}`}
-                                    value={option.id}
-                                    checked={currentAnswer === option.id}
-                                    onChange={() =>
-                                        handleOptionChange(
-                                            currentQuestion.id,
-                                            option.id
-                                        )
-                                    }
-                                    className="h-5 w-5 text-blue-600 focus:ring-blue-500"
-                                />
-                                <label
-                                    htmlFor={`option-${currentQuestion.id}-${option.id}`}
-                                    className="ml-3 block text-md text-gray-700"
-                                >
-                                    {option.option_text}
-                                </label>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="mt-8 flex justify-between">
+                {/* Navigation Buttons */}
+                <div className="flex justify-end items-center gap-4 mt-10">
                     <button
                         onClick={handlePreviousQuestion}
                         disabled={currentQuestionIndex === 0}
-                        className={`px-6 py-2 rounded-md ${
+                        className={`px-6 py-3 rounded-full font-semibold transition-all ${
                             currentQuestionIndex === 0
-                                ? "bg-gray-300 cursor-not-allowed"
-                                : "bg-blue-600 hover:bg-blue-700 text-white"
+                                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                                : "bg-indigo-500 hover:bg-indigo-600 text-white"
                         }`}
                     >
                         Previous
@@ -188,14 +135,14 @@ const CourseExam = ({ course, questions }) => {
                         <button
                             onClick={handleSubmitExam}
                             disabled={processing}
-                            className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
+                            className="px-8 py-3 rounded-full font-semibold bg-green-500 hover:bg-green-600 text-white disabled:opacity-50 transition-all"
                         >
-                            {processing ? "Submitting..." : "Submit Exam"}
+                            {processing ? "Submitting..." : "Finish"}
                         </button>
                     ) : (
                         <button
                             onClick={handleNextQuestion}
-                            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                            className="px-8 py-3 rounded-full font-semibold bg-indigo-500 hover:bg-indigo-600 text-white transition-all"
                         >
                             Next
                         </button>
