@@ -1,4 +1,4 @@
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, usePage } from "@inertiajs/react";
 import logo from "../images/logo.png";
 import Dropdown from "@/Components/Dropdown";
 import NavLink from "@/Components/NavLink";
@@ -6,6 +6,8 @@ import { useEffect } from "react";
 import { HiOutlineShoppingCart } from "react-icons/hi";
 
 export default function Navbar({ auth }) {
+    const { cartCount } = usePage().props;
+
     const navLinks = [
         { name: "Home", href: route("home"), active: route().current("home") },
         {
@@ -53,8 +55,16 @@ export default function Navbar({ auth }) {
                                         <></>
                                     ) : (
                                         <>
-                                            <Link href={route("cart")}>
+                                            <Link
+                                                href={route("cart")}
+                                                className="relative inline-block"
+                                            >
                                                 <HiOutlineShoppingCart className="size-6 text-gray-600" />
+                                                {cartCount > 0 && (
+                                                    <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full">
+                                                        {cartCount}
+                                                    </span>
+                                                )}
                                             </Link>
                                         </>
                                     )}

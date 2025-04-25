@@ -57,14 +57,14 @@ const CourseDescription = ({
             <div className="pt-20 max-w-6xl mx-auto p-6 space-y-6">
                 {/* Course Header */}
 
-                <div className="bg-gray-50  shadow-md p-8 rounded-2xl flex flex-col lg:flex-row items-center gap-8">
+                <div className="bg-gray-50  shadow-md p-8 rounded-2xl flex flex-col lg:flex-row items-start gap-8">
                     <div className="flex-1">
                         <h1 className="text-3xl font-bold text-gray-800">
                             {singleCourse && singleCourse.course_title}
                         </h1>
-                        <p className="text-gray-600 mt-3 leading-relaxed">
+                        <pre className="text-gray-600 mt-3 whitespace-pre-line leading-relaxed font-sans">
                             {singleCourse && singleCourse.course_desc}
-                        </p>
+                        </pre>
                         <p className="text-gray-600 mt-5">
                             Course by:{" "}
                             <Link
@@ -109,13 +109,15 @@ const CourseDescription = ({
                                 singleCourse &&
                                 auth.user?.id ===
                                     singleCourse.course_teacher && (
-                                    <div className="flex space-x-4">
-                                        <Link
-                                            className="bg-indigo-600 flex items-center gap-2 text-white px-5 py-2 rounded-md hover:bg-indigo-700 transition-all"
-                                            href={`/course_exam/id/${singleCourse.id}`}
-                                        >
-                                            Make Exam
-                                        </Link>
+                                    <div className="flex space-x-4 items-center">
+                                        {chapters.length > 0 && (
+                                            <Link
+                                                className="bg-indigo-600 flex items-center gap-2 text-white px-5 py-2 rounded-md hover:bg-indigo-700 transition-all"
+                                                href={`/course_exam/id/${singleCourse.id}`}
+                                            >
+                                                Make Exam
+                                            </Link>
+                                        )}
 
                                         <button
                                             onClick={() =>
@@ -145,6 +147,11 @@ const CourseDescription = ({
                                                 ? "Publish"
                                                 : "Cannot Publish"}
                                         </button>
+                                        <p className="text-sm text-red-600">
+                                            {chapters.length > 0
+                                                ? ""
+                                                : "Please add at least one chapter to publish the course"}
+                                        </p>
                                     </div>
                                 )
                             )}
@@ -162,7 +169,9 @@ const CourseDescription = ({
                     <div className="bg-gray-100 p-5 rounded-lg text-center shadow-sm">
                         <p className="font-bold text-gray-700">Rating:</p>
                         <div className="text-gray-600">
-                            {singleCourse && singleCourse.course_rating}
+                            {singleCourse?.course_rating
+                                ? singleCourse.course_rating
+                                : "No ratings yet"}
                         </div>
                     </div>
                     <div className="bg-gray-100 p-5 rounded-lg text-center shadow-sm">

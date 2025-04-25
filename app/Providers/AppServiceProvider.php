@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Cart;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Vite;
@@ -38,5 +40,10 @@ class AppServiceProvider extends ServiceProvider
                 ];
             }
         ]);
+
+        Inertia::share('cartCount', function () {
+            $user = Auth::user();
+            return $user ? Cart::where('student_id', $user->id)->count() : 0;
+        });
     }
 }
