@@ -47,7 +47,10 @@ const TeacherEarning = ({ TeacherWallet = {}, Enrollments = [] }) => {
                             <div className="p-4 bg-green-50 rounded-lg">
                                 <p className="text-gray-600">Total Earnings</p>
                                 <p className="text-green-500 text-2xl font-semibold">
-                                    PKR {TeacherWallet.total_amount || 0}
+                                    PKR{" "}
+                                    {TeacherWallet && TeacherWallet.total_amount
+                                        ? TeacherWallet.total_amount
+                                        : "0"}
                                 </p>
                             </div>
                             {/* Top Selling Course */}
@@ -94,7 +97,10 @@ const TeacherEarning = ({ TeacherWallet = {}, Enrollments = [] }) => {
                         <div className="p-4 bg-yellow-50 rounded-lg mb-4">
                             <p className="text-gray-600">Current Balance</p>
                             <p className="text-yellow-500 text-2xl font-semibold">
-                                PKR {TeacherWallet.total_amount || 0}
+                                PKR{" "}
+                                {TeacherWallet && TeacherWallet.total_amount
+                                    ? TeacherWallet.total_amount
+                                    : "0"}
                             </p>
                         </div>
                         <button className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
