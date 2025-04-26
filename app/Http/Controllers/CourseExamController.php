@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\CourseExam;
+use App\Models\ExamResults;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -172,6 +174,8 @@ class CourseExamController extends Controller
 
     public function submit(Request $request, $courseId)
     {
+
+        $user = Auth::user();
         $answers = $request->input('answers');
 
         if (!is_array($answers)) {
@@ -197,16 +201,26 @@ class CourseExamController extends Controller
             }
         }
 
-        // Optionally store the score in a results table
-        // DB::table('exam_results')->insert([
-        //     'user_id' => auth()->id(),
-        //     'course_id' => $courseId,
-        //     'score' => $score,
-        //     'created_at' => now(),
-        // ]);
+        ExamResults::create([
+            'user_id' => $user->id,
+            'course_id' => $courseId,
+            'score' => $score,
+            'created_at' => now(),
+        ]);
 
-        // dd($score);
 
-        return redirect()->route('dashboard')->with('success', "You scored $score point(s)!");
+        $results =  DB::table('exam_results')
+            ->join('course', 'course.id', '=', 'exam_results.course_id')
+            ->where('exam_results.user_id', '=', $user->id)
+            ->where('exam_results.course_id', '=', $courseId)
+            ->select('course.*', 'exam_results.*')
+            ->first(); // 👈 important!
+
+
+
+        return Inertia::render('ExamResults', [
+            'results' => $results,
+            'total_questions' => count($answers)
+        ]);
     }
 }
