@@ -37,7 +37,7 @@ const CourseExam = ({ course, questions }) => {
     };
 
     const handleSubmitExam = () => {
-        post(route("exams.submit", course.id));
+        post(`/courses/exam/results/${course.id}`);
     };
 
     const currentQuestion = questions[currentQuestionIndex];

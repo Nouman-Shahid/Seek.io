@@ -170,11 +170,8 @@ class CourseExamController extends Controller
     }
 
 
-    // CourseExamController.php
-
     public function submit(Request $request, $courseId)
     {
-
         $user = Auth::user();
         $answers = $request->input('answers');
 
@@ -209,18 +206,33 @@ class CourseExamController extends Controller
         ]);
 
 
-        $results =  DB::table('exam_results')
+        // Redirect with data in session
+        return redirect()->route('exam_results');
+    }
+
+    public function results($courseId)
+    {
+        $user = Auth::user();
+
+        // Fetch results and course
+        $results = DB::table('exam_results')
             ->join('course', 'course.id', '=', 'exam_results.course_id')
             ->where('exam_results.user_id', '=', $user->id)
             ->where('exam_results.course_id', '=', $courseId)
             ->select('course.*', 'exam_results.*')
-            ->first(); // 👈 important!
+            ->first();
 
+        if (!$results) {
+            abort(404, 'Result not found');
+        }
 
+        $total_questions = DB::table('exam_questions')
+            ->where('course_id', '=', $courseId)
+            ->count();
 
         return Inertia::render('ExamResults', [
             'results' => $results,
-            'total_questions' => count($answers)
+            'total_questions' => $total_questions,
         ]);
     }
 }

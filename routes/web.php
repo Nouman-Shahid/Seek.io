@@ -144,4 +144,11 @@ Route::post('/courses/{id}/exam/submit', [CourseExamController::class, 'submit']
     ->name('exams.submit')
     ->middleware('auth');
 
+
+Route::match(['post', 'get'], '/courses/exam/results/{id}', [CourseExamController::class, 'results'])
+    ->name('exam_results')
+    ->middleware('auth');
+
+
+
 require __DIR__ . '/auth.php';
