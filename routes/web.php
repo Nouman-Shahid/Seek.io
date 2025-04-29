@@ -139,7 +139,6 @@ Route::get('/exam_instructions/{id}', [CourseExamController::class, 'getExamInfo
 
 
 Route::get('/exam/id/{id}', [CourseExamController::class, 'exam']);
-// routes/api.php
 Route::post('/courses/{id}/exam/submit', [CourseExamController::class, 'submit'])
     ->name('exams.submit')
     ->middleware('auth');

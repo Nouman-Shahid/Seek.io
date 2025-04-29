@@ -206,8 +206,7 @@ class CourseExamController extends Controller
         ]);
 
 
-        // Redirect with data in session
-        return redirect()->route('exam_results');
+        return redirect()->route('exam_results', ['id' => $courseId]);
     }
 
     public function results($courseId)
