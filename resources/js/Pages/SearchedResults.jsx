@@ -1,12 +1,13 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import React from "react";
-import { Link } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 import image from "../images/assets/loading.png";
 import Navbar from "@/Components/Navbar";
 const SearchedResults = ({ results = [], count, auth }) => {
     return (
         <>
             <Navbar auth={auth} />
+            <Head title="Searched Results" />
             <div className="flex w-full">
                 <div className="w-[75%] p-6">
                     <h2 className="text-2xl font-bold  mb-4">

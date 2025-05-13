@@ -38,7 +38,7 @@ class StripeController extends Controller
                         'product_data' => [
                             'name' => $course->course_title,
                         ],
-                        'unit_amount' => $course->course_amount * 100,
+                        'unit_amount' => (int) $course->course_amount * 100,
                     ],
                     'quantity' => 1,
                 ];

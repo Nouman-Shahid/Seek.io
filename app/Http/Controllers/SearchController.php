@@ -17,18 +17,24 @@ class SearchController extends Controller
         return redirect()->route('search.results', ['query' => $validated['searchdata']]);
     }
 
+
     public function showResults(Request $request)
     {
-        $search = $request->query('query', '');
+        $search = trim($request->query('query', ''));
 
-        if (!$search) {
+        if (empty($search)) {
             return Inertia::render('SearchedResults', [
                 'results' => [],
                 'count' => 0,
+                'query' => '',
             ]);
         }
 
-        // Query courses
+        $searchTerms = array_filter(explode(' ', $search), function ($term) {
+            return !empty(trim($term));
+        });
+
+        // Course query
         $courseQuery = DB::table('course')
             ->select(
                 'id',
@@ -44,12 +50,23 @@ class SearchController extends Controller
                 DB::raw("NULL as email"),
                 DB::raw("'course' as type")
             )
-            ->where(function ($query) use ($search) {
-                $query->where('course_title', 'like', "%{$search}%")
-                    ->orWhere('course_category', 'like', "%{$search}%");
+            ->where(function ($query) use ($search, $searchTerms) {
+                $query->where('course_title', 'LIKE', "%{$search}%")
+                    ->orWhere('course_category', 'LIKE', "%{$search}%");
+
+                foreach ($searchTerms as $term) {
+                    $query->orWhere('course_title', 'LIKE', "%{$term}%")
+                        ->orWhere('course_category', 'LIKE', "%{$term}%")
+                        ->orWhere('course_desc', 'LIKE', "%{$term}%");
+                }
+
+                if (is_numeric($search)) {
+                    $query->orWhere('course_amount', '=', (float)$search)
+                        ->orWhere('course_rating', '=', (float)$search);
+                }
             });
 
-        // Query users
+        // User query
         $userQuery = DB::table('users')
             ->select(
                 'id',
@@ -65,18 +82,31 @@ class SearchController extends Controller
                 'email',
                 DB::raw("'user' as type")
             )
-            ->where(function ($query) use ($search) {
-                $query->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
+            ->where(function ($query) use ($search, $searchTerms) {
+                $query->where('name', 'LIKE', "%{$search}%")
+                    ->orWhere('email', 'LIKE', "%{$search}%");
+
+                foreach ($searchTerms as $term) {
+                    $query->orWhere('name', 'LIKE', "%{$term}%")
+                        ->orWhere('profile_headline', 'LIKE', "%{$term}%")
+                        ->orWhere('email', 'LIKE', "%{$term}%");
+                }
             });
 
-        // Merge results using UNION
-        $results = $courseQuery->union($userQuery)->get();
-        $count = $results->count();
+        $combinedQuery = $courseQuery->union($userQuery);
+
+        $results = collect(DB::table(DB::raw("({$combinedQuery->toSql()}) as combined"))
+            ->mergeBindings($combinedQuery)
+            ->get());
+
+        $results = $results->sortBy(function ($item) use ($search) {
+            $value = strtolower($item->name ?? '');
+            return strpos($value, strtolower($search)) ?: PHP_INT_MAX;
+        })->values();
 
         return Inertia::render('SearchedResults', [
             'results' => $results,
-            'count' => $count,
+            'count' => $results->count(),
             'query' => $search,
         ]);
     }
