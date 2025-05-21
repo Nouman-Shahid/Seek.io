@@ -20,7 +20,7 @@ export default function Welcome({ auth, data = [] }) {
             <Head title="Home" />
             <Navbar auth={auth} />
 
-            <main className="flex flex-col justify-between items-center h-auto w-full">
+            <main className="flex flex-col justify-between items-center h-[300vh] w-full">
                 <Hero auth={auth} />
                 <CourseCards auth={auth} data={data} />
             </main>

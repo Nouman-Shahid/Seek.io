@@ -32,7 +32,7 @@ export default function Navbar({ auth }) {
 
     return (
         <>
-            <nav className="flex justify-between items-center p-4 bg-white shadow-md border-b">
+            <nav className="fixed w-full top-0 z-50 flex justify-between items-center p-4 bg-white shadow-xl border-b">
                 <img src={logo} className="h-12" alt="Logo" />
                 <div className="flex space-x-6">
                     {navLinks.map((link) => (
@@ -48,7 +48,6 @@ export default function Navbar({ auth }) {
                 <div className="flex space-x-4">
                     {auth.user ? (
                         <div className=" sm:ms-6 sm:flex sm:items-center flex">
-                            {/* Set relative here to fix dropdown positioning */}
                             <Dropdown>
                                 <div className="flex items-center space-x-5">
                                     {auth.user.role === "Teacher" ? (
