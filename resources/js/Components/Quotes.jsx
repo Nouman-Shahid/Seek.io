@@ -9,10 +9,10 @@ const Quotes = () => {
                 <ParticlesComponent />
             </div>
 
-            {/* Optional overlay to darken particles */}
+            {/*overlay darken  */}
             <div className="absolute inset-0 bg-black/20 z-10" />
 
-            {/* Quote box content */}
+            {/* Quote  */}
             <div className="relative z-20 max-w-3xl w-full text-center px-6 py-10 bg-white/10 min-h-40 max-h-52 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 animate-fade-in-up">
                 <h2 className="text-white text-2xl md:text-4xl font-semibold leading-relaxed drop-shadow-md">
                     <Typewriter
