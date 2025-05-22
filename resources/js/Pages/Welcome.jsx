@@ -8,6 +8,7 @@ import Hero from "@/Components/Hero";
 import Navbar from "@/Components/Navbar";
 import Footer from "@/Components/Footer";
 import Quotes from "@/Components/Quotes";
+import Features from "@/Components/Features";
 
 export default function Welcome({ auth, data = [] }) {
     useEffect(() => {
@@ -38,7 +39,7 @@ export default function Welcome({ auth, data = [] }) {
                     flag="Free"
                 />
 
-                <div className="flex border-2 h-screen w-full"></div>
+                <Features />
             </main>
 
             <Footer />

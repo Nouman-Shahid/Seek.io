@@ -11,7 +11,7 @@ const Quotes = () => {
             }}
         >
             {/* Overlay */}
-            <div className="absolute inset-0 bg-black/40"></div>
+            <div className="absolute inset-0 bg-black/20"></div>
 
             {/* Centered Quote Box */}
             <div className="relative z-10 max-w-3xl w-full text-center px-6 py-10 bg-white/10  min-h-40 max-h-52 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 animate-fade-in-up">
