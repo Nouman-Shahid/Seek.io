@@ -22,10 +22,11 @@ const Hero = ({ auth }) => {
             <div className="absolute inset-0">
                 <img
                     src="https://i.makeagif.com/media/10-22-2020/Pms24f.gif"
+                    // src="https://images.saymedia-content.com/.image/t_share/MTkzOTUzODU0MDkyODEzODI5/particlesjs-examples.gif"
                     alt="hero"
                     className="w-full h-full object-cover opacity-100"
                 />
-                <div className="absolute inset-0 bg-black/50" />
+                <div className="absolute inset-0 bg-black/25" />
             </div>
 
             <div className="relative z-10 flex flex-col items-center justify-center h-full px-16 space-y-10 text-white">
@@ -48,7 +49,7 @@ const Hero = ({ auth }) => {
                         placeholder="Search..."
                         value={data.searchdata}
                         onChange={handleChange}
-                        className="w-full p-3 text-gray-800 outline-none border-none active:ring-0"
+                        className="w-full p-3 text-gray-800 outline-none border-none "
                     />
                     <button
                         type="submit"

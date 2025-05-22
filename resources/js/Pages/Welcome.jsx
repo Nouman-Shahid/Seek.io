@@ -37,6 +37,8 @@ export default function Welcome({ auth, data = [] }) {
                     text={`Start with free courses`}
                     flag="Free"
                 />
+
+                <div className="flex border-2 h-screen w-full"></div>
             </main>
 
             <Footer />
