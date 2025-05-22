@@ -32,14 +32,19 @@ export default function Navbar({ auth }) {
 
     return (
         <>
-            <nav className="fixed w-full top-0 z-50 flex justify-between items-center p-4 bg-white shadow-xl border-b">
-                <img src={logo} className="h-12" alt="Logo" />
+            <nav className="fixed w-full top-0 z-50 flex justify-between items-center p-4 bg-[#f8fafc] shadow-xl border-b border-[#e5e7eb]">
+                <img
+                    src={logo}
+                    className="h-12 mix-blend-multiply"
+                    alt="Logo"
+                />
                 <div className="flex space-x-6">
                     {navLinks.map((link) => (
                         <NavLink
                             key={link.name}
                             href={link.href}
                             active={link.active}
+                            className="text-[#111827] hover:text-[#1d4ed8] transition-colors"
                         >
                             {link.name}
                         </NavLink>
@@ -47,25 +52,21 @@ export default function Navbar({ auth }) {
                 </div>
                 <div className="flex space-x-4">
                     {auth.user ? (
-                        <div className=" sm:ms-6 sm:flex sm:items-center flex">
+                        <div className="sm:ms-6 sm:flex sm:items-center flex">
                             <Dropdown>
                                 <div className="flex items-center space-x-5">
-                                    {auth.user.role === "Teacher" ? (
-                                        <></>
-                                    ) : (
-                                        <>
-                                            <Link
-                                                href={route("cart")}
-                                                className="relative inline-block"
-                                            >
-                                                <HiOutlineShoppingCart className="size-6 text-gray-600" />
-                                                {cartCount > 0 && (
-                                                    <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full">
-                                                        {cartCount}
-                                                    </span>
-                                                )}
-                                            </Link>
-                                        </>
+                                    {auth.user.role === "Teacher" ? null : (
+                                        <Link
+                                            href={route("cart")}
+                                            className="relative inline-block"
+                                        >
+                                            <HiOutlineShoppingCart className="size-6 text-[#6b7280]" />
+                                            {cartCount > 0 && (
+                                                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full">
+                                                    {cartCount}
+                                                </span>
+                                            )}
+                                        </Link>
                                     )}
                                     <Dropdown.Trigger>
                                         <span className="inline-flex rounded-md">
@@ -79,7 +80,7 @@ export default function Navbar({ auth }) {
                                             ) : (
                                                 <button
                                                     type="button"
-                                                    className="bg-orange-500 text-white font-bold w-10 h-10 flex items-center justify-center rounded-full"
+                                                    className="bg-[#1d4ed8] text-white font-bold w-10 h-10 flex items-center justify-center rounded-full"
                                                 >
                                                     {auth.user.name.charAt(0)}
                                                 </button>
@@ -88,7 +89,7 @@ export default function Navbar({ auth }) {
                                     </Dropdown.Trigger>
                                 </div>
 
-                                <Dropdown.Content className="relative right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                                <Dropdown.Content className="relative right-0 mt-2 w-48 bg-white border border-[#e5e7eb] rounded-md shadow-lg z-50">
                                     <Dropdown.Link
                                         href={route("user_dashboard")}
                                     >
@@ -113,13 +114,13 @@ export default function Navbar({ auth }) {
                         <>
                             <Link
                                 href={route("login")}
-                                className="px-3 py-1 bg-gray-200 text-gray-800 rounded-md transition-all duration-300 hover:bg-gray-300"
+                                className="px-4 py-1.5 bg-[#e5e7eb] text-[#111827] rounded-md transition-all duration-300 hover:bg-[#d1d5db]"
                             >
                                 Log in
                             </Link>
                             <Link
                                 href={route("register")}
-                                className="px-3 py-1 bg-red-600 text-white rounded-md transition-all duration-300 hover:bg-red-700"
+                                className="px-4 py-1.5 bg-[#1d4ed8] text-white rounded-md transition-all duration-300 hover:bg-[#2563eb]"
                             >
                                 Register
                             </Link>

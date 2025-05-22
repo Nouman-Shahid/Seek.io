@@ -100,7 +100,7 @@ const CourseDescription = ({
                                 ) : (
                                     <Link
                                         href={`/add_to_cart/id/${singleCourse.id}`}
-                                        className="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded-lg transition-all"
+                                        className="bg-blue-700 hover:bg-blue-600 text-white px-5 py-2 rounded-lg transition-all"
                                     >
                                         Add To Cart
                                     </Link>

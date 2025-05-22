@@ -17,7 +17,7 @@ const Hero = ({ auth }) => {
     };
 
     return (
-        <div className="relative w-full h-[110vh]">
+        <div className="relative w-full h-[110vh] top-20">
             {/* Background image */}
             <div className="absolute inset-0">
                 <img
@@ -28,11 +28,11 @@ const Hero = ({ auth }) => {
                 <div className="absolute inset-0 bg-black/50" />
             </div>
 
-            <div className="relative z-10 flex flex-col items-center justify-center h-full px-16 space-y-10 text-white">
-                <p className="text-7xl font-bold leading-tight">
+            <div className="relative z-10 flex flex-col items-center justify-center h-full px-6 sm:px-16 space-y-10 text-white text-center">
+                <p className="text-4xl sm:text-6xl md:text-7xl font-extrabold leading-tight max-w-5xl">
                     ᴀʟʟ ᴛʜᴇ ꜱᴋɪʟʟꜱ ʏᴏᴜ ɴᴇᴇᴅ ɪɴ ᴏɴᴇ ᴘʟᴀᴄᴇ
                 </p>
-                <p className="text-3xl max-w-5xl text-center">
+                <p className="text-xl sm:text-2xl max-w-4xl text-gray-200">
                     From critical skills to technical topics, Seekio supports
                     your professional development.
                 </p>
@@ -40,7 +40,7 @@ const Hero = ({ auth }) => {
                 {/* Search Form */}
                 <form
                     onSubmit={handleSubmit}
-                    className="flex w-[60vw] max-w-xl items-center bg-white rounded-lg overflow-hidden shadow-md border border-gray-300"
+                    className="flex w-[90vw] sm:w-[60vw] max-w-xl items-center rounded-lg overflow-hidden shadow-md "
                 >
                     <input
                         type="text"
@@ -48,12 +48,13 @@ const Hero = ({ auth }) => {
                         placeholder="Search..."
                         value={data.searchdata}
                         onChange={handleChange}
-                        className="w-full p-3 text-gray-800 outline-none border-none active:ring-0"
+                        className="w-full p-3 text-[#111827] placeholder:text-[#6b7280] outline-none border-none focus:ring-0 focus:outline-none focus:border-transparent"
                     />
+
                     <button
                         type="submit"
                         disabled={processing}
-                        className="text-gray-600 p-3"
+                        className="text-white bg-blue-700 hover:bg-blue-600 p-3 transition-colors"
                     >
                         <IoSearchOutline className="size-6" />
                     </button>

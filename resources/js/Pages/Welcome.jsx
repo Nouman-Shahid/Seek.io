@@ -16,11 +16,11 @@ export default function Welcome({ auth, data = [] }) {
     }, []);
 
     return (
-        <div className="overflow-x-hidden ">
+        <div className="overflow-hidden ">
             <Head title="Home" />
             <Navbar auth={auth} />
 
-            <main className="flex flex-col justify-between items-center h-[300vh] w-full">
+            <main className="flex flex-col justify-between items-center h-auto w-full">
                 <Hero auth={auth} />
                 <CourseCards auth={auth} data={data} />
             </main>
