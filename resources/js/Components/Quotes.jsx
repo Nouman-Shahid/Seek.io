@@ -4,17 +4,16 @@ import ParticlesComponent from "./ParticlesComponent";
 
 const Quotes = () => {
     return (
-        <div className="relative w-full h-[110vh] flex items-center justify-center bg-black px-4">
-            <div className="absolute inset-0 z-0 overflow-hidden bg-blue-800">
+        <div className="relative w-full min-h-screen flex items-center justify-center bg-black px-4 py-12 sm:py-20">
+            <div className="absolute inset-0 z-0 overflow-hidden bg-blue-900 hidden sm:flex">
                 <ParticlesComponent />
             </div>
 
-            {/*overlay darken  */}
-            <div className="absolute inset-0 bg-black/20 z-10" />
+            {/* Overlay */}
+            <div className="absolute inset-0 bg-black/10   z-10" />
 
-            {/* Quote  */}
-            <div className="relative z-20 max-w-3xl w-full text-center px-6 py-10 bg-white/10 min-h-40 max-h-52 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 animate-fade-in-up">
-                <h2 className="text-white text-2xl md:text-4xl font-semibold leading-relaxed drop-shadow-md">
+            <div className="relative z-20 w-full max-w-4xl text-center px-6 py-10 bg-white/10 backdrop-blur-lg rounded-3xl shadow-[0_10px_50px_rgba(0,0,0,0.3)] border border-white/20 animate-fade-in-up">
+                <h2 className="text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold leading-relaxed drop-shadow-md">
                     <Typewriter
                         words={[
                             "“Learning never exhausts the mind.” — Leonardo da Vinci",

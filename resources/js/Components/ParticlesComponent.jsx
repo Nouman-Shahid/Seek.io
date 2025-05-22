@@ -29,18 +29,18 @@ const ParticlesComponent = () => {
                     onHover: { enable: true, mode: "grab" },
                 },
                 modes: {
-                    push: { distance: 200, duration: 15 },
+                    push: { distance: 200, duration: 5 },
                     grab: { distance: 150 },
                 },
             },
             particles: {
-                color: { value: "#FFFFFF" },
+                color: { value: "#ddff33" },
                 links: {
-                    color: "#FFFFFF",
+                    color: "#ddff33",
                     distance: 150,
                     enable: true,
                     opacity: 0.3,
-                    width: 1,
+                    width: 2,
                 },
                 move: {
                     direction: "none",
@@ -52,7 +52,7 @@ const ParticlesComponent = () => {
                 },
                 number: {
                     density: { enable: true },
-                    value: 150,
+                    value: 200,
                 },
                 opacity: { value: 1.0 },
                 shape: { type: "circle" },

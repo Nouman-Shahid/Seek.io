@@ -1,9 +1,5 @@
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, { useRef, useMemo } from "react";
 import { Link } from "@inertiajs/react";
-import {
-    IoIosArrowDropleftCircle,
-    IoIosArrowDroprightCircle,
-} from "react-icons/io";
 
 const CourseCards = ({ auth, data = [], text, flag }) => {
     const filteredData = useMemo(() => {
@@ -16,63 +12,27 @@ const CourseCards = ({ auth, data = [], text, flag }) => {
     }, [data, flag]);
 
     const carouselRef = useRef(null);
-    const [canScrollLeft, setCanScrollLeft] = useState(false);
-    const [canScrollRight, setCanScrollRight] = useState(false);
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const itemsPerPage = 3;
-
-    useEffect(() => {
-        const updateScrollButtons = () => {
-            if (carouselRef.current) {
-                const { scrollLeft, scrollWidth, clientWidth } =
-                    carouselRef.current;
-                setCanScrollLeft(scrollLeft > 0);
-                setCanScrollRight(scrollLeft + clientWidth < scrollWidth);
-            }
-        };
-        updateScrollButtons();
-        carouselRef.current?.addEventListener("scroll", updateScrollButtons);
-        return () =>
-            carouselRef.current?.removeEventListener(
-                "scroll",
-                updateScrollButtons
-            );
-    }, [filteredData]);
-
-    const scrollLeft = () => {
-        carouselRef.current?.scrollBy({ left: -900, behavior: "smooth" });
-        setCurrentIndex(Math.max(currentIndex - 1, 0));
-    };
-
-    const scrollRight = () => {
-        carouselRef.current?.scrollBy({ left: 900, behavior: "smooth" });
-        setCurrentIndex(
-            Math.min(
-                currentIndex + 1,
-                Math.ceil(filteredData.length / itemsPerPage) - 1
-            )
-        );
-    };
 
     return (
-        <div className="relative w-full h-[110vh] p-16 shadow-xl">
+        <div className="relative w-full px-4 md:px-16 py-20">
             {text && (
-                <h1 className="text-4xl font-extrabold text-gray-700 mb-6 tracking-tight py-5">
+                <h1 className="text-2xl md:text-4xl font-extrabold text-gray-700 mb-6 tracking-tight py-5 text-center md:text-left">
                     {text}
                 </h1>
             )}
+
             <div className="overflow-hidden bg-[#f9fafb] rounded-xl shadow-inner">
                 <div
                     ref={carouselRef}
-                    className="flex space-x-6 overflow-x-hidden scroll-smooth scrollbar-hidden p-4"
+                    className="flex gap-4 md:gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory px-4 py-6 no-scrollbar"
                 >
                     {filteredData.length > 0 ? (
                         filteredData.map((course) => (
                             <div
                                 key={course.id}
-                                className="w-[300px] flex-shrink-0 snap-center p-2"
+                                className="flex-shrink-0 w-[85%] sm:w-[300px] snap-center"
                             >
-                                <div className="bg-white border border-gray-200 rounded-xl hover:shadow-lg transition-all duration-300 relative">
+                                <div className="bg-white border border-gray-200 rounded-xl hover:shadow-xl transition-all duration-300 relative h-full flex flex-col justify-between">
                                     <img
                                         className="rounded-t-xl w-full h-48 object-cover"
                                         src={course.course_image}
@@ -111,7 +71,6 @@ const CourseCards = ({ auth, data = [], text, flag }) => {
                                                   )}...`
                                                 : course.course_desc}
                                         </p>
-
                                         <div className="flex justify-between items-center mt-4">
                                             <span className="text-md font-semibold text-blue-600">
                                                 {course.course_amount === 0
@@ -135,50 +94,6 @@ const CourseCards = ({ auth, data = [], text, flag }) => {
                         </p>
                     )}
                 </div>
-            </div>
-
-            {canScrollLeft && (
-                <button
-                    type="button"
-                    onClick={scrollLeft}
-                    className="absolute top-1/2 left-10 transform -translate-y-1/2 rounded-full transition hover:scale-105"
-                >
-                    <IoIosArrowDropleftCircle className="size-10 text-blue-600 bg-white rounded-full shadow-lg" />
-                </button>
-            )}
-            {canScrollRight && (
-                <button
-                    type="button"
-                    onClick={scrollRight}
-                    className="absolute top-1/2 right-10 transform -translate-y-1/2 rounded-full transition hover:scale-105"
-                >
-                    <IoIosArrowDroprightCircle className="size-10 text-blue-600 bg-white rounded-full shadow-lg" />
-                </button>
-            )}
-
-            <div className="flex justify-center mt-6 space-x-2">
-                {Array.from({
-                    length: Math.max(
-                        1,
-                        Math.ceil(filteredData.length / itemsPerPage)
-                    ),
-                }).map((_, index) => (
-                    <button
-                        key={index}
-                        onClick={() => {
-                            carouselRef.current?.scrollTo({
-                                left: index * 900,
-                                behavior: "smooth",
-                            });
-                            setCurrentIndex(index);
-                        }}
-                        className={`h-3 w-3 rounded-full ${
-                            index === currentIndex
-                                ? "bg-blue-600 scale-110"
-                                : "bg-gray-400 hover:bg-gray-500"
-                        } transition-all duration-300`}
-                    ></button>
-                ))}
             </div>
         </div>
     );

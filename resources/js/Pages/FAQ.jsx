@@ -33,47 +33,50 @@ export default function FAQ({ auth }) {
         <>
             <Navbar auth={auth} />
             <Head title="FAQ" />
-            <div className="pt-20 relative bg-cover bg-center bg-no-repeat py-20 px-6">
-                <div className=""></div>
 
-                {/* FAQ Content */}
-                <div className="relative max-w-6xl mx-auto text-white">
-                    <h2 className="text-4xl font-bold mb-8  text-black">
+            <section className="bg-white min-h-screen pt-8 px-6 sm:px-10 lg:px-20">
+                <div className="max-w-5xl mx-auto text-center mb-12">
+                    <h1 className="text-3xl sm:text-4xl font-bold text-blue-700">
                         Frequently Asked Questions
-                    </h2>
-                    <div className="space-y-6">
-                        {faqs.map((faq, index) => (
-                            <div
-                                key={index}
-                                className={`bg-white bg-opacity-90 rounded-2xl overflow-hidden shadow-md ${
-                                    openIndex === index
-                                        ? "ring-2 ring-purple-600"
-                                        : ""
-                                }`}
-                            >
-                                <button
-                                    onClick={() => toggleFAQ(index)}
-                                    className="w-full flex justify-between items-center p-6 text-gray-900 font-semibold text-lg bg-gray-100 hover:bg-gray-200 transition-all"
-                                >
-                                    <span>{faq.question}</span>
-                                    <FaChevronDown
-                                        className={`transition-transform transform ${
-                                            openIndex === index
-                                                ? "rotate-180"
-                                                : "rotate-0"
-                                        }`}
-                                    />
-                                </button>
-                                {openIndex === index && (
-                                    <div className="p-6 text-gray-700 text-md leading-relaxed bg-white">
-                                        {faq.answer}
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
+                    </h1>
+                    <p className="mt-4 text-gray-600 text-md sm:text-lg">
+                        Get answers to common questions about Seekio's platform,
+                        courses, and more.
+                    </p>
                 </div>
-            </div>
+
+                <div className="max-w-4xl mx-auto space-y-6">
+                    {faqs.map((faq, index) => (
+                        <div
+                            key={index}
+                            className={`border border-gray-200 rounded-xl overflow-hidden transition-shadow duration-300 ${
+                                openIndex === index
+                                    ? "shadow-lg border-blue-500"
+                                    : "shadow-sm"
+                            }`}
+                        >
+                            <button
+                                onClick={() => toggleFAQ(index)}
+                                className="w-full flex justify-between items-center bg-blue-50 px-6 py-5 text-left text-blue-800 font-medium text-lg hover:bg-blue-100 transition-colors"
+                            >
+                                <span>{faq.question}</span>
+                                <FaChevronDown
+                                    className={`transition-transform duration-300 ${
+                                        openIndex === index
+                                            ? "rotate-180"
+                                            : "rotate-0"
+                                    }`}
+                                />
+                            </button>
+                            {openIndex === index && (
+                                <div className="px-6 py-5 bg-white text-gray-700 text-md leading-relaxed border-t border-gray-100">
+                                    {faq.answer}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            </section>
         </>
     );
 }

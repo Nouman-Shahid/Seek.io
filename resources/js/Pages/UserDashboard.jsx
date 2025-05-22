@@ -5,6 +5,7 @@ import { IoIosAddCircle } from "react-icons/io";
 import CourseCards from "@/Components/CourseCards";
 import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
+import Navbar from "@/Components/Navbar";
 
 const TeacherDashboard = ({
     user = {},
@@ -29,8 +30,9 @@ const TeacherDashboard = ({
     };
 
     return (
-        <AuthenticatedLayout>
+        <>
             <Head title="Profile" />
+            <Navbar auth={auth} />
 
             <form
                 onSubmit={submit}
@@ -62,7 +64,7 @@ const TeacherDashboard = ({
                     ) : (
                         <div
                             onClick={() => setIsEditing(true)}
-                            className="bg-green-600 text-white px-4 py-2 rounded-lg mb-4 cursor-pointer"
+                            className="bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mb-4 cursor-pointer"
                             disabled={processing}
                         >
                             Edit Profile
@@ -182,14 +184,16 @@ const TeacherDashboard = ({
                             )}
                         </div>
 
-                        {auth.user.role !== "Teacher" ? (
+                        {auth.user.id !== user.id && (
                             <a
                                 href={`mailto:${user.email}`}
                                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mt-4 w-full text-center block"
                             >
                                 Contact
                             </a>
-                        ) : (
+                        )}
+
+                        {auth.user.role === "Teacher" && (
                             <Link
                                 href={`/payout_&_earnings/id/${auth.user.id}`}
                                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mt-4 w-full text-center block"
@@ -239,7 +243,7 @@ const TeacherDashboard = ({
                             </>
                         ) : (
                             <>
-                                <div className="mb-6 flex items-center justify-between">
+                                <div className=" flex items-center justify-between">
                                     <h2 className="text-xl font-bold mt-6 mb-4">
                                         Enrolled Courses
                                     </h2>{" "}
@@ -250,7 +254,7 @@ const TeacherDashboard = ({
                     </main>
                 </div>
             </form>
-        </AuthenticatedLayout>
+        </>
     );
 };
 
