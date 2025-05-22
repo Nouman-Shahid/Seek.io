@@ -1,20 +1,19 @@
 import React from "react";
 import { Typewriter } from "react-simple-typewriter";
+import ParticlesComponent from "./ParticlesComponent";
 
 const Quotes = () => {
     return (
-        <div
-            className="relative w-full h-[110vh] flex items-center justify-center bg-cover bg-center px-4"
-            style={{
-                backgroundImage:
-                    "url('https://images.saymedia-content.com/.image/t_share/MTkzOTUzODU0MDkyODEzODI5/particlesjs-examples.gif')",
-            }}
-        >
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-black/20"></div>
+        <div className="relative w-full h-[110vh] flex items-center justify-center bg-black px-4">
+            <div className="absolute inset-0 z-0 overflow-hidden bg-blue-800">
+                <ParticlesComponent />
+            </div>
 
-            {/* Centered Quote Box */}
-            <div className="relative z-10 max-w-3xl w-full text-center px-6 py-10 bg-white/10  min-h-40 max-h-52 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 animate-fade-in-up">
+            {/* Optional overlay to darken particles */}
+            <div className="absolute inset-0 bg-black/20 z-10" />
+
+            {/* Quote box content */}
+            <div className="relative z-20 max-w-3xl w-full text-center px-6 py-10 bg-white/10 min-h-40 max-h-52 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 animate-fade-in-up">
                 <h2 className="text-white text-2xl md:text-4xl font-semibold leading-relaxed drop-shadow-md">
                     <Typewriter
                         words={[
