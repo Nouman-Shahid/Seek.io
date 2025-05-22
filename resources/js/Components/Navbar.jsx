@@ -32,7 +32,7 @@ export default function Navbar({ auth }) {
 
     return (
         <>
-            <nav className="fixed w-full top-0 z-50 flex justify-between items-center p-4 bg-[#f8fafc] shadow-xl border-b border-[#e5e7eb]">
+            <nav className=" w-full  flex justify-between items-center p-4 bg-[#f8fafc] shadow-xl border-b border-[#e5e7eb]">
                 <img
                     src={logo}
                     className="h-12 mix-blend-multiply"

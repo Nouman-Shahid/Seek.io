@@ -5,8 +5,9 @@ import React from "react";
 import InputError from "@/Components/InputError";
 import TextInput from "@/Components/TextInput";
 import { TiDelete } from "react-icons/ti";
+import Navbar from "@/Components/Navbar";
 
-const Cart = ({ courses = [], allcourses = [], flash }) => {
+const Cart = ({ courses = [], allcourses = [], flash, auth }) => {
     const { props } = usePage();
     const coupon = props.coupon || {};
 
@@ -36,9 +37,10 @@ const Cart = ({ courses = [], allcourses = [], flash }) => {
     };
 
     return (
-        <AuthenticatedLayout>
+        <>
+            <Navbar auth={auth} />
             <Head title="Cart" />
-            <div className="pt-20 p-4 sm:p-6 max-w-7xl mx-auto">
+            <div className="pt-20 p-4 sm:p-6 max-w-7xl mx-auto ">
                 <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">
                     Shopping Cart
                 </h2>
@@ -213,7 +215,7 @@ const Cart = ({ courses = [], allcourses = [], flash }) => {
                     <CourseCards data={allcourses} />
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </>
     );
 };
 

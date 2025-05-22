@@ -1,11 +1,20 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import { Link } from "@inertiajs/react";
 import {
     IoIosArrowDropleftCircle,
     IoIosArrowDroprightCircle,
 } from "react-icons/io";
 
-const CourseCards = ({ auth, data = [] }) => {
+const CourseCards = ({ auth, data = [], text, flag }) => {
+    const filteredData = useMemo(() => {
+        let filtered = data;
+        if (flag === "Free") {
+            filtered = data.filter((course) => course.course_amount === "0");
+        }
+        const shuffled = [...filtered].sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, 9);
+    }, [data, flag]);
+
     const carouselRef = useRef(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(false);
@@ -28,7 +37,7 @@ const CourseCards = ({ auth, data = [] }) => {
                 "scroll",
                 updateScrollButtons
             );
-    }, [data]);
+    }, [filteredData]);
 
     const scrollLeft = () => {
         carouselRef.current?.scrollBy({ left: -900, behavior: "smooth" });
@@ -40,20 +49,25 @@ const CourseCards = ({ auth, data = [] }) => {
         setCurrentIndex(
             Math.min(
                 currentIndex + 1,
-                Math.ceil(data.length / itemsPerPage) - 1
+                Math.ceil(filteredData.length / itemsPerPage) - 1
             )
         );
     };
 
     return (
-        <div className="relative w-full p-6 top-20">
+        <div className="relative w-full h-[110vh] p-16 shadow-xl">
+            {text && (
+                <h1 className="text-4xl font-extrabold text-gray-700 mb-6 tracking-tight py-5">
+                    {text}
+                </h1>
+            )}
             <div className="overflow-hidden bg-[#f9fafb] rounded-xl shadow-inner">
                 <div
                     ref={carouselRef}
                     className="flex space-x-6 overflow-x-hidden scroll-smooth scrollbar-hidden p-4"
                 >
-                    {data.length > 0 ? (
-                        data.map((course) => (
+                    {filteredData.length > 0 ? (
+                        filteredData.map((course) => (
                             <div
                                 key={course.id}
                                 className="w-[300px] flex-shrink-0 snap-center p-2"
@@ -100,7 +114,7 @@ const CourseCards = ({ auth, data = [] }) => {
 
                                         <div className="flex justify-between items-center mt-4">
                                             <span className="text-md font-semibold text-blue-600">
-                                                {course.course_amount === "free"
+                                                {course.course_amount === 0
                                                     ? "PKR 0"
                                                     : `PKR ${course.course_amount}`}
                                             </span>
@@ -127,7 +141,7 @@ const CourseCards = ({ auth, data = [] }) => {
                 <button
                     type="button"
                     onClick={scrollLeft}
-                    className="absolute top-1/2 left-2 transform -translate-y-1/2 rounded-full transition hover:scale-105"
+                    className="absolute top-1/2 left-10 transform -translate-y-1/2 rounded-full transition hover:scale-105"
                 >
                     <IoIosArrowDropleftCircle className="size-10 text-blue-600 bg-white rounded-full shadow-lg" />
                 </button>
@@ -136,7 +150,7 @@ const CourseCards = ({ auth, data = [] }) => {
                 <button
                     type="button"
                     onClick={scrollRight}
-                    className="absolute top-1/2 right-2 transform -translate-y-1/2 rounded-full transition hover:scale-105"
+                    className="absolute top-1/2 right-10 transform -translate-y-1/2 rounded-full transition hover:scale-105"
                 >
                     <IoIosArrowDroprightCircle className="size-10 text-blue-600 bg-white rounded-full shadow-lg" />
                 </button>
@@ -144,7 +158,10 @@ const CourseCards = ({ auth, data = [] }) => {
 
             <div className="flex justify-center mt-6 space-x-2">
                 {Array.from({
-                    length: Math.max(1, Math.ceil(data.length / itemsPerPage)),
+                    length: Math.max(
+                        1,
+                        Math.ceil(filteredData.length / itemsPerPage)
+                    ),
                 }).map((_, index) => (
                     <button
                         key={index}
