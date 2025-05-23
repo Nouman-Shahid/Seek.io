@@ -52,7 +52,7 @@ export default function Navbar({ auth }) {
                                 key={link.name}
                                 href={link.href}
                                 active={link.active}
-                                className="text-[#111827] hover:text-[#1d4ed8] transition-colors"
+                                className="text-blue-700 hover:text-blue-600 transition-colors"
                             >
                                 {link.name}
                             </NavLink>

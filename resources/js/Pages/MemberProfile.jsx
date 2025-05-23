@@ -2,11 +2,13 @@ import React from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import CourseCards from "@/Components/CourseCards";
 import { Head, Link } from "@inertiajs/react";
+import Navbar from "@/Components/Navbar";
 
 const MemberProfile = ({ user = {}, data = [], auth }) => {
     return (
-        <AuthenticatedLayout>
+        <>
             <Head title="Profile" />
+            <Navbar auth={auth} />
 
             <div className="py-10 flex flex-col  p-6 mx-auto">
                 <div className="flex">
@@ -68,7 +70,7 @@ const MemberProfile = ({ user = {}, data = [], auth }) => {
                     </main>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </>
     );
 };
 

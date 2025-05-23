@@ -14,7 +14,7 @@ const CourseCards = ({ auth, data = [], text, flag }) => {
     const carouselRef = useRef(null);
 
     return (
-        <div className="relative w-full px-4 md:px-16 py-20">
+        <div className="relative w-full px-4 md:px-16 py-20 bg-white">
             {text && (
                 <h1 className="text-2xl md:text-4xl font-extrabold text-gray-700 mb-6 tracking-tight py-5 text-center md:text-left">
                     {text}

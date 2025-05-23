@@ -22,7 +22,7 @@ const ParticlesComponent = () => {
             fullScreen: {
                 enable: false,
             },
-            fpsLimit: 120,
+            fpsLimit: 240,
             interactivity: {
                 events: {
                     onClick: { enable: true, mode: "repulse" },
@@ -47,12 +47,12 @@ const ParticlesComponent = () => {
                     enable: true,
                     outModes: { default: "bounce" },
                     random: true,
-                    speed: 1,
+                    speed: 2,
                     straight: false,
                 },
                 number: {
                     density: { enable: true },
-                    value: 200,
+                    value: 150,
                 },
                 opacity: { value: 1.0 },
                 shape: { type: "circle" },
