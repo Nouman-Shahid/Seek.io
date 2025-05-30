@@ -54,45 +54,30 @@ const CourseDescription = ({
         <>
             <Navbar auth={auth} />
             <Head title="Course Description" />
-            <div className="pt-20 max-w-6xl mx-auto p-6 space-y-6">
+            <div className="pt-20 max-w-6xl mx-auto p-6 space-y-10">
                 {/* Course Header */}
-
-                <div className="bg-gray-50  shadow-md p-8 rounded-2xl flex flex-col lg:flex-row items-start gap-8">
-                    <div className="flex-1">
-                        <h1 className="text-3xl font-bold text-gray-800">
-                            {singleCourse && singleCourse.course_title}
+                <div className="bg-white shadow-lg rounded-2xl p-8 flex flex-col lg:flex-row gap-8">
+                    <div className="flex-1 space-y-4">
+                        <h1 className="text-3xl font-bold text-gray-900">
+                            {singleCourse?.course_title}
                         </h1>
-                        <pre className="text-gray-600 mt-3 whitespace-pre-line leading-relaxed font-sans">
-                            {singleCourse && singleCourse.course_desc}
+                        <pre className="whitespace-pre-line text-gray-700 font-sans leading-relaxed">
+                            {singleCourse?.course_desc}
                         </pre>
-                        <p className="text-gray-600 mt-5">
+                        <p className="text-gray-600">
                             Course by:{" "}
                             <Link
                                 href={`/user/${singleCourse.course_teacher}`}
-                                className=" hover:underline font-bold "
+                                className="font-semibold text-blue-700 hover:underline"
                             >
-                                {singleCourse && singleCourse.name}
+                                {singleCourse?.name}
                             </Link>
                         </p>
-                        <div className="mt-5 flex items-center gap-6">
-                            {/* <span className="font-sans">
-                                {singleCourse &&
-                                singleCourse.course_amount === "free" ? (
-                                    <p className="text-blue-600 font-bold">
-                                        FREE
-                                    </p>
-                                ) : (
-                                    <p className="text-green-600 font-bold">
-                                        PKR{" "}
-                                        {singleCourse &&
-                                            singleCourse.course_amount}
-                                    </p>
-                                )}
-                            </span> */}
+                        <div className="flex items-center gap-4 pt-2">
                             {auth?.user?.role !== "Teacher" ? (
                                 isEnrolled?.course_id === singleCourse?.id ? (
                                     <button
-                                        className="bg-gray-300 text-gray-500 px-5 py-2 rounded-lg cursor-not-allowed"
+                                        className="bg-gray-300 text-gray-500 px-4 py-2 rounded-md cursor-not-allowed"
                                         disabled
                                     >
                                         Enrolled
@@ -100,25 +85,23 @@ const CourseDescription = ({
                                 ) : (
                                     <Link
                                         href={`/add_to_cart/id/${singleCourse.id}`}
-                                        className="bg-blue-700 hover:bg-blue-600 text-white px-5 py-2 rounded-lg transition-all"
+                                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition"
                                     >
                                         Add To Cart
                                     </Link>
                                 )
                             ) : (
-                                singleCourse &&
-                                auth.user?.id ===
-                                    singleCourse.course_teacher && (
-                                    <div className="flex space-x-4 items-center">
+                                singleCourse?.course_teacher ===
+                                    auth.user?.id && (
+                                    <div className="flex gap-4 items-center">
                                         {chapters.length > 0 && (
                                             <Link
-                                                className="bg-indigo-600 flex items-center gap-2 text-white px-5 py-2 rounded-md hover:bg-indigo-700 transition-all"
                                                 href={`/course_exam/id/${singleCourse.id}`}
+                                                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center gap-2"
                                             >
-                                                Make Exam
+                                                <FaCheckCircle /> Make Exam
                                             </Link>
                                         )}
-
                                         <button
                                             onClick={() =>
                                                 router.post(
@@ -130,219 +113,182 @@ const CourseDescription = ({
                                                     "Published" ||
                                                 chapters.length === 0
                                             }
-                                            className={`flex items-center gap-2 px-5 py-2 rounded-md transition-all ${
+                                            className={`px-4 py-2 rounded-md flex items-center gap-2 transition-all ${
                                                 singleCourse.publish ===
-                                                "Published"
+                                                    "Published" ||
+                                                chapters.length === 0
                                                     ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                                    : chapters.length > 0
-                                                    ? "bg-green-600 text-white hover:bg-green-700"
-                                                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                                    : "bg-green-600 text-white hover:bg-green-700"
                                             }`}
                                         >
-                                            <FaCheckCircle />
+                                            <FaCheckCircle />{" "}
                                             {singleCourse.publish ===
                                             "Published"
                                                 ? "Published"
-                                                : chapters.length > 0
-                                                ? "Publish"
-                                                : "Cannot Publish"}
+                                                : "Publish"}
                                         </button>
-                                        <p className="text-sm text-red-600">
-                                            {chapters.length > 0
-                                                ? ""
-                                                : "Please add at least one chapter to publish the course"}
-                                        </p>
                                     </div>
                                 )
                             )}
                         </div>
+                        {auth?.user?.role === "Teacher" &&
+                            chapters.length === 0 && (
+                                <p className="text-red-500 text-sm pt-1">
+                                    Add at least one chapter to publish the
+                                    course.
+                                </p>
+                            )}
                     </div>
                     <img
-                        src={singleCourse && singleCourse.course_image}
+                        src={singleCourse?.course_image}
                         alt="Course"
-                        className="w-80 h-64 rounded-2xl object-cover shadow-lg"
+                        className="w-full max-w-sm h-64 rounded-xl object-cover shadow-md"
                     />
                 </div>
 
-                {/* Course Details */}
+                {/* Details Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-gray-100 p-5 rounded-lg text-center shadow-sm">
-                        <p className="font-bold text-gray-700">Rating:</p>
-                        <div className="text-gray-600">
-                            {singleCourse?.course_rating
-                                ? singleCourse.course_rating
-                                : "No ratings yet"}
-                        </div>
-                    </div>
-                    <div className="bg-gray-100 p-5 rounded-lg text-center shadow-sm">
-                        <p className="font-bold text-gray-700">Skill Level:</p>
-                        <p className="text-gray-600">
-                            {singleCourse && singleCourse.course_level}
-                        </p>
-                    </div>
-                    <div className="bg-gray-100 p-5 rounded-lg text-center shadow-sm">
-                        <p className="font-bold text-gray-700">
-                            Time to Complete:
-                        </p>
-                        <p className="text-gray-600">
-                            {singleCourse && singleCourse.course_hours} hours
-                        </p>
-                    </div>
+                    {["Rating", "Skill Level", "Time to Complete"].map(
+                        (label, i) => (
+                            <div
+                                key={i}
+                                className="bg-gray-50 rounded-xl p-5 shadow text-center"
+                            >
+                                <p className="font-semibold text-gray-800">
+                                    {label}:
+                                </p>
+                                <p className="text-gray-600">
+                                    {label === "Rating"
+                                        ? singleCourse?.course_rating ||
+                                          "No ratings yet"
+                                        : label === "Skill Level"
+                                        ? singleCourse?.course_level
+                                        : `${singleCourse?.course_hours} hours`}
+                                </p>
+                            </div>
+                        )
+                    )}
                 </div>
 
-                {/* Chapters Details */}
-                <div className="flex gap-8 mt-12">
+                {/* Course Content Section */}
+                <div className="flex flex-col lg:flex-row gap-6 mt-10">
                     {/* Sidebar */}
-                    <aside className="w-1/3 bg-white rounded-2xl shadow-md border p-4 space-y-6 h-fit">
-                        {/* Course Material */}
-                        <div
-                            className={`p-4 ${
-                                auth?.user?.role === "Teacher" ||
-                                isEnrolled?.course_id !== singleCourse?.id
-                                    ? ""
-                                    : " border-b"
-                            }`}
-                        >
-                            <div className="flex justify-between">
-                                <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                    <aside className="w-full lg:w-1/3 bg-white rounded-xl p-5 shadow space-y-6">
+                        {/* Chapters */}
+                        <div className="space-y-3">
+                            <div className="flex justify-between items-center">
+                                <h3 className="text-lg font-semibold text-gray-800">
                                     Course Chapters
                                 </h3>
-                                {singleCourse.course_teacher ===
-                                    auth?.user?.id && (
+                                {auth?.user?.id ===
+                                    singleCourse?.course_teacher && (
                                     <button
-                                        onClick={() => {
-                                            setShowModal(true);
-                                        }}
-                                        className="bg-blue-600 flex items-center size-6 justify-center text-white rounded-full hover:bg-blue-700 transition-all"
+                                        onClick={() => setShowModal(true)}
+                                        className="bg-blue-600 text-white rounded-full p-1 hover:bg-blue-700"
                                     >
                                         <FaPlus />
                                     </button>
                                 )}
                             </div>
-                            <ul className="space-y-2  text-blue-700">
+                            <ul className="space-y-2">
                                 {chapters.map((item, index) => (
-                                    <li key={item.id} className="w-full">
+                                    <li key={item.id}>
                                         <button
                                             onClick={() =>
                                                 setSelectedChapter(item)
                                             }
-                                            className="flex items-center justify-center gap-3 text-gray-800 font-medium bg-gray-50 border  px-4 py-3 rounded-lg shadow-md w-full text-left hover:bg-blue-100 transition duration-200"
+                                            className="flex items-center gap-2 w-full bg-gray-100 hover:bg-blue-100 text-left px-4 py-2 rounded-md text-gray-800"
                                         >
-                                            <div className="flex w-full space-x-2">
-                                                <span className="font-semibold ">
-                                                    {index + 1}.
-                                                </span>
-                                                <span className="truncate flex">
-                                                    {item.title}
-                                                </span>
-                                            </div>
+                                            <span className="font-semibold">
+                                                {index + 1}.
+                                            </span>
+                                            <span className="truncate">
+                                                {item.title}
+                                            </span>
                                         </button>
                                     </li>
                                 ))}
                             </ul>
                         </div>
 
-                        {/* Additional Sections */}
+                        {/* Conditional Student Sections */}
                         {auth?.user?.role !== "Teacher" &&
-                            isEnrolled?.course_id === singleCourse.id &&
+                            isEnrolled?.course_id === singleCourse?.id &&
                             [
                                 "Chapters Completed",
                                 "Course Exam",
                                 "Course Grades",
-                            ].map((items, index) => (
+                            ].map((section, i) => (
                                 <div
-                                    key={index}
-                                    className="p-4 border-b flex flex-col space-y-5"
+                                    key={i}
+                                    className="space-y-2 border-t pt-4"
                                 >
-                                    <h3 className="text-lg font-semibold text-gray-800">
-                                        {items}
-                                    </h3>
-                                    <p className="text-gray-600 text-sm">
-                                        {items === "Chapters Completed" ? (
-                                            <div className="flex items-center justify-center gap-3 text-gray-800 font-medium bg-gray-50 border  px-4 py-3 rounded-lg shadow-md">
-                                                <FaCheckCircle className="text-green-500 size-5" />
-                                                {showConfetti && (
-                                                    <>
-                                                        <ReactConfetti className="h-[200vh] w-full" />
-                                                    </>
-                                                )}
-
-                                                <p>
-                                                    <span className="text-green-600">
-                                                        {
-                                                            completedChapters.length
-                                                        }
-                                                    </span>{" "}
-                                                    / {chapters.length}
-                                                </p>
-                                            </div>
-                                        ) : items === "Course Exam" ? (
-                                            <>
-                                                {completedChapters.length ===
-                                                    chapters.length &&
-                                                isEnrolled?.course_id ===
-                                                    singleCourse?.id ? (
-                                                    <Link
-                                                        // href={`/exam/id/${singleCourse.id}`}
-                                                        href={`/exam_instructions/${singleCourse.id}`}
-                                                        className="bg-green-600 w-60 text-center text-white px-4 py-2 rounded-md"
-                                                    >
-                                                        Give Exam
-                                                    </Link>
-                                                ) : (
-                                                    <div className="flex items-center justify-center gap-3 text-gray-800 font-medium bg-gray-50 border px-4 py-3 rounded-lg shadow-md">
-                                                        <span className="text-gray-700">
-                                                            <span className="text-blue-600 font-semibold">
-                                                                📚 Complete
-                                                                Chapters
-                                                            </span>{" "}
-                                                            in order to unlock
-                                                            exams.
-                                                        </span>
-                                                    </div>
-                                                )}
-                                            </>
+                                    <h4 className="font-semibold text-gray-800">
+                                        {section}
+                                    </h4>
+                                    {section === "Chapters Completed" ? (
+                                        <div className="flex items-center gap-2 text-blue-700">
+                                            <FaCheckCircle />{" "}
+                                            {showConfetti && (
+                                                <ReactConfetti className="w-full h-[200vh]" />
+                                            )}{" "}
+                                            {completedChapters.length} /{" "}
+                                            {chapters.length}
+                                        </div>
+                                    ) : section === "Course Exam" ? (
+                                        completedChapters.length ===
+                                        chapters.length ? (
+                                            <Link
+                                                href={`/exam_instructions/${singleCourse.id}`}
+                                                className="block text-center bg-blue-700 hover:bg-blue-800 text-white py-2 rounded-md"
+                                            >
+                                                Give Exam
+                                            </Link>
                                         ) : (
-                                            "Grades will be shared after evaluations."
-                                        )}
-                                    </p>
+                                            <p className="text-blue-600">
+                                                📚 Complete all chapters to
+                                                unlock the exam.
+                                            </p>
+                                        )
+                                    ) : (
+                                        <p className="text-sm text-gray-600">
+                                            Grades will be shared after
+                                            evaluation.
+                                        </p>
+                                    )}
                                 </div>
                             ))}
                     </aside>
 
-                    {/* Main Content */}
-                    <main className="w-3/4 bg-white p-6 rounded-lg shadow-md border">
+                    {/* Chapter Viewer */}
+                    <main className="flex-1 bg-white rounded-xl p-6 shadow">
                         {selectedChapter ? (
                             <>
-                                {/* Chapter Header */}
-                                <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg shadow-sm">
-                                    <div className="w-full">
-                                        <h2 className="text-2xl font-bold text-blue-700 border-b-2 border-blue-300 pb-2">
+                                <div className="bg-gray-50 p-4 rounded-md shadow flex justify-between items-center">
+                                    <div>
+                                        <h2 className="text-2xl font-bold text-blue-700 border-b-2 border-blue-300 mb-1">
                                             {selectedChapter.title}
                                         </h2>
-                                        {isEnrolled?.course_id ===
-                                        singleCourse?.id ? (
-                                            ""
-                                        ) : selectedChapter.preview !== "0" ? (
-                                            <div className="text-md text-green-500 mt-2 font-bold flex items-center space-x-1">
-                                                <CiUnlock />
-                                                <p> Free Preview</p>
-                                            </div>
-                                        ) : (
-                                            <div className="text-md text-red-700 mt-2 font-bold flex items-center space-x-1">
-                                                <CiLock />
-                                                <p> Paid Access</p>
-                                            </div>
-                                        )}
+                                        {isEnrolled?.course_id !==
+                                            singleCourse?.id &&
+                                            (selectedChapter.preview !== "0" ? (
+                                                <div className="text-green-600 font-semibold flex items-center gap-1">
+                                                    <CiUnlock /> Free Preview
+                                                </div>
+                                            ) : (
+                                                <div className="text-red-600 font-semibold flex items-center gap-1">
+                                                    <CiLock /> Paid Access
+                                                </div>
+                                            ))}
                                     </div>
                                     {isEnrolled?.course_id ===
                                         singleCourse?.id &&
                                         (!completedChapters.includes(
-                                            Number(selectedChapter?.id)
+                                            Number(selectedChapter.id)
                                         ) ? (
                                             <Link
                                                 href={`/chapter_complete/id/${selectedChapter.id}`}
-                                                className="bg-blue-600 w-60 text-center text-white px-4 py-2 rounded-md"
+                                                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
                                             >
                                                 Mark as Complete
                                             </Link>
@@ -352,13 +298,9 @@ const CourseDescription = ({
                                             </p>
                                         ))}
                                 </div>
-
-                                {/* Chapter Description */}
-                                <p className="text-gray-700 mt-4 leading-relaxed">
+                                <p className="mt-4 text-gray-700 leading-relaxed">
                                     {selectedChapter.desc}
                                 </p>
-
-                                {/* Video Section */}
                                 <div className="mt-6">
                                     {auth?.user?.id !==
                                         singleCourse?.course_teacher &&
@@ -366,8 +308,8 @@ const CourseDescription = ({
                                     (!isEnrolled ||
                                         isEnrolled?.course_id !==
                                             singleCourse?.id) ? (
-                                        <div className="flex items-center space-x-3 text-red-600 bg-red-100 p-3 rounded-lg">
-                                            <CiLock className="size-5" />
+                                        <div className="bg-red-100 text-red-700 p-4 rounded-md flex gap-2 items-start">
+                                            <CiLock className="mt-1" />
                                             <div>
                                                 <p className="font-semibold">
                                                     Access Restricted
@@ -382,51 +324,46 @@ const CourseDescription = ({
                                     ) : (
                                         <iframe
                                             src={selectedChapter.video}
-                                            className="w-full h-40 md:h-96 border border-gray-300 rounded-md shadow-sm"
+                                            className="w-full h-64 md:h-96 rounded-md border border-gray-300 shadow-sm"
                                             allowFullScreen
-                                        ></iframe>
+                                        />
                                     )}
                                 </div>
-
-                                {/* Edit Button (Only for Teachers) */}
-                                <div className="flex mt-4">
-                                    {auth?.user?.role !== "Student" &&
-                                        auth.user?.id ===
-                                            singleCourse?.course_teacher && (
+                                {auth?.user?.role !== "Student" &&
+                                    auth.user?.id ===
+                                        singleCourse?.course_teacher && (
+                                        <div className="mt-4">
                                             <Link
                                                 href={`/edit_chapter/id/${selectedChapter.id}`}
-                                                className=" bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+                                                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
                                             >
                                                 Edit Chapter
                                             </Link>
-                                        )}
-                                </div>
+                                        </div>
+                                    )}
                             </>
                         ) : (
-                            <div className="text-center text-gray-600">
+                            <p className="text-center text-gray-600">
                                 Select a chapter to view details.
-                            </div>
+                            </p>
                         )}
                     </main>
                 </div>
 
                 {/* Related Courses */}
-                <div>
-                    <h2 className="text-2xl font-bold text-gray-800 mt-36">
+                <section className="mt-20">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-6">
                         Related Courses
                     </h2>
                     <CourseCards data={courses} auth={auth} />
-                </div>
+                </section>
             </div>
-
-            {/* Chapter Form */}
 
             <ChapterForm
                 showModal={showModal}
                 setShowModal={setShowModal}
                 singleCourse={singleCourse}
             />
-
             <Footer />
         </>
     );

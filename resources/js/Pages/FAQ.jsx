@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
-import { Head, Link } from "@inertiajs/react";
+import { Head } from "@inertiajs/react";
 import Navbar from "@/Components/Navbar";
+import Footer from "@/Components/Footer";
 
 const faqs = [
     {
@@ -34,14 +35,14 @@ export default function FAQ({ auth }) {
             <Navbar auth={auth} />
             <Head title="FAQ" />
 
-            <section className="bg-white min-h-screen pt-8 px-6 sm:px-10 lg:px-20">
-                <div className="max-w-5xl mx-auto text-center mb-12">
-                    <h1 className="text-3xl sm:text-4xl font-bold text-blue-700">
+            <section className="bg-white min-h-screen pt-16 px-6 sm:px-10 lg:px-24 transition-all">
+                <div className="max-w-5xl mx-auto text-center mb-14">
+                    <h1 className="text-4xl sm:text-5xl font-extrabold text-blue-800">
                         Frequently Asked Questions
                     </h1>
-                    <p className="mt-4 text-gray-600 text-md sm:text-lg">
+                    <p className="mt-4 text-gray-600 text-lg sm:text-xl max-w-2xl mx-auto">
                         Get answers to common questions about Seekio's platform,
-                        courses, and more.
+                        courses, and how we support your journey.
                     </p>
                 </div>
 
@@ -49,22 +50,21 @@ export default function FAQ({ auth }) {
                     {faqs.map((faq, index) => (
                         <div
                             key={index}
-                            className={`border border-gray-200 rounded-xl overflow-hidden transition-shadow duration-300 ${
+                            className={`border rounded-xl transition-shadow duration-300 ${
                                 openIndex === index
-                                    ? "shadow-lg border-blue-500"
-                                    : "shadow-sm"
+                                    ? "shadow-md border-blue-500"
+                                    : "shadow-sm border-gray-200"
                             }`}
                         >
                             <button
                                 onClick={() => toggleFAQ(index)}
-                                className="w-full flex justify-between items-center bg-blue-50 px-6 py-5 text-left text-blue-800 font-medium text-lg hover:bg-blue-100 transition-colors"
+                                className="w-full flex justify-between items-center px-6 py-5 bg-blue-50 text-left text-blue-800 font-semibold text-lg hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all"
+                                aria-expanded={openIndex === index}
                             >
                                 <span>{faq.question}</span>
                                 <FaChevronDown
-                                    className={`transition-transform duration-300 ${
-                                        openIndex === index
-                                            ? "rotate-180"
-                                            : "rotate-0"
+                                    className={`ml-4 transition-transform duration-300 ${
+                                        openIndex === index ? "rotate-180" : ""
                                     }`}
                                 />
                             </button>
@@ -77,6 +77,8 @@ export default function FAQ({ auth }) {
                     ))}
                 </div>
             </section>
+
+            <Footer />
         </>
     );
 }

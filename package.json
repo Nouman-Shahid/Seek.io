@@ -25,6 +25,7 @@
         "@tsparticles/all": "^3.8.1",
         "@tsparticles/react": "^3.0.0",
         "@tsparticles/slim": "^3.8.1",
+        "aos": "^2.3.4",
         "chart.js": "^4.4.8",
         "framer-motion": "^12.4.7",
         "lucide-react": "^0.511.0",

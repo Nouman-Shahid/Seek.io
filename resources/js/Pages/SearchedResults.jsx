@@ -1,117 +1,110 @@
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import React from "react";
 import { Head, Link } from "@inertiajs/react";
-import image from "../images/assets/loading.png";
 import Navbar from "@/Components/Navbar";
-const SearchedResults = ({ results = [], count, auth }) => {
+import image from "../images/assets/loading.png";
+
+export default function SearchedResults({ results = [], count, auth }) {
     return (
         <>
             <Navbar auth={auth} />
-            <Head title="Searched Results" />
-            <div className="flex w-full">
-                <div className="w-[75%] p-6">
-                    <h2 className="text-2xl font-bold  mb-4">
-                        Search Results ({count})
+            <Head title="Search Results" />
+
+            <div className="flex flex-col lg:flex-row w-full min-h-screen bg-white">
+                {/* Main Content */}
+                <div className="w-full lg:w-3/4 p-6 space-y-6">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-blue-800">
+                        Showing {count} result{count !== 1 && "s"}
                     </h2>
+
                     {results.length > 0 ? (
-                        <div className="flex flex-col space-y-4">
+                        <div className="space-y-6">
                             {results.map((item, index) => (
                                 <div
                                     key={index}
-                                    className="border rounded-lg shadow-lg p-4 bg-white flex hover:bg-blue-50 space-x-5"
+                                    className="bg-gray-50 border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 flex flex-col sm:flex-row p-5 gap-5"
                                 >
-                                    {/* If its a course */}
-                                    {item.type === "course" ? (
-                                        <>
-                                            <img
-                                                src={
-                                                    item.image ||
-                                                    "https://via.placeholder.com/300"
-                                                }
-                                                alt={item.name}
-                                                className="w-52 h-52 object-cover rounded-lg mb-3"
-                                            />
-                                            <div className="flex flex-col flex-grow space-y-5">
-                                                <h3 className="text-lg font-semibold text-gray-800">
-                                                    {item.name}
-                                                </h3>
-                                                {item.type === "course" ? (
-                                                    <>
-                                                        <p className="text-gray-600 text-sm">
-                                                            {item.description ||
-                                                                "No description available."}
-                                                        </p>
-                                                        <span className="text-yellow-500 font-bold">
-                                                            ⭐{" "}
-                                                            {item.course_rating ||
-                                                                "4.5"}
-                                                        </span>
-                                                        <span className="text-green-600 font-bold">
-                                                            PKR{" "}
-                                                            {item.price ||
-                                                                "Free"}
-                                                        </span>
-                                                        <div className="flex justify-end">
-                                                            <Link
-                                                                href={`/course/id/${item.id}`}
-                                                                className="px-3 py-2 bg-green-600 text-white rounded-md transition-all duration-300 hover:bg-green-700"
-                                                            >
-                                                                View Courses
-                                                            </Link>
-                                                        </div>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <p className="text-gray-500">
-                                                            {item.email}
-                                                        </p>
-                                                        <button className="mt-4 bg-gray-700 text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition-all self-start">
-                                                            View Profile
-                                                        </button>
-                                                    </>
-                                                )}
-                                            </div>
-                                        </>
-                                    ) : (
-                                        // If it's a user
-                                        <div className="w-[80%] h-28 bg-white rounded-xl shadow-lg p-4 flex items-center border border-gray-200">
-                                            <img
-                                                src={item.profile_image}
-                                                alt={item.name}
-                                                className="w-16 h-16 rounded-full border-4 border-gray-300 shadow-md"
-                                            />
-                                            <div className="ml-4 flex-1">
-                                                <h3 className="text-lg font-bold text-gray-900">
-                                                    {item.name}
-                                                </h3>
+                                    <img
+                                        src={
+                                            item.image ||
+                                            item.profile_image ||
+                                            "https://via.placeholder.com/300"
+                                        }
+                                        alt={item.name}
+                                        className="w-full sm:w-48 h-48 object-cover rounded-xl"
+                                    />
 
-                                                <p className="mt-2 text-gray-500 text-sm line-clamp-2 overflow-hidden">
-                                                    {item.profile_headline}
+                                    <div className="flex-1 flex flex-col justify-between space-y-3">
+                                        <div>
+                                            <h3 className="text-xl font-semibold text-gray-900">
+                                                {item.name}
+                                            </h3>
+
+                                            {item.type === "course" ? (
+                                                <p className="text-gray-600 mt-1 text-sm leading-relaxed">
+                                                    {item.description ||
+                                                        "No description provided."}
                                                 </p>
-                                            </div>
+                                            ) : (
+                                                <p className="text-gray-500 mt-1 text-sm line-clamp-2">
+                                                    {item.profile_headline ||
+                                                        "No headline available."}
+                                                </p>
+                                            )}
+                                        </div>
+
+                                        <div className="flex items-center justify-between">
+                                            {item.type === "course" ? (
+                                                <div className="flex flex-col space-y-1">
+                                                    <span className="text-yellow-500 text-sm font-medium">
+                                                        ⭐{" "}
+                                                        {item.course_rating ||
+                                                            "4.5"}
+                                                    </span>
+                                                    <span className="text-green-600 font-semibold text-sm">
+                                                        {item.price === 0 ||
+                                                        item.price === "0"
+                                                            ? "Free"
+                                                            : `PKR ${item.price}`}
+                                                    </span>
+                                                </div>
+                                            ) : (
+                                                <div className="text-sm text-gray-500">
+                                                    {item.email}
+                                                </div>
+                                            )}
+
                                             <Link
-                                                href={`/user/${item.id}`}
-                                                className="ml-4 bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition duration-300 hover:bg-gray-900"
+                                                href={
+                                                    item.type === "course"
+                                                        ? `/course/id/${item.id}`
+                                                        : `/user/${item.id}`
+                                                }
+                                                className="px-4 py-2 text-sm font-medium rounded-lg bg-blue-700 text-white hover:bg-blue-800 transition duration-300"
                                             >
-                                                View
+                                                {item.type === "course"
+                                                    ? "View Course"
+                                                    : "View Profile"}
                                             </Link>
                                         </div>
-                                    )}
+                                    </div>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <p className="text-gray-600 text-center">
+                        <div className="text-center text-gray-500 text-lg mt-12">
                             No results found.
-                        </p>
+                        </div>
                     )}
                 </div>
-                <div className="flex w-[25%]">
-                    <img src={image} alt="" />
+
+                {/* Fixed Side Image */}
+                <div className="hidden lg:block w-1/4 h-screen sticky top-0">
+                    <img
+                        src={image}
+                        alt="Search Illustration"
+                        className="w-full h-full object-cover"
+                    />
                 </div>
             </div>
         </>
     );
-};
-
-export default SearchedResults;
+}

@@ -37,7 +37,7 @@ class CourseController extends Controller
             ->select('users.*', 'course.*')
             ->first();
 
-        $chapters = Chapter::where('course_id', $id)->get();
+        $chapters = Chapter::where('course_id', $id)->orderBy('id')->get();
 
         $isEnrolled = $user ? Enrollments::where('student_id', $user->id)
             ->where('course_id', $id)

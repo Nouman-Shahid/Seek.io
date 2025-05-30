@@ -73,8 +73,8 @@ const CourseCards = ({ auth, data = [], text, flag }) => {
                                         </p>
                                         <div className="flex justify-between items-center mt-4">
                                             <span className="text-md font-semibold text-blue-600">
-                                                {course.course_amount === 0
-                                                    ? "PKR 0"
+                                                {course.course_amount === "0"
+                                                    ? "FREE"
                                                     : `PKR ${course.course_amount}`}
                                             </span>
                                             <Link

@@ -25,7 +25,6 @@ const TeacherDashboard = ({
 
     const submit = (e) => {
         e.preventDefault();
-
         patch(route("user_details_update"));
     };
 
@@ -36,18 +35,20 @@ const TeacherDashboard = ({
 
             <form
                 onSubmit={submit}
-                className="py-10 flex flex-col  p-6 mx-auto"
+                className="py-10 px-4 sm:px-8 max-w-7xl mx-auto space-y-8"
             >
-                <div className="flex justify-end">
+                {/* Edit/Save Buttons */}
+                <div className="flex justify-end space-x-3">
                     {isEditing ? (
-                        <div className="space-x-3 flex">
-                            <div
+                        <>
+                            <button
+                                type="button"
                                 onClick={() => setIsEditing(false)}
-                                className="bg-red-500 text-white px-4 py-2 rounded-lg mb-4 cursor-pointer"
+                                className="px-5 py-2 rounded-lg bg-gray-300 hover:bg-gray-400 text-gray-800 transition-all"
                                 disabled={processing}
                             >
                                 Cancel
-                            </div>
+                            </button>
                             <button
                                 type="submit"
                                 onClick={(e) => {
@@ -55,35 +56,38 @@ const TeacherDashboard = ({
                                     submit(e);
                                     setIsEditing(false);
                                 }}
-                                className="bg-blue-600 text-white px-4 py-2 rounded-lg mb-4"
+                                className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-all"
                                 disabled={processing}
                             >
                                 Save
                             </button>
-                        </div>
+                        </>
                     ) : (
-                        <div
+                        <button
+                            type="button"
                             onClick={() => setIsEditing(true)}
-                            className="bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mb-4 cursor-pointer"
+                            className="px-5 py-2 rounded-lg bg-blue-700 hover:bg-blue-600 text-white transition-all"
                             disabled={processing}
                         >
                             Edit Profile
-                        </div>
+                        </button>
                     )}
                 </div>
 
-                <div className="flex space-x-5">
-                    <aside className="w-full lg:w-1/4 h-[60vh]  p-4 rounded-xl shadow-lg flex flex-col justify-between items-center text-center">
-                        <div className="flex-col flex w-full items-center">
+                {/* Profile Section */}
+                <div className="flex flex-col lg:flex-row gap-8">
+                    {/* Sidebar */}
+                    <aside className="w-full lg:w-1/3 bg-white p-6 rounded-2xl shadow-xl space-y-6 text-center">
+                        {/* Profile Image */}
+                        <div className="flex flex-col items-center">
                             {isEditing ? (
                                 <>
-                                    <label className=" w-full text-left font-bold">
-                                        Image (URL):
+                                    <label className="w-full text-left font-semibold text-gray-700 mb-1">
+                                        Image URL
                                     </label>
-
                                     <TextInput
                                         id="profile_image"
-                                        className="mt-1 block w-full"
+                                        className="w-full"
                                         value={data.profile_image}
                                         onChange={(e) =>
                                             setData(
@@ -93,77 +97,84 @@ const TeacherDashboard = ({
                                         }
                                     />
                                     <InputError
-                                        className="mt-2"
+                                        className="mt-1"
                                         message={errors.profile_image}
                                     />
                                 </>
                             ) : auth.user.profile_image ? (
                                 <img
                                     src={auth.user.profile_image}
-                                    className="mb-4 w-32 h-32 rounded-full"
+                                    className="w-28 h-28 rounded-full object-cover border-4 border-blue-500 shadow-lg"
                                 />
                             ) : (
-                                <p className="bg-orange-500 text-white text-6xl mb-4 font-bold w-32 h-32 flex items-center justify-center rounded-full">
+                                <div className="bg-orange-500 text-white text-5xl font-bold w-28 h-28 flex items-center justify-center rounded-full shadow-lg">
                                     {auth.user.name.charAt(0)}
-                                </p>
+                                </div>
                             )}
+                        </div>
 
+                        {/* Name */}
+                        <div className="space-y-1">
+                            <label className="hidden">Name</label>
                             {isEditing ? (
                                 <>
-                                    <label className=" w-full text-left font-bold">
-                                        Name:
-                                    </label>
                                     <TextInput
                                         id="name"
-                                        className="mt-1 block w-full"
+                                        className="w-full"
                                         value={data.name}
                                         onChange={(e) =>
                                             setData("name", e.target.value)
                                         }
                                     />
                                     <InputError
-                                        className="mt-2"
+                                        className="mt-1"
                                         message={errors.name}
                                     />
                                 </>
                             ) : (
-                                <h2 className="text-xl font-bold">
+                                <h2 className="text-xl font-bold text-gray-800">
                                     {data.name}
                                 </h2>
                             )}
+                        </div>
 
+                        {/* Address */}
+                        <div className="space-y-1">
                             {isEditing ? (
                                 <>
-                                    <label className=" w-full text-left font-bold">
-                                        Address:
+                                    <label className="w-full text-left font-semibold text-gray-700">
+                                        Address
                                     </label>
                                     <TextInput
                                         id="address"
-                                        className="mt-1 block w-full"
+                                        className="w-full"
                                         value={data.address}
                                         onChange={(e) =>
                                             setData("address", e.target.value)
                                         }
                                     />
                                     <InputError
-                                        className="mt-2"
+                                        className="mt-1"
                                         message={errors.address}
                                     />
                                 </>
                             ) : (
-                                <p className="text-gray-600 font-bold">
+                                <p className="text-sm text-gray-600">
                                     {data.address}
                                 </p>
                             )}
+                        </div>
 
+                        {/* Headline */}
+                        <div className="space-y-1">
                             {isEditing ? (
                                 <>
-                                    <label className=" w-full text-left font-bold">
-                                        Headline:
+                                    <label className="w-full text-left font-semibold text-gray-700">
+                                        Headline
                                     </label>
                                     <TextInput
                                         id="profile_headline"
-                                        className="mt-1 block w-full"
+                                        className="w-full"
                                         value={data.profile_headline}
                                         onChange={(e) =>
                                             setData(
@@ -173,84 +184,93 @@ const TeacherDashboard = ({
                                         }
                                     />
                                     <InputError
-                                        className="mt-2"
+                                        className="mt-1"
                                         message={errors.profile_headline}
                                     />
                                 </>
                             ) : (
-                                <p className="text-gray-600 my-3">
+                                <p className="text-gray-500 italic">
                                     {data.profile_headline}
                                 </p>
                             )}
                         </div>
 
-                        {auth.user.id !== user.id && (
-                            <a
-                                href={`mailto:${user.email}`}
-                                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mt-4 w-full text-center block"
-                            >
-                                Contact
-                            </a>
-                        )}
-
-                        {auth.user.role === "Teacher" && (
-                            <Link
-                                href={`/payout_&_earnings/id/${auth.user.id}`}
-                                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mt-4 w-full text-center block"
-                            >
-                                Payouts & Earnings
-                            </Link>
-                        )}
+                        {/* Contact / Payout */}
+                        <div className="space-y-3 w-full">
+                            {auth.user.id !== user.id && (
+                                <a
+                                    href={`mailto:${user.email}`}
+                                    className="block w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-center transition-all"
+                                >
+                                    Contact
+                                </a>
+                            )}
+                            {auth.user.role === "Teacher" && (
+                                <Link
+                                    href={`/payout_&_earnings/id/${auth.user.id}`}
+                                    className="block w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-center transition-all"
+                                >
+                                    Payouts & Earnings
+                                </Link>
+                            )}
+                        </div>
                     </aside>
 
-                    <main className="w-full lg:w-3/4 p-6 shadow-lg rounded-lg ">
-                        <h1 className="text-2xl font-bold ">About me</h1>
-                        {isEditing ? (
-                            <>
-                                <textarea
-                                    id="profile_about"
-                                    className="mt-1 block w-full min-h-[40vh]"
-                                    value={data.profile_about}
-                                    onChange={(e) =>
-                                        setData("profile_about", e.target.value)
-                                    }
-                                />
-                                <InputError
-                                    className="mt-2"
-                                    message={errors.profile_about}
-                                />
-                            </>
-                        ) : (
-                            <pre className="text-gray-600 whitespace-pre-wrap break-words font-sans">
-                                {data.profile_about}
-                            </pre>
-                        )}
+                    {/* Main Content */}
+                    <main className="w-full lg:w-2/3 bg-white p-6 rounded-2xl shadow-xl space-y-8">
+                        <section>
+                            <h1 className="text-2xl font-bold text-gray-800 mb-4">
+                                About Me
+                            </h1>
+                            {isEditing ? (
+                                <>
+                                    <textarea
+                                        id="profile_about"
+                                        className="w-full min-h-[200px] p-3 rounded-lg border border-gray-300 focus:outline-blue-500"
+                                        value={data.profile_about}
+                                        onChange={(e) =>
+                                            setData(
+                                                "profile_about",
+                                                e.target.value
+                                            )
+                                        }
+                                    />
+                                    <InputError
+                                        className="mt-1"
+                                        message={errors.profile_about}
+                                    />
+                                </>
+                            ) : (
+                                <p className="text-gray-600 whitespace-pre-wrap font-sans leading-relaxed">
+                                    {data.profile_about}
+                                </p>
+                            )}
+                        </section>
 
-                        {user.role === "Teacher" ? (
-                            <>
-                                <div className="mb-6 flex items-center justify-between">
-                                    <h2 className="text-xl font-bold mt-6 mb-4">
-                                        My Courses
-                                    </h2>{" "}
-                                    <Link href={`/makecourse`}>
-                                        <IoIosAddCircle className="size-[5vh] text-blue-600" />
+                        {/* Courses */}
+                        <section>
+                            <div className="flex justify-between items-center mb-4">
+                                <h2 className="text-xl font-bold text-gray-800">
+                                    {user.role === "Teacher"
+                                        ? "My Courses"
+                                        : "Enrolled Courses"}
+                                </h2>
+                                {user.role === "Teacher" && (
+                                    <Link href="/makecourse">
+                                        <IoIosAddCircle className="text-blue-600 hover:text-blue-700 text-3xl" />
                                     </Link>
-                                </div>
-                                <CourseCards
-                                    data={coursesAsTeacher}
-                                    auth={auth}
-                                />
-                            </>
-                        ) : (
-                            <>
-                                <div className=" flex items-center justify-between">
-                                    <h2 className="text-xl font-bold mt-6 mb-4">
-                                        Enrolled Courses
-                                    </h2>{" "}
-                                </div>
-                                <CourseCards data={coursesAsStudent} />
-                            </>
-                        )}
+                                )}
+                            </div>
+
+                            <CourseCards
+                                data={
+                                    user.role === "Teacher"
+                                        ? coursesAsTeacher
+                                        : coursesAsStudent
+                                }
+                                auth={auth}
+                            />
+                        </section>
                     </main>
                 </div>
             </form>
