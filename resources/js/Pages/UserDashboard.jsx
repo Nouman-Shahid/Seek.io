@@ -77,7 +77,7 @@ const TeacherDashboard = ({
                 {/* Profile Section */}
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Sidebar */}
-                    <aside className="w-full lg:w-1/3 bg-white p-6 rounded-2xl shadow-xl space-y-6 text-center">
+                    <aside className="w-full  shadow-xl h-fit p-6 rounded-2xl space-y-6 text-center">
                         {/* Profile Image */}
                         <div className="flex flex-col items-center">
                             {isEditing ? (
@@ -196,11 +196,11 @@ const TeacherDashboard = ({
                         </div>
 
                         {/* Contact / Payout */}
-                        <div className="space-y-3 w-full">
+                        <div className="space-y-3 w-full flex items-center justify-center">
                             {auth.user.id !== user.id && (
                                 <a
                                     href={`mailto:${user.email}`}
-                                    className="block w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-center transition-all"
+                                    className="block lg:w-full w-3/4 px-2 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-center transition-all"
                                 >
                                     Contact
                                 </a>
@@ -208,7 +208,7 @@ const TeacherDashboard = ({
                             {auth.user.role === "Teacher" && (
                                 <Link
                                     href={`/payout_&_earnings/id/${auth.user.id}`}
-                                    className="block w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-center transition-all"
+                                    className="block lg:w-full w-3/4 px-2 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-center transition-all"
                                 >
                                     Payouts & Earnings
                                 </Link>
@@ -217,7 +217,7 @@ const TeacherDashboard = ({
                     </aside>
 
                     {/* Main Content */}
-                    <main className="w-full lg:w-2/3 bg-white p-6 rounded-2xl shadow-xl space-y-8">
+                    <main className="w-full lg:w-3/4 bg-white p-6 rounded-2xl shadow-xl space-y-8">
                         <section>
                             <h1 className="text-2xl font-bold text-gray-800 mb-4">
                                 About Me

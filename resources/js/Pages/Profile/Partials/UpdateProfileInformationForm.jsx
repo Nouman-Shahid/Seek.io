@@ -27,7 +27,7 @@ export default function UpdateProfileInformation({
     return (
         <section className={className}>
             <header>
-                <h2 className="text-lg font-medium text-gray-900">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">
                     Profile Information
                 </h2>
 

@@ -107,17 +107,18 @@ class CourseController extends Controller
     }
 
 
-
-
-
-
-
-
     public function publishCourse($id)
     {
         Course::where('id', $id)->update([
             'publish' => 'Published'
         ]);
+
+        return back();
+    }
+
+    public function removeCourse($id)
+    {
+        Course::where('id', '=', $id)->delete();
 
         return back();
     }

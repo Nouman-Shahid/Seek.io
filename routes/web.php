@@ -122,11 +122,12 @@ Route::get('/checkout/success', [StripeController::class, 'success'])->name('suc
 
 
 
-Route::post('add_course_chapter/id/{id}', [ChapterController::class, 'addChapter'])->name('submit_course_chapter');
+Route::post('/course/{id}/chapter', [ChapterController::class, 'addOrUpdateChapter'])->name('submit_course_chapter');
 Route::post('publish_course/id/{id}', [CourseController::class, 'publishCourse'])->name('publish_course');
+Route::get('/remove_course/id/{id}', [CourseController::class, 'removeCourse']);
 
-
-
+Route::get('/remove_chapter/id/{id}', [ChapterController::class, 'removeChapter']);
+Route::patch('/update_chapter/id/{id}', [ChapterController::class, 'updateChapter']);
 Route::get('chapter_complete/id/{id}', [ChapterCompletionController::class, 'markComplete'])->name('chapter_complete');
 
 

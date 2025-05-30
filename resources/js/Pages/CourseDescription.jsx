@@ -10,6 +10,8 @@ import Footer from "@/Components/Footer";
 import ChapterForm from "./ChapterForm";
 import ReactConfetti from "react-confetti";
 import CompletionAudio from "../Audio/course_completion.mp3";
+import { MdDelete } from "react-icons/md";
+
 const CourseDescription = ({
     singleCourse = {},
     auth,
@@ -21,6 +23,7 @@ const CourseDescription = ({
     const [showModal, setShowModal] = useState(false);
     const [selectedChapter, setSelectedChapter] = useState(null);
     const [showConfetti, setShowConfetti] = useState(false);
+    const [chapterToEdit, setChapterToEdit] = useState(null);
 
     useEffect(() => {
         if (chapters.length > 0) {
@@ -170,11 +173,8 @@ const CourseDescription = ({
                     )}
                 </div>
 
-                {/* Course Content Section */}
                 <div className="flex flex-col lg:flex-row gap-6 mt-10">
-                    {/* Sidebar */}
                     <aside className="w-full lg:w-1/3 bg-white rounded-xl p-5 shadow space-y-6">
-                        {/* Chapters */}
                         <div className="space-y-3">
                             <div className="flex justify-between items-center">
                                 <h3 className="text-lg font-semibold text-gray-800">
@@ -183,7 +183,10 @@ const CourseDescription = ({
                                 {auth?.user?.id ===
                                     singleCourse?.course_teacher && (
                                     <button
-                                        onClick={() => setShowModal(true)}
+                                        onClick={() => {
+                                            setChapterToEdit(null);
+                                            setShowModal(true);
+                                        }}
                                         className="bg-blue-600 text-white rounded-full p-1 hover:bg-blue-700"
                                     >
                                         <FaPlus />
@@ -210,65 +213,34 @@ const CourseDescription = ({
                                 ))}
                             </ul>
                         </div>
-
-                        {/* Conditional Student Sections */}
-                        {auth?.user?.role !== "Teacher" &&
-                            isEnrolled?.course_id === singleCourse?.id &&
-                            [
-                                "Chapters Completed",
-                                "Course Exam",
-                                "Course Grades",
-                            ].map((section, i) => (
-                                <div
-                                    key={i}
-                                    className="space-y-2 border-t pt-4"
-                                >
-                                    <h4 className="font-semibold text-gray-800">
-                                        {section}
-                                    </h4>
-                                    {section === "Chapters Completed" ? (
-                                        <div className="flex items-center gap-2 text-blue-700">
-                                            <FaCheckCircle />{" "}
-                                            {showConfetti && (
-                                                <ReactConfetti className="w-full h-[200vh]" />
-                                            )}{" "}
-                                            {completedChapters.length} /{" "}
-                                            {chapters.length}
-                                        </div>
-                                    ) : section === "Course Exam" ? (
-                                        completedChapters.length ===
-                                        chapters.length ? (
-                                            <Link
-                                                href={`/exam_instructions/${singleCourse.id}`}
-                                                className="block text-center bg-blue-700 hover:bg-blue-800 text-white py-2 rounded-md"
-                                            >
-                                                Give Exam
-                                            </Link>
-                                        ) : (
-                                            <p className="text-blue-600">
-                                                📚 Complete all chapters to
-                                                unlock the exam.
-                                            </p>
-                                        )
-                                    ) : (
-                                        <p className="text-sm text-gray-600">
-                                            Grades will be shared after
-                                            evaluation.
-                                        </p>
-                                    )}
-                                </div>
-                            ))}
                     </aside>
 
-                    {/* Chapter Viewer */}
                     <main className="flex-1 bg-white rounded-xl p-6 shadow">
                         {selectedChapter ? (
                             <>
                                 <div className="bg-gray-50 p-4 rounded-md shadow flex justify-between items-center">
-                                    <div>
-                                        <h2 className="text-2xl font-bold text-blue-700 border-b-2 border-blue-300 mb-1">
-                                            {selectedChapter.title}
-                                        </h2>
+                                    <div className="flex flex-col w-full">
+                                        <div className="flex w-full justify-between items-center ">
+                                            <h2 className="text-2xl font-bold text-blue-700 border-b-2 border-blue-300 mb-1">
+                                                {selectedChapter.title}
+                                            </h2>
+                                            <button
+                                                onClick={() => {
+                                                    const confirmed =
+                                                        window.confirm(
+                                                            "Are you sure you want to delete this chapter?"
+                                                        );
+                                                    if (confirmed) {
+                                                        router.visit(
+                                                            `/remove_chapter/id/${selectedChapter.id}`
+                                                        );
+                                                    }
+                                                }}
+                                                className="bg-red-100 text-red-500 p-2 rounded-full hover:scale-110"
+                                            >
+                                                <MdDelete className="size-5" />
+                                            </button>
+                                        </div>
                                         {isEnrolled?.course_id !==
                                             singleCourse?.id &&
                                             (selectedChapter.preview !== "0" ? (
@@ -298,9 +270,11 @@ const CourseDescription = ({
                                             </p>
                                         ))}
                                 </div>
+
                                 <p className="mt-4 text-gray-700 leading-relaxed">
                                     {selectedChapter.desc}
                                 </p>
+
                                 <div className="mt-6">
                                     {auth?.user?.id !==
                                         singleCourse?.course_teacher &&
@@ -329,16 +303,22 @@ const CourseDescription = ({
                                         />
                                     )}
                                 </div>
+
                                 {auth?.user?.role !== "Student" &&
                                     auth.user?.id ===
                                         singleCourse?.course_teacher && (
                                         <div className="mt-4">
-                                            <Link
-                                                href={`/edit_chapter/id/${selectedChapter.id}`}
+                                            <button
+                                                onClick={() => {
+                                                    setChapterToEdit(
+                                                        selectedChapter
+                                                    );
+                                                    setShowModal(true);
+                                                }}
                                                 className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
                                             >
                                                 Edit Chapter
-                                            </Link>
+                                            </button>
                                         </div>
                                     )}
                             </>
@@ -363,6 +343,7 @@ const CourseDescription = ({
                 showModal={showModal}
                 setShowModal={setShowModal}
                 singleCourse={singleCourse}
+                chapterToEdit={chapterToEdit}
             />
             <Footer />
         </>
