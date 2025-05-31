@@ -11,6 +11,8 @@ import ChapterForm from "./ChapterForm";
 import ReactConfetti from "react-confetti";
 import CompletionAudio from "../Audio/course_completion.mp3";
 import { MdDelete } from "react-icons/md";
+import { BadgeCheck, Clock, Star } from "lucide-react";
+import FeedbackDrawer from "@/Components/FeedbackDrawer";
 
 const CourseDescription = ({
     singleCourse = {},
@@ -19,11 +21,21 @@ const CourseDescription = ({
     chapters = [],
     isEnrolled = {},
     completedChapters = [],
+    feedbacks = [],
 }) => {
     const [showModal, setShowModal] = useState(false);
     const [selectedChapter, setSelectedChapter] = useState(null);
     const [showConfetti, setShowConfetti] = useState(false);
     const [chapterToEdit, setChapterToEdit] = useState(null);
+    const [showFeedbackDrawer, setShowFeedbackDrawer] = useState(false);
+    const [windowSize, setWindowSize] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight,
+    });
+
+    const handleRatingClick = () => {
+        setShowFeedbackDrawer(true);
+    };
 
     useEffect(() => {
         if (chapters.length > 0) {
@@ -32,12 +44,25 @@ const CourseDescription = ({
     }, [chapters]);
 
     useEffect(() => {
+        const handleResize = () => {
+            setWindowSize({
+                width: window.innerWidth,
+                height: window.innerHeight,
+            });
+        };
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    useEffect(() => {
         const courseKey = `${singleCourse.id}-${auth?.user?.id}`;
         const hasSeenConfetti = localStorage.getItem(courseKey);
 
         if (
+            isEnrolled?.course_id === singleCourse?.id &&
             completedChapters.length === chapters.length &&
-            completedChapters.length > 0 &&
+            chapters.length > 0 &&
             !hasSeenConfetti
         ) {
             setShowConfetti(true);
@@ -51,13 +76,22 @@ const CourseDescription = ({
         chapters.length,
         singleCourse.id,
         auth?.user?.id,
+        isEnrolled?.course_id,
     ]);
 
     return (
         <>
             <Navbar auth={auth} />
             <Head title="Course Description" />
-            <div className="pt-20 max-w-6xl mx-auto p-6 space-y-10">
+            {showConfetti && (
+                <ReactConfetti
+                    width={windowSize.width}
+                    height={windowSize.height}
+                    recycle={false}
+                    numberOfPieces={500}
+                />
+            )}
+            <div className="pt-20 max-w-7xl mx-auto p-6 space-y-10">
                 {/* Course Header */}
                 <div className="bg-white shadow-lg rounded-2xl p-8 flex flex-col lg:flex-row gap-8">
                     <div className="flex-1 space-y-4">
@@ -150,31 +184,55 @@ const CourseDescription = ({
                 </div>
 
                 {/* Details Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {["Rating", "Skill Level", "Time to Complete"].map(
-                        (label, i) => (
-                            <div
-                                key={i}
-                                className="bg-gray-50 rounded-xl p-5 shadow text-center"
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                    {/* Rating */}
+                    <div className="bg-white shadow-lg rounded-2xl p-6 border border-gray-100 ">
+                        <div className="flex flex-col items-center text-center">
+                            <Star className="w-8 h-8 text-yellow-500 mb-2" />
+                            <p className="text-sm text-gray-500 tracking-wide mb-1">
+                                Rating
+                            </p>
+                            <p
+                                onClick={handleRatingClick}
+                                className="text-3xl font-semibold text-gray-900 hover:underline cursor-pointer"
                             >
-                                <p className="font-semibold text-gray-800">
-                                    {label}:
-                                </p>
-                                <p className="text-gray-600">
-                                    {label === "Rating"
-                                        ? singleCourse?.course_rating ||
-                                          "No ratings yet"
-                                        : label === "Skill Level"
-                                        ? singleCourse?.course_level
-                                        : `${singleCourse?.course_hours} hours`}
-                                </p>
-                            </div>
-                        )
-                    )}
-                </div>
+                                {singleCourse?.course_rating
+                                    ? Number(
+                                          singleCourse.course_rating
+                                      ).toFixed(1)
+                                    : "0"}
+                            </p>
+                        </div>
+                    </div>
 
+                    {/* Skill Level */}
+                    <div className="bg-white shadow-lg rounded-2xl p-6 border border-gray-100">
+                        <div className="flex flex-col items-center text-center">
+                            <BadgeCheck className="w-8 h-8 text-blue-500 mb-2" />
+                            <p className="text-sm text-gray-500 tracking-wide mb-1">
+                                Skill Level
+                            </p>
+                            <p className="text-3xl font-semibold text-gray-900">
+                                {singleCourse?.course_level}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Time to Complete */}
+                    <div className="bg-white shadow-lg rounded-2xl p-6 border border-gray-100  ">
+                        <div className="flex flex-col items-center text-center">
+                            <Clock className="w-8 h-8 text-green-500 mb-2" />
+                            <p className="text-sm text-gray-500 tracking-wide mb-1">
+                                Time to Complete
+                            </p>
+                            <p className="text-3xl font-semibold text-gray-900">
+                                {singleCourse?.course_hours} hrs
+                            </p>
+                        </div>
+                    </div>
+                </div>
                 <div className="flex flex-col lg:flex-row gap-6 mt-10">
-                    <aside className="w-full lg:w-1/3 bg-white rounded-xl p-5 shadow space-y-6">
+                    <aside className="w-full h-fit lg:w-1/3 bg-white rounded-xl p-5 shadow-lg space-y-6">
                         <div className="space-y-3">
                             <div className="flex justify-between items-center">
                                 <h3 className="text-lg font-semibold text-gray-800">
@@ -200,7 +258,13 @@ const CourseDescription = ({
                                             onClick={() =>
                                                 setSelectedChapter(item)
                                             }
-                                            className="flex items-center gap-2 w-full bg-gray-100 hover:bg-blue-100 text-left px-4 py-2 rounded-md text-gray-800"
+                                            className={`flex items-center gap-2 w-full ${
+                                                completedChapters.includes(
+                                                    Number(item.id)
+                                                )
+                                                    ? "bg-green-50 hover:bg-green-100"
+                                                    : "bg-gray-100 hover:bg-blue-100"
+                                            } text-left px-4 py-2 rounded-md text-gray-800`}
                                         >
                                             <span className="font-semibold">
                                                 {index + 1}.
@@ -208,14 +272,37 @@ const CourseDescription = ({
                                             <span className="truncate">
                                                 {item.title}
                                             </span>
+                                            {completedChapters.includes(
+                                                Number(item.id)
+                                            ) && (
+                                                <FaCheckCircle className="text-green-500 ml-auto" />
+                                            )}
                                         </button>
                                     </li>
                                 ))}
                             </ul>
                         </div>
+
+                        {/* Exam Button Section */}
+                        {isEnrolled?.course_id === singleCourse?.id &&
+                            completedChapters.length === chapters.length &&
+                            chapters.length > 0 && (
+                                <div className="mt-6">
+                                    <button
+                                        onClick={() =>
+                                            router.visit(
+                                                `/exam_instructions/${singleCourse.id}`
+                                            )
+                                        }
+                                        className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-md transition-colors"
+                                    >
+                                        Give Exam
+                                    </button>
+                                </div>
+                            )}
                     </aside>
 
-                    <main className="flex-1 bg-white rounded-xl p-6 shadow">
+                    <main className="flex-1 bg-white rounded-xl p-6 shadow-lg">
                         {selectedChapter ? (
                             <>
                                 <div className="bg-gray-50 p-4 rounded-md shadow flex justify-between items-center">
@@ -224,22 +311,25 @@ const CourseDescription = ({
                                             <h2 className="text-2xl font-bold text-blue-700 border-b-2 border-blue-300 mb-1">
                                                 {selectedChapter.title}
                                             </h2>
-                                            <button
-                                                onClick={() => {
-                                                    const confirmed =
-                                                        window.confirm(
-                                                            "Are you sure you want to delete this chapter?"
-                                                        );
-                                                    if (confirmed) {
-                                                        router.visit(
-                                                            `/remove_chapter/id/${selectedChapter.id}`
-                                                        );
-                                                    }
-                                                }}
-                                                className="bg-red-100 text-red-500 p-2 rounded-full hover:scale-110"
-                                            >
-                                                <MdDelete className="size-5" />
-                                            </button>
+                                            {auth?.user?.id ===
+                                                singleCourse?.course_teacher && (
+                                                <button
+                                                    onClick={() => {
+                                                        const confirmed =
+                                                            window.confirm(
+                                                                "Are you sure you want to delete this chapter?"
+                                                            );
+                                                        if (confirmed) {
+                                                            router.visit(
+                                                                `/remove_chapter/id/${selectedChapter.id}`
+                                                            );
+                                                        }
+                                                    }}
+                                                    className="bg-red-100 text-red-500 p-2 rounded-full hover:scale-110"
+                                                >
+                                                    <MdDelete className="size-5" />
+                                                </button>
+                                            )}
                                         </div>
                                         {isEnrolled?.course_id !==
                                             singleCourse?.id &&
@@ -260,7 +350,7 @@ const CourseDescription = ({
                                         ) ? (
                                             <Link
                                                 href={`/chapter_complete/id/${selectedChapter.id}`}
-                                                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                                                className="bg-blue-600 text-white w-1/3 px-4 py-2 rounded-md hover:bg-blue-700"
                                             >
                                                 Mark as Complete
                                             </Link>
@@ -329,13 +419,13 @@ const CourseDescription = ({
                         )}
                     </main>
                 </div>
-
                 {/* Related Courses */}
-                <section className="mt-20">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-6">
-                        Related Courses
-                    </h2>
-                    <CourseCards data={courses} auth={auth} />
+                <section>
+                    <CourseCards
+                        data={courses}
+                        auth={auth}
+                        text={"Related Courses"}
+                    />
                 </section>
             </div>
 
@@ -345,6 +435,15 @@ const CourseDescription = ({
                 singleCourse={singleCourse}
                 chapterToEdit={chapterToEdit}
             />
+
+            <FeedbackDrawer
+                isOpen={showFeedbackDrawer}
+                onClose={() => setShowFeedbackDrawer(false)}
+                feedbacks={feedbacks}
+                courseId={singleCourse.id}
+                auth={auth}
+            />
+
             <Footer />
         </>
     );

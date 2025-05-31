@@ -14,7 +14,7 @@ class ChapterController extends Controller
             'chapterDesc' => 'required|string|min:20|max:300',
             'chapterVideo' => 'required|url',
             'isPreview' => 'boolean',
-            'chapterId' => 'nullable|exists:chapters,id', // Optional for updates
+            'chapterId' => 'nullable|exists:chapter,id', // Optional for updates
         ]);
 
         // If chapterId is passed, we're updating; otherwise, we're creating

@@ -50,10 +50,10 @@ const Quotes = () => {
 
     return (
         <div className="relative w-full min-h-screen flex items-center justify-center bg-black px-4 py-12 sm:py-20">
-            <div className="absolute inset-0 z-0 overflow-hidden bg-blue-950 hidden sm:block">
+            <div className="absolute inset-0 z-0 overflow-hidden bg-blue-900 hidden sm:block">
                 <ParticlesComponent />
             </div>
-            <div className="absolute inset-0 bg-black/10 z-10" />
+            {/* <div className="absolute inset-0 bg-black/10 z-10" /> */}
 
             <div className="relative z-20 max-w-2xl w-full px-6 py-10 bg-white/10 backdrop-blur-lg rounded-3xl shadow-[0_10px_50px_rgba(0,0,0,0.3)] border border-white/20 animate-fade-in-up text-white">
                 <div className="flex flex-col items-center gap-6 text-center">

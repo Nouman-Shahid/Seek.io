@@ -26,6 +26,7 @@ const ChapterForm = ({
     useEffect(() => {
         if (chapterToEdit) {
             setData({
+                chapterId: chapterToEdit.id ?? null,
                 chapterTitle: chapterToEdit.title || "",
                 chapterDesc: chapterToEdit.desc || "",
                 chapterVideo: chapterToEdit.video || "",

@@ -38,13 +38,13 @@ export default function Edit({ mustVerifyEmail, status, auth, courses = [] }) {
                     </section>
 
                     {/* Manage Courses */}
-                    <section className="bg-white shadow sm:rounded-2xl p-6 sm:p-8">
-                        <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                            Manage Courses
-                        </h2>
-                        <div className="space-y-4">
-                            {courses.length > 0 ? (
-                                courses.map((course) => (
+                    {courses.length > 0 && (
+                        <section className="bg-white shadow sm:rounded-2xl p-6 sm:p-8">
+                            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                                Manage Courses
+                            </h2>
+                            <div className="space-y-4">
+                                {courses.map((course) => (
                                     <div
                                         key={course.id}
                                         className="flex items-center justify-between bg-gray-50 p-4 rounded-lg"
@@ -69,14 +69,10 @@ export default function Edit({ mustVerifyEmail, status, auth, courses = [] }) {
                                             <MdDelete className="size-5" />
                                         </button>
                                     </div>
-                                ))
-                            ) : (
-                                <p className="text-gray-500">
-                                    No courses available.
-                                </p>
-                            )}
-                        </div>
-                    </section>
+                                ))}
+                            </div>
+                        </section>
+                    )}
 
                     {/* Delete Account */}
                     <section className="bg-white shadow sm:rounded-2xl p-6 sm:p-8">

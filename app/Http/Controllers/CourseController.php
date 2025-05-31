@@ -6,6 +6,7 @@ use App\Models\Chapter;
 use App\Models\ChapterCompletion;
 use App\Models\Course;
 use App\Models\Enrollments;
+use App\Models\Feedback;
 use App\Services\WebPurifyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -48,12 +49,15 @@ class CourseController extends Controller
             $completedChapters = ChapterCompletion::where('student_id', $user->id)
                 ->whereIn('chapter_id', $chapters->pluck('id'))
                 ->where('status', 'Completed')
-                ->orderBy('id', direction: 'desc')
+                ->orderBy('id', 'desc')
                 ->pluck('chapter_id')
                 ->toArray();
         }
 
-
+        $feedbacks = DB::table('feedback')
+            ->where('course_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
 
         return Inertia::render('CourseDescription', [
@@ -61,9 +65,11 @@ class CourseController extends Controller
             'singleCourse' => $data,
             'chapters' => $chapters,
             'isEnrolled' => $isEnrolled,
-            'completedChapters' => $completedChapters
+            'completedChapters' => $completedChapters,
+            'feedbacks' => $feedbacks,
         ]);
     }
+
 
     // protected $webPurifyService;
 
@@ -121,5 +127,58 @@ class CourseController extends Controller
         Course::where('id', '=', $id)->delete();
 
         return back();
+    }
+
+
+
+    public function storeFeedback(Request $request)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'course_id' => 'required|exists:course,id',
+            'rating' => 'required|in:1,3,5',
+            'comment' => 'required|string|min:3',
+        ]);
+
+        Feedback::create([
+            'course_id' => $validated['course_id'],
+            'rating' => $validated['rating'],
+            'comment' => $validated['comment'],
+            'user_name' => $user->name,
+            'created_at' => now(),
+        ]);
+
+        // Calculate the average rating and round to 1 decimal place
+        $avgRating = Feedback::where('course_id', $validated['course_id'])
+            ->selectRaw('AVG(CAST(rating AS INTEGER)) as avg_rating')
+            ->value('avg_rating');
+
+        $avgRating = round($avgRating, 1); // round to 1 decimal place
+
+        Course::where('id', $validated['course_id'])
+            ->update(['course_rating' => $avgRating]);
+
+        return back()->with('success', 'Feedback submitted.');
+    }
+
+    public function removeFeedback($id)
+    {
+        $feedback = Feedback::findOrFail($id);
+        $courseId = $feedback->course_id;
+
+        $feedback->delete();
+
+        $avgRating = Feedback::where('course_id', $courseId)
+            ->selectRaw('AVG(CAST(rating AS INTEGER)) as avg_rating')
+            ->value('avg_rating');
+
+        $avgRating = $avgRating ? round($avgRating, 1) : null;
+
+        // Update course rating
+        Course::where('id', $courseId)
+            ->update(['course_rating' => $avgRating]);
+
+        return back()->with('success', 'Feedback deleted and rating updated.');
     }
 }
