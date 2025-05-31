@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Chapter;
 use App\Models\ChapterCompletion;
 use App\Models\Course;
+use App\Models\CourseExam;
 use App\Models\Enrollments;
 use App\Models\Feedback;
 use App\Services\WebPurifyService;
@@ -60,6 +61,9 @@ class CourseController extends Controller
             ->get();
 
 
+        $courseExam = CourseExam::where('course_id', '=', $id)->get();
+
+
         return Inertia::render('CourseDescription', [
             'courses' => $courses,
             'singleCourse' => $data,
@@ -67,6 +71,7 @@ class CourseController extends Controller
             'isEnrolled' => $isEnrolled,
             'completedChapters' => $completedChapters,
             'feedbacks' => $feedbacks,
+            'courseExam' => $courseExam
         ]);
     }
 

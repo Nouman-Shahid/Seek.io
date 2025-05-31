@@ -17,7 +17,6 @@ class SearchController extends Controller
         return redirect()->route('search.results', ['query' => $validated['searchdata']]);
     }
 
-
     public function showResults(Request $request)
     {
         $search = trim($request->query('query', ''));
@@ -34,7 +33,7 @@ class SearchController extends Controller
             return !empty(trim($term));
         });
 
-        // Course query
+        // Enhanced Course Query
         $courseQuery = DB::table('course')
             ->select(
                 'id',
@@ -48,8 +47,10 @@ class SearchController extends Controller
                 DB::raw("NULL as profile_image"),
                 DB::raw("NULL as profile_headline"),
                 DB::raw("NULL as email"),
-                DB::raw("'course' as type")
+                DB::raw("'course' as type"),
+                DB::raw("(publish = 'Published')::integer as is_published") // Cast to integer
             )
+            ->where('publish', 'Published')
             ->where(function ($query) use ($search, $searchTerms) {
                 $query->where('course_title', 'LIKE', "%{$search}%")
                     ->orWhere('course_category', 'LIKE', "%{$search}%");
@@ -57,7 +58,8 @@ class SearchController extends Controller
                 foreach ($searchTerms as $term) {
                     $query->orWhere('course_title', 'LIKE', "%{$term}%")
                         ->orWhere('course_category', 'LIKE', "%{$term}%")
-                        ->orWhere('course_desc', 'LIKE', "%{$term}%");
+                        ->orWhere('course_desc', 'LIKE', "%{$term}%")
+                        ->orWhere('course_level', 'LIKE', "%{$term}%");
                 }
 
                 if (is_numeric($search)) {
@@ -66,25 +68,27 @@ class SearchController extends Controller
                 }
             });
 
-        // User query
+        // Enhanced User Query
         $userQuery = DB::table('users')
             ->select(
                 'id',
                 'name',
                 DB::raw("NULL as price"),
                 DB::raw("NULL as course_level"),
-                DB::raw("NULL as image"),
+                'profile_image as image',
                 DB::raw("NULL as course_category"),
                 DB::raw("NULL as course_rating"),
-                DB::raw("NULL as description"),
+                'profile_headline as description',
                 'profile_image',
                 'profile_headline',
                 'email',
-                DB::raw("'user' as type")
+                DB::raw("'user' as type"),
+                DB::raw("1 as is_published") // Already integer
             )
             ->where(function ($query) use ($search, $searchTerms) {
                 $query->where('name', 'LIKE', "%{$search}%")
-                    ->orWhere('email', 'LIKE', "%{$search}%");
+                    ->orWhere('email', 'LIKE', "%{$search}%")
+                    ->orWhere('profile_headline', 'LIKE', "%{$search}%");
 
                 foreach ($searchTerms as $term) {
                     $query->orWhere('name', 'LIKE', "%{$term}%")
@@ -93,16 +97,26 @@ class SearchController extends Controller
                 }
             });
 
-        $combinedQuery = $courseQuery->union($userQuery);
-
-        $results = collect(DB::table(DB::raw("({$combinedQuery->toSql()}) as combined"))
-            ->mergeBindings($combinedQuery)
-            ->get());
-
-        $results = $results->sortBy(function ($item) use ($search) {
-            $value = strtolower($item->name ?? '');
-            return strpos($value, strtolower($search)) ?: PHP_INT_MAX;
-        })->values();
+        // Combine queries with proper scoring
+        $results = DB::query()
+            ->fromSub($courseQuery->unionAll($userQuery), 'combined')
+            ->orderByRaw("
+                CASE 
+                    WHEN type = 'course' AND name LIKE ? THEN 1
+                    WHEN type = 'course' AND name LIKE ? THEN 2
+                    WHEN type = 'course' AND description LIKE ? THEN 3
+                    WHEN type = 'user' AND name LIKE ? THEN 4
+                    WHEN type = 'user' AND email LIKE ? THEN 5
+                    ELSE 6
+                END
+            ", [
+                $search . '%',
+                '%' . $search . '%',
+                '%' . $search . '%',
+                $search . '%',
+                $search . '%'
+            ])
+            ->get();
 
         return Inertia::render('SearchedResults', [
             'results' => $results,
