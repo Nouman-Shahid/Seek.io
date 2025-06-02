@@ -6,7 +6,7 @@ import { Head, useForm } from "@inertiajs/react";
 import Preference from "../images/assets/preference.png";
 import Role from "../images/assets/role.png";
 
-const steps = ["Basic Information", "user_details", "User Role"];
+const steps = ["Basic Information", "User Details", "User Role"];
 const roles = [
     {
         id: 1,

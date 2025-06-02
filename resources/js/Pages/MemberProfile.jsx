@@ -14,7 +14,7 @@ const MemberProfile = ({ user = {}, data = [], auth }) => {
                 {/* Profile Section */}
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Sidebar */}
-                    <aside className="w-full shadow-xl h-fit p-6 rounded-2xl space-y-6 text-center">
+                    <aside className="w-[30%] shadow-xl h-fit p-6 rounded-2xl space-y-6 text-center">
                         {/* Profile Image */}
                         <div className="flex flex-col items-center">
                             {user.profile_image ? (
