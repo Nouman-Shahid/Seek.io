@@ -75,9 +75,11 @@ export default function Edit({ mustVerifyEmail, status, auth, courses = [] }) {
                     )}
 
                     {/* Delete Account */}
-                    <section className="bg-white shadow sm:rounded-2xl p-6 sm:p-8">
-                        <DeleteUserForm className="max-w-xl" />
-                    </section>
+                    {auth?.user?.role !== "Admin" && (
+                        <section className="bg-white shadow sm:rounded-2xl p-6 sm:p-8">
+                            <DeleteUserForm className="max-w-xl" />
+                        </section>
+                    )}
                 </div>
             </div>
         </>

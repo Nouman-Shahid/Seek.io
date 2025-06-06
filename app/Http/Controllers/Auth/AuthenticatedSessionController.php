@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -31,19 +32,14 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
-        $user = Auth::user();
 
+        $user = Auth::user();
         if ($user->email_verified_at === NULL) {
             return redirect()->route('verification.notice');
         }
-        // if ($user->role == 'student' && $user->preference === NULL) {
-        //     return redirect()->route('user_details');
-        // }
-        // // elseif ($user->role == 'teacher') {
-        // //     return redirect()->intended(route('home'));
-        // // } elseif ($user->role == 'admin') {
-        // //     return redirect()->intended(route('admindashboard'));
-        // // }
+        if ($user->role === 'Admin') {
+            return Redirect::route('adminDashboard');
+        }
 
         $request->session()->regenerate();
 

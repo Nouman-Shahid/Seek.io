@@ -115,7 +115,7 @@ const CourseDescription = ({
                                 </Link>
                             </p>
                             <div className="flex items-center gap-4 pt-2">
-                                {auth?.user?.role !== "Teacher" ? (
+                                {auth?.user?.role === "Student" ? (
                                     isEnrolled?.course_id ===
                                     singleCourse?.id ? (
                                         <button

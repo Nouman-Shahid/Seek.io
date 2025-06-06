@@ -63,7 +63,7 @@ export default function Navbar({ auth }) {
                     <div className="hidden md:flex space-x-4 items-center">
                         {auth.user ? (
                             <div className="flex items-center space-x-4">
-                                {auth.user.role !== "Teacher" && (
+                                {auth?.user?.role === "Student" && (
                                     <Link
                                         href={route("cart")}
                                         className="relative"
@@ -97,11 +97,20 @@ export default function Navbar({ auth }) {
                                         </span>
                                     </Dropdown.Trigger>
                                     <Dropdown.Content className="relative right-0 mt-2 w-48 bg-white border border-[#e5e7eb] rounded-md shadow-lg z-50">
-                                        <Dropdown.Link
-                                            href={route("user_dashboard")}
-                                        >
-                                            Profile
-                                        </Dropdown.Link>
+                                        {auth?.user?.role !== "Admin" && (
+                                            <Dropdown.Link
+                                                href={route("user_dashboard")}
+                                            >
+                                                Profile
+                                            </Dropdown.Link>
+                                        )}
+                                        {auth?.user?.role === "Admin" && (
+                                            <Dropdown.Link
+                                                href={route("adminDashboard")}
+                                            >
+                                                Admin Dashboard
+                                            </Dropdown.Link>
+                                        )}
                                         <Dropdown.Link
                                             href={route("settings.edit")}
                                         >

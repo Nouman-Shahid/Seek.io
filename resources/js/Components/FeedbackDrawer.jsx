@@ -124,15 +124,17 @@ export default function FeedbackDrawer({
                                 </p>
 
                                 <div className="flex w-full justify-end">
-                                    <button
-                                        onClick={() => {
-                                            router.visit(
-                                                `/remove_feedback/${feedback.id}`
-                                            );
-                                        }}
-                                    >
-                                        <MdDelete className="text-red-500 bg-red-100 size-5 rounded-full" />
-                                    </button>
+                                    {feedback.user_id === auth?.user?.id && (
+                                        <button
+                                            onClick={() => {
+                                                router.visit(
+                                                    `/remove_feedback/${feedback.id}`
+                                                );
+                                            }}
+                                        >
+                                            <MdDelete className="text-red-500 bg-red-100 size-5 rounded-full" />
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         ))
@@ -190,13 +192,17 @@ export default function FeedbackDrawer({
                             </p>
                         )}
 
-                        <button
-                            type="submit"
-                            disabled={processing}
-                            className="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition disabled:opacity-60"
-                        >
-                            {processing ? "Submitting..." : "Submit Feedback"}
-                        </button>
+                        {auth?.user?.role !== "Admin" && (
+                            <button
+                                type="submit"
+                                disabled={processing}
+                                className="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition disabled:opacity-60"
+                            >
+                                {processing
+                                    ? "Submitting..."
+                                    : "Submit Feedback"}
+                            </button>
+                        )}
                     </form>
                 )}
             </div>
