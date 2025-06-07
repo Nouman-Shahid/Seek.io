@@ -94,7 +94,9 @@ const CourseDescription = ({
                 />
             )}
 
-            {singleCourse.publish === "Published" ? (
+            {singleCourse.publish === "Published" ||
+            singleCourse.course_teacher === auth?.user?.id ||
+            auth?.user?.role === "Admin" ? (
                 <div className="pt-20 max-w-7xl mx-auto p-6 space-y-10">
                     {/* Course Header */}
                     <div className="bg-white shadow-lg rounded-2xl p-8 flex flex-col lg:flex-row gap-8">
@@ -144,37 +146,50 @@ const CourseDescription = ({
                                                     <FaCheckCircle /> Make Exam
                                                 </Link>
                                             )}
-                                            <button
-                                                onClick={() =>
-                                                    router.post(
-                                                        `/publish_course/id/${singleCourse.id}`
-                                                    )
-                                                }
-                                                disabled={
-                                                    singleCourse.publish ===
-                                                        "Published" ||
-                                                    chapters.length === 0 ||
-                                                    !courseExam?.length > 0 // Changed this condition
-                                                }
-                                                className={`px-4 py-2 rounded-md flex items-center gap-2 transition-all ${
-                                                    singleCourse.publish ===
-                                                        "Published" ||
-                                                    chapters.length === 0 ||
-                                                    !courseExam?.length > 0 // Changed this condition
-                                                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                                        : "bg-green-600 text-white hover:bg-green-700"
-                                                }`}
-                                            >
-                                                <FaCheckCircle />
-                                                {singleCourse.publish ===
-                                                "Published"
-                                                    ? "Published"
-                                                    : "Publish"}
-                                            </button>
+                                            <div className="space-y-3 flex">
+                                                <button
+                                                    onClick={() =>
+                                                        router.post(
+                                                            `/publish_course/id/${singleCourse.id}`
+                                                        )
+                                                    }
+                                                    disabled={
+                                                        singleCourse.publish ===
+                                                            "Published" ||
+                                                        "Pending" ||
+                                                        chapters.length === 0 ||
+                                                        !courseExam?.length > 0
+                                                    }
+                                                    className={`px-4 py-2 rounded-md flex items-center gap-2 transition-all ${
+                                                        singleCourse.publish ===
+                                                            "Published" ||
+                                                        "Pending" ||
+                                                        chapters.length === 0 ||
+                                                        !courseExam?.length > 0
+                                                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                                            : "bg-green-600 text-white hover:bg-green-700"
+                                                    }`}
+                                                >
+                                                    <FaCheckCircle />
+                                                    {singleCourse.publish ===
+                                                    "Published"
+                                                        ? "Published"
+                                                        : singleCourse.publish ===
+                                                          "Pending"
+                                                        ? "Pending "
+                                                        : "Publish"}
+                                                </button>
+                                            </div>
                                         </div>
                                     )
                                 )}
                             </div>
+                            {singleCourse.publish === "Pending" && (
+                                <div className="bg-blue-50 border border-blue-300 text-blue-800 text-sm px-4 py-2 rounded-lg w-fit">
+                                    Your course is being reviewed for guideline
+                                    compliance.
+                                </div>
+                            )}
                             {auth?.user?.role === "Teacher" &&
                                 chapters.length === 0 && (
                                     <p className="text-red-500 text-sm pt-1">

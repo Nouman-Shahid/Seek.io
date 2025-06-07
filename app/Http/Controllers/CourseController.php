@@ -120,12 +120,22 @@ class CourseController extends Controller
 
     public function publishCourse($id)
     {
+        $user = Auth::user();
+
+        $publishedCount = Course::where('course_teacher', $user->id)
+            ->where('publish', 'Published')
+            ->count();
+
+        $status = $publishedCount >= 3 ? 'Published' : 'Pending';
+
         Course::where('id', $id)->update([
-            'publish' => 'Published'
+            'publish' => $status
         ]);
 
         return back();
     }
+
+
 
     public function removeCourse($id)
     {

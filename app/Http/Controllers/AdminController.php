@@ -27,12 +27,24 @@ class AdminController extends Controller
 
     public function getCourses()
     {
-        $courses = Course::all();
+        $courses = Course::orderBy('publish')->paginate(8);
 
         return Inertia::render('Admin/AdminCourses', [
             'courses' => $courses,
 
         ]);
+    }
+    public function changePublishStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:Published,Pending,Draft',
+        ]);
+
+        Course::where('id', $id)->update([
+            'publish' => $request->status,
+        ]);
+
+        return back();
     }
 
     public function getStudents()

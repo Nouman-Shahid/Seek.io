@@ -66,7 +66,7 @@ const MakeExam = ({ course, questions }) => {
                         <div className="flex space-x-2">
                             <button
                                 onClick={() => setShowModal(true)}
-                                className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-all shadow-md"
+                                className="px-6 py-3 bg-blue-100 text-black font-semibold rounded-md hover:bg-blue-200 transition-all shadow-md"
                             >
                                 + Add New Question
                             </button>
@@ -81,7 +81,7 @@ const MakeExam = ({ course, questions }) => {
                                     className={`px-6 py-3 font-semibold rounded-md transition-all shadow-md ${
                                         isSaving
                                             ? "bg-gray-400 cursor-not-allowed"
-                                            : "bg-green-500 text-white hover:bg-green-600"
+                                            : "bg-blue-700 text-white hover:bg-blue-600"
                                     }`}
                                     onClick={(e) => {
                                         if (isSaving) {
@@ -137,7 +137,7 @@ const MakeExam = ({ course, questions }) => {
                                                             key={option.id}
                                                             className={`flex items-center px-3 py-2 rounded-md ${
                                                                 option.is_correct
-                                                                    ? "bg-green-100 text-green-800"
+                                                                    ? "bg-blue-100 text-blue-800"
                                                                     : "bg-gray-100 text-gray-700"
                                                             }`}
                                                         >
@@ -160,7 +160,7 @@ const MakeExam = ({ course, questions }) => {
                                             <div className="text-right mt-3 space-x-2">
                                                 <Link
                                                     href={`/exam_question/delete/${question.id}`}
-                                                    className="px-4 py-2 bg-red-500 text-white rounded-md text-sm hover:bg-red-600"
+                                                    className="px-4 py-2 bg-red-600 text-white rounded-md text-sm hover:bg-red-700"
                                                 >
                                                     Delete
                                                 </Link>
@@ -168,7 +168,7 @@ const MakeExam = ({ course, questions }) => {
                                                     onClick={() =>
                                                         handleEdit(question)
                                                     }
-                                                    className="px-4 py-2 bg-yellow-500 text-white rounded-md text-sm hover:bg-yellow-600"
+                                                    className="px-4 py-2 bg-blue-700 text-white rounded-md text-sm hover:bg-blue-600"
                                                 >
                                                     Edit
                                                 </button>
