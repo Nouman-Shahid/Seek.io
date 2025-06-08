@@ -52,7 +52,7 @@ const MemberProfile = ({ user = {}, data = [], auth }) => {
 
                         {/* Contact / Payout */}
                         <div className="space-y-3 w-full flex items-center justify-center">
-                            {auth.user?.id !== user.id && (
+                            {auth?.user?.id !== user.id && (
                                 <a
                                     href={`mailto:${user.email}`}
                                     className="block lg:w-full w-3/4 px-2 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-center transition-all"
@@ -86,11 +86,11 @@ const MemberProfile = ({ user = {}, data = [], auth }) => {
                         <section>
                             <div className="flex justify-between items-center mb-4">
                                 <h2 className="text-xl font-bold text-gray-800">
-                                    {user.role === "Teacher"
+                                    {auth?.user?.role === "Teacher"
                                         ? "My Courses"
                                         : "Enrolled Courses"}
                                 </h2>
-                                {user.role === "Teacher" && (
+                                {auth?.user?.role === "Teacher" && (
                                     <Link href="/makecourse">
                                         <IoIosAddCircle className="text-blue-600 hover:text-blue-700 text-3xl" />
                                     </Link>

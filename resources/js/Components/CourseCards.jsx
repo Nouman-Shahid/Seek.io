@@ -43,13 +43,18 @@ const CourseCards = ({ auth, data = [], text, flag }) => {
                                         course.course_teacher && (
                                         <span
                                             className={`absolute top-3 right-3 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md ${
-                                                course.publish
+                                                course.publish === "Published"
                                                     ? "bg-green-600"
-                                                    : "bg-yellow-500"
+                                                    : course.publish ===
+                                                      "Pending"
+                                                    ? "bg-yellow-500"
+                                                    : "bg-gray-500"
                                             }`}
                                         >
-                                            {course.publish
+                                            {course.publish === "Published"
                                                 ? "Published"
+                                                : course.publish === "Pending"
+                                                ? "Pending"
                                                 : "Draft"}
                                         </span>
                                     )}
