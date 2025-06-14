@@ -59,6 +59,8 @@ const CourseCards = ({ auth, data = [], text, flag }) => {
                                         </span>
                                     )}
 
+                                    {}
+
                                     <div className="p-4 flex flex-col justify-between h-[240px]">
                                         <h5 className="text-lg font-semibold text-gray-900">
                                             {course.course_title.length > 50
