@@ -19,30 +19,32 @@ export default function Welcome({ auth, data = [] }) {
     }, []);
 
     return (
-        <div className="overflow-hidden ">
+        <>
             <Head title="Home" />
             <Navbar auth={auth} />
 
-            <main className="flex flex-col justify-between items-center h-auto w-full">
-                <Hero auth={auth} />
+            <div className="overflow-hidden ">
+                <main className="flex flex-col justify-between items-center h-auto w-full">
+                    <Hero auth={auth} />
 
-                <CourseCards
-                    auth={auth}
-                    data={data}
-                    text={`Courses That Sell Themselves`}
-                />
-                <Quotes />
-                <CourseCards
-                    auth={auth}
-                    data={data}
-                    text={`Start with free courses`}
-                    flag="Free"
-                />
+                    <CourseCards
+                        auth={auth}
+                        data={data}
+                        text={`Courses That Sell Themselves`}
+                    />
+                    <Quotes />
+                    <CourseCards
+                        auth={auth}
+                        data={data}
+                        text={`Start with free courses`}
+                        flag="Free"
+                    />
 
-                <Features />
-            </main>
+                    <Features />
+                </main>
 
-            <Footer />
-        </div>
+                <Footer />
+            </div>
+        </>
     );
 }

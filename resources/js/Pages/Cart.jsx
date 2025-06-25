@@ -1,5 +1,4 @@
 import CourseCards from "@/Components/CourseCards";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, useForm, usePage } from "@inertiajs/react";
 import React from "react";
 import InputError from "@/Components/InputError";
@@ -191,11 +190,7 @@ const Cart = ({ courses = [], allcourses = [], flash, auth }) => {
                                 </span>
                             </div>
                         </div>
-                        <form
-                            action={route("checkout")}
-                            // method="POST"
-                            className="flex mt-5"
-                        >
+                        <form action={route("checkout")} className="flex mt-5">
                             {courses.length !== 0 && (
                                 <button
                                     type="submit"

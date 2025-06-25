@@ -1,3 +1,4 @@
+import Navbar from "@/Components/Navbar";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import React from "react";
@@ -11,7 +12,7 @@ import {
     CartesianGrid,
 } from "recharts";
 
-const TeacherEarning = ({ TeacherWallet = {}, Enrollments = [] }) => {
+const TeacherEarning = ({ TeacherWallet = {}, Enrollments = [], auth }) => {
     const enrollmentsByMonth = {};
 
     Enrollments.forEach((enrollment) => {
@@ -28,8 +29,9 @@ const TeacherEarning = ({ TeacherWallet = {}, Enrollments = [] }) => {
     }));
 
     return (
-        <AuthenticatedLayout>
+        <>
             <Head title="Earnings" />
+            <Navbar auth={auth} />
 
             <div className="min-h-screen p-6 bg-white">
                 {/* Page Header */}
@@ -108,7 +110,7 @@ const TeacherEarning = ({ TeacherWallet = {}, Enrollments = [] }) => {
                     </div>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </>
     );
 };
 

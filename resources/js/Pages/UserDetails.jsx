@@ -6,7 +6,7 @@ import { Head, useForm } from "@inertiajs/react";
 import Preference from "../images/assets/preference.png";
 import Role from "../images/assets/role.png";
 
-const steps = ["Basic Information", "User Details", "User Role"];
+const steps = ["User Role", "Basic Information", "User Preference"];
 const roles = [
     {
         id: 1,
@@ -161,8 +161,61 @@ const UserDetails = () => {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.4 }}
                     >
-                        {/* Step 0: Basic Information */}
                         {step === 0 && (
+                            <>
+                                <Head title="User Role" />
+                                <div className="w-full h-auto min-h-[500px] flex justify-between p-6 shadow-lg rounded-lg bg-white mx-auto border border-gray-200">
+                                    <div className="flex flex-col w-full md:w-7/12 space-y-6">
+                                        <div className="text-center text-3xl font-extrabold text-gray-900 mb-6">
+                                            Select Your Role
+                                        </div>
+
+                                        {roles.map((item) => (
+                                            <div
+                                                key={item.id}
+                                                className="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+                                            >
+                                                <div className="flex flex-col">
+                                                    <p className="text-xl font-semibold text-gray-800">
+                                                        {item.role}
+                                                    </p>
+                                                    <p className="text-gray-600">
+                                                        {item.description}
+                                                    </p>
+                                                </div>
+                                                <input
+                                                    type="radio"
+                                                    className="w-6 h-6 border-gray-400 text-blue-600 focus:ring-blue-500"
+                                                    name="role"
+                                                    value={item.role}
+                                                    checked={
+                                                        data.role === item.role
+                                                    }
+                                                    required
+                                                    onChange={handleChange}
+                                                />
+                                            </div>
+                                        ))}
+
+                                        {errors.role && (
+                                            <div className="text-red-600 text-sm mt-2 text-center">
+                                                {errors.role}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="w-full md:w-5/12 flex justify-center items-center">
+                                        <img
+                                            src={Role}
+                                            className="w-80 h-96 object-fit  rounded-lg shadow-md opacity-90"
+                                            alt="Role image depicting the different roles of Student and Teacher"
+                                        />
+                                    </div>
+                                </div>
+                            </>
+                        )}
+
+                        {step === 1 && (
                             <div className="w-full h-auto min-h-[500px] flex flex-col justify-between p-8 shadow-xl rounded-lg bg-white mx-auto border border-gray-200">
                                 <Head title="Basic Information" />
                                 <h2 className="text-center text-3xl font-extrabold text-gray-900 my-6">
@@ -245,7 +298,7 @@ const UserDetails = () => {
                             </div>
                         )}
 
-                        {step === 1 && (
+                        {step === 2 && (
                             <>
                                 <Head title="User Details" />
                                 <div>
@@ -309,60 +362,6 @@ const UserDetails = () => {
                                                 alt="loading"
                                             />
                                         </div>
-                                    </div>
-                                </div>
-                            </>
-                        )}
-
-                        {step === 2 && (
-                            <>
-                                <Head title="User Role" />
-                                <div className="w-full h-auto min-h-[500px] flex justify-between p-6 shadow-lg rounded-lg bg-white mx-auto border border-gray-200">
-                                    <div className="flex flex-col w-full md:w-7/12 space-y-6">
-                                        <div className="text-center text-3xl font-extrabold text-gray-900 mb-6">
-                                            Select Your Role
-                                        </div>
-
-                                        {roles.map((item) => (
-                                            <div
-                                                key={item.id}
-                                                className="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
-                                            >
-                                                <div className="flex flex-col">
-                                                    <p className="text-xl font-semibold text-gray-800">
-                                                        {item.role}
-                                                    </p>
-                                                    <p className="text-gray-600">
-                                                        {item.description}
-                                                    </p>
-                                                </div>
-                                                <input
-                                                    type="radio"
-                                                    className="w-6 h-6 border-gray-400 text-blue-600 focus:ring-blue-500"
-                                                    name="role"
-                                                    value={item.role}
-                                                    checked={
-                                                        data.role === item.role
-                                                    }
-                                                    required
-                                                    onChange={handleChange}
-                                                />
-                                            </div>
-                                        ))}
-
-                                        {errors.role && (
-                                            <div className="text-red-600 text-sm mt-2 text-center">
-                                                {errors.role}
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="w-full md:w-5/12 flex justify-center items-center">
-                                        <img
-                                            src={Role}
-                                            className="w-80 h-96 object-fit  rounded-lg shadow-md opacity-90"
-                                            alt="Role image depicting the different roles of Student and Teacher"
-                                        />
                                     </div>
                                 </div>
                             </>

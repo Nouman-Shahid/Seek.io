@@ -53,10 +53,6 @@ const ChapterForm = ({
             if (match) {
                 embedUrl = `https://drive.google.com/file/d/${match[1]}/preview`;
             }
-        } else if (url.includes("facebook.com")) {
-            embedUrl = `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(
-                url
-            )}`;
         } else if (url.includes("github.com") && url.includes("/blob/")) {
             embedUrl = url.replace("/blob/", "/raw/");
         } else {

@@ -138,8 +138,7 @@ class CourseExamController extends Controller
 
         $course = Course::find($id);
 
-        // dd($exam, $course); // or Log::info($exam);
-
+        // dd($exam, $course); 
 
         return Inertia::render('ExamInstructions', ['exam' => $exam, 'course' => $course]);
     }
@@ -209,15 +208,17 @@ class CourseExamController extends Controller
         return redirect()->route('exam_results', ['id' => $courseId]);
     }
 
+
     public function results($courseId)
     {
         $user = Auth::user();
 
-        // Fetch results and course
+        // Fetch the latest result for the user and course
         $results = DB::table('exam_results')
             ->join('course', 'course.id', '=', 'exam_results.course_id')
             ->where('exam_results.user_id', '=', $user->id)
             ->where('exam_results.course_id', '=', $courseId)
+            ->orderBy('exam_results.created_at', 'desc') // Get the latest result
             ->select('course.*', 'exam_results.*')
             ->first();
 

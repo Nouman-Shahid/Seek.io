@@ -2,12 +2,7 @@ import { Link, router, usePage } from "@inertiajs/react";
 import { useState } from "react";
 import {
     LayoutDashboard,
-    Box,
     Users,
-    ShoppingCart,
-    MessageSquare,
-    Info,
-    Shield,
     Globe,
     Menu,
     X,
@@ -34,15 +29,8 @@ const navItems = [
         href: "/admin/teachers",
         icon: <GraduationCap size={20} />,
     },
-    { name: "Orders", href: "/admin/orders", icon: <ShoppingCart size={20} /> },
-    {
-        name: "Feedbacks",
-        href: "/admin/feedbacks",
-        icon: <MessageSquare size={20} />,
-    },
-    { name: "Make Quiz", href: "/admin/routes", icon: <Globe size={20} /> },
-    { name: "About", href: "/admin/about", icon: <Info size={20} /> },
-    { name: "Policies", href: "/admin/policies", icon: <Shield size={20} /> },
+
+    { name: "Make Quiz", href: "/admin/quiz", icon: <Globe size={20} /> },
 ];
 
 export default function Sidebar() {

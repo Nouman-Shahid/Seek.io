@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
 import { router, useForm } from "@inertiajs/react";
-import { MdDelete, MdRemove } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
 
 export default function FeedbackDrawer({
     isOpen,
@@ -124,17 +124,18 @@ export default function FeedbackDrawer({
                                 </p>
 
                                 <div className="flex w-full justify-end">
-                                    {feedback.user_id === auth?.user?.id && (
-                                        <button
-                                            onClick={() => {
-                                                router.visit(
-                                                    `/remove_feedback/${feedback.id}`
-                                                );
-                                            }}
-                                        >
-                                            <MdDelete className="text-red-500 bg-red-100 size-5 rounded-full" />
-                                        </button>
-                                    )}
+                                    {feedback.user_id === auth?.user?.id &&
+                                        auth?.user?.role === "Teacher" && (
+                                            <button
+                                                onClick={() => {
+                                                    router.visit(
+                                                        `/remove_feedback/${feedback.id}`
+                                                    );
+                                                }}
+                                            >
+                                                <MdDelete className="text-red-500 bg-red-100 size-5 rounded-full" />
+                                            </button>
+                                        )}
                                 </div>
                             </div>
                         ))

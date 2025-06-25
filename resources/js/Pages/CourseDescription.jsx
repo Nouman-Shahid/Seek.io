@@ -1,7 +1,7 @@
 import CourseCards from "@/Components/CourseCards";
 import { Head, Link } from "@inertiajs/react";
 import React, { useState, useEffect, useRef } from "react";
-import { FaPlus, FaCheckCircle } from "react-icons/fa";
+import { FaCheckCircle } from "react-icons/fa";
 import { CiLock } from "react-icons/ci";
 import { CiUnlock } from "react-icons/ci";
 import { router } from "@inertiajs/react";
@@ -11,8 +11,9 @@ import ChapterForm from "./ChapterForm";
 import ReactConfetti from "react-confetti";
 import CompletionAudio from "../Audio/course_completion.mp3";
 import { MdDelete } from "react-icons/md";
-import { BadgeCheck, Clock, Star } from "lucide-react";
+import { BadgeCheck, CheckCircle, Clock, Star } from "lucide-react";
 import FeedbackDrawer from "@/Components/FeedbackDrawer";
+import { ToastContainer, toast } from "react-toastify";
 
 const CourseDescription = ({
     singleCourse = {},
@@ -80,6 +81,18 @@ const CourseDescription = ({
         isEnrolled?.course_id,
     ]);
 
+    const notify = () => {
+        setTimeout(() => {
+            toast(" ☑️ Course Added to Cart", {
+                style: {
+                    backgroundColor: "#576eff",
+                    color: "#ffffff",
+                },
+                progressClassName: "custom-progress", //class is in app.css file
+            });
+        }, 2000);
+    };
+
     return (
         <>
             <Navbar auth={auth} />
@@ -104,9 +117,10 @@ const CourseDescription = ({
                             <h1 className="text-3xl font-bold text-gray-900">
                                 {singleCourse?.course_title}
                             </h1>
-                            <pre className="whitespace-pre-line text-gray-700 font-sans leading-relaxed">
+                            <div className="whitespace-pre-wrap break-words break-all text-gray-700 font-sans leading-relaxed">
                                 {singleCourse?.course_desc}
-                            </pre>
+                            </div>
+
                             <p className="text-gray-600">
                                 Course by:{" "}
                                 <Link
@@ -117,7 +131,7 @@ const CourseDescription = ({
                                 </Link>
                             </p>
                             <div className="flex items-center gap-4 pt-2">
-                                {auth?.user?.role === "Student" ? (
+                                {auth?.user?.role !== "Teacher" ? (
                                     isEnrolled?.course_id ===
                                     singleCourse?.id ? (
                                         <button
@@ -129,6 +143,7 @@ const CourseDescription = ({
                                     ) : (
                                         <Link
                                             href={`/add_to_cart/id/${singleCourse.id}`}
+                                            onClick={notify}
                                             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition"
                                         >
                                             Add To Cart
@@ -211,10 +226,14 @@ const CourseDescription = ({
                         <div className="bg-white shadow-lg rounded-2xl p-6 border border-gray-100 ">
                             <div className="flex flex-col items-center text-center">
                                 <Star className="w-8 h-8 text-yellow-500 mb-2" />
-                                <p className="text-sm text-gray-500 tracking-wide mb-1">
+                                <p
+                                    title="Share Your Feedback"
+                                    className="text-sm text-gray-500 tracking-wide mb-1"
+                                >
                                     Rating
                                 </p>
                                 <p
+                                    title="Share Your Feedback"
                                     onClick={handleRatingClick}
                                     className="text-3xl font-semibold text-gray-900 hover:underline cursor-pointer"
                                 >
@@ -267,9 +286,9 @@ const CourseDescription = ({
                                                 setChapterToEdit(null);
                                                 setShowModal(true);
                                             }}
-                                            className="bg-blue-600 text-white rounded-full p-1 hover:bg-blue-700"
+                                            className="bg-blue-600 text-white rounded-md py-1 px-3 hover:bg-blue-700"
                                         >
-                                            <FaPlus />
+                                            Add Chapter
                                         </button>
                                     )}
                                 </div>
@@ -307,21 +326,31 @@ const CourseDescription = ({
 
                             {/* Exam Button Section */}
                             {isEnrolled?.course_id === singleCourse?.id &&
-                                completedChapters.length === chapters.length &&
-                                chapters.length > 0 && (
-                                    <div className="mt-6">
-                                        <button
-                                            onClick={() =>
-                                                router.visit(
-                                                    `/exam_instructions/${singleCourse.id}`
-                                                )
-                                            }
-                                            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-md transition-colors"
-                                        >
-                                            Give Exam
-                                        </button>
-                                    </div>
-                                )}
+                            completedChapters.length === chapters.length &&
+                            chapters.length > 0 ? (
+                                <div className="mt-6">
+                                    <button
+                                        onClick={() =>
+                                            router.visit(
+                                                `/exam_instructions/${singleCourse.id}`
+                                            )
+                                        }
+                                        className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-md transition-colors"
+                                    >
+                                        Give Exam
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="mt-6">
+                                    <button
+                                        title="Complete all chapters to become eligible for the exam"
+                                        disabled
+                                        className="w-full bg-gray-200  text-black  py-2 px-4 rounded-md transition-colors"
+                                    >
+                                        Get Certified Now{" "}
+                                    </button>
+                                </div>
+                            )}
                         </aside>
 
                         <main className="flex-1 bg-white rounded-xl p-6 shadow-lg">
@@ -484,6 +513,8 @@ const CourseDescription = ({
                 courseId={singleCourse.id}
                 auth={auth}
             />
+
+            <ToastContainer />
 
             <Footer />
         </>

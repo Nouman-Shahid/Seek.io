@@ -38,3 +38,7 @@
 ::-webkit-scrollbar-thumb:hover {
     background: #0061d1;
 }
+
+.custom-progress {
+    background: white !important;
+}

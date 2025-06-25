@@ -10,11 +10,7 @@ import { HiOutlineShoppingCart } from "react-icons/hi";
 export default function AuthenticatedLayout({ header, children }) {
     const navLinks = [
         { name: "Home", href: route("home"), active: route().current("home") },
-        {
-            name: "Explore",
-            href: route("explore"),
-            active: route().current("explore"),
-        },
+
         {
             name: "About",
             href: route("about"),
@@ -42,6 +38,16 @@ export default function AuthenticatedLayout({ header, children }) {
                             {link.name}
                         </NavLink>
                     ))}
+                    {user?.role === "Student" && (
+                        <NavLink
+                            name="Daily Challenge"
+                            href={route("daily-challenge")}
+                            active={route().current("daily-challenge")}
+                            className="text-blue-600 hover:text-blue-600 text-base font-medium transition-colors duration-200"
+                        >
+                            Challenge
+                        </NavLink>
+                    )}
                 </div>
 
                 <div className="hidden sm:ms-6 sm:flex sm:items-center">

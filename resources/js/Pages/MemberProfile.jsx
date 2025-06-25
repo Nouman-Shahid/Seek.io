@@ -86,7 +86,7 @@ const MemberProfile = ({ user = {}, data = [], auth }) => {
                         <section>
                             <div className="flex justify-between items-center mb-4">
                                 <h2 className="text-xl font-bold text-gray-800">
-                                    {auth?.user?.role === "Teacher"
+                                    {user.role === "Teacher"
                                         ? "My Courses"
                                         : "Enrolled Courses"}
                                 </h2>

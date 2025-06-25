@@ -7,6 +7,7 @@ import AOS from "aos";
 import { useEffect } from "react";
 import Navbar from "@/Components/Navbar";
 import { Head, router } from "@inertiajs/react";
+import jsPDF from "jspdf";
 
 const ExamResults = ({ results, total_questions, auth }) => {
     useEffect(() => {
@@ -16,6 +17,81 @@ const ExamResults = ({ results, total_questions, auth }) => {
     results = results || {};
     const percentage = (results.score / total_questions) * 100 || 0;
     const pass = percentage >= 75;
+
+    const handleDownloadCertificate = () => {
+        const doc = new jsPDF({
+            orientation: "landscape",
+            unit: "pt",
+            format: "a4",
+        });
+
+        const userName = auth?.user?.name || "Student";
+        const courseName = results?.course_title || "Unnamed Course";
+        const date = new Date().toLocaleDateString();
+        const siteColor = "#1e3a8a"; // Tailwind blue-800
+
+        // Background border
+        doc.setDrawColor(siteColor);
+        doc.setLineWidth(3);
+        doc.rect(20, 20, 800, 550, "S");
+
+        // Seek.io heading
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(28);
+        doc.setTextColor(siteColor);
+        doc.text("Seek.io", 40, 70);
+
+        // "Verified Certificate" Ribbon
+        doc.setFillColor("#f3f4f6"); // light gray ribbon
+        doc.rect(640, 60, 140, 400, "F");
+
+        doc.setFontSize(14);
+        doc.setTextColor("#374151"); // gray-700
+        doc.setFont("helvetica", "bold");
+        doc.text("VERIFIED", 710, 100, { align: "center" });
+        doc.text("CERTIFICATE", 710, 120, { align: "center" });
+
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        doc.text("Issued by Seek.io", 710, 160, { align: "center" });
+
+        // Main title
+        doc.setFontSize(24);
+        doc.setFont("times", "bold");
+        doc.setTextColor("#000000");
+        doc.text("Certificate of Completion", 420, 160, { align: "center" });
+
+        // Sub content
+        doc.setFont("times", "normal");
+        doc.setFontSize(16);
+        doc.text(`This is to certify that`, 420, 200, { align: "center" });
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(22);
+        doc.text(userName, 420, 240, { align: "center" });
+
+        doc.setFont("times", "normal");
+        doc.setFontSize(16);
+        doc.text("has successfully completed", 420, 280, { align: "center" });
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(20);
+        doc.text(courseName, 420, 320, { align: "center" });
+
+        // Date
+        doc.setFont("times", "italic");
+        doc.setFontSize(12);
+        doc.text(`Date: ${date}`, 420, 360, { align: "center" });
+
+        // Signature
+        doc.setFont("courier", "normal");
+        doc.setFontSize(18);
+        doc.text("_______Seekio_______", 100, 440);
+        doc.setFontSize(12);
+
+        // Save PDF
+        doc.save(`${userName.replace(/\s/g, "_")}_Certificate.pdf`);
+    };
 
     return (
         <>
@@ -61,16 +137,14 @@ const ExamResults = ({ results, total_questions, auth }) => {
                                 </button>
                             )}
 
-                            <button
-                                className={`px-6 py-2 rounded-lg font-semibold transition ${
-                                    pass
-                                        ? "bg-green-500 text-white hover:bg-green-600"
-                                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                }`}
-                                disabled={!pass}
-                            >
-                                Request Certificate
-                            </button>
+                            {pass && (
+                                <button
+                                    className="px-6 py-2 bg-blue-800 text-white hover:bg-blue-900 rounded-lg font-semibold"
+                                    onClick={handleDownloadCertificate}
+                                >
+                                    Download Certificate
+                                </button>
+                            )}
                         </div>
                     </div>
 

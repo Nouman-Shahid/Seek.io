@@ -6,6 +6,7 @@ import CourseCards from "@/Components/CourseCards";
 import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
 import Navbar from "@/Components/Navbar";
+import { ToastContainer, toast } from "react-toastify";
 
 const TeacherDashboard = ({
     user = {},
@@ -28,10 +29,23 @@ const TeacherDashboard = ({
         patch(route("user_details_update"));
     };
 
+    const notify = () => {
+        setTimeout(() => {
+            toast(" ☑️ Profile Saved Successfully", {
+                style: {
+                    backgroundColor: "#576eff",
+                    color: "#ffffff",
+                },
+                progressClassName: "custom-progress", //class is in app.css file
+            });
+        }, 2000);
+    };
+
     return (
         <>
             <Head title="Profile" />
             <Navbar auth={auth} />
+            <ToastContainer />
 
             <form
                 onSubmit={submit}
@@ -55,6 +69,7 @@ const TeacherDashboard = ({
                                     e.preventDefault();
                                     submit(e);
                                     setIsEditing(false);
+                                    notify();
                                 }}
                                 className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-all"
                                 disabled={processing}
@@ -256,8 +271,11 @@ const TeacherDashboard = ({
                                         : "Enrolled Courses"}
                                 </h2>
                                 {user.role === "Teacher" && (
-                                    <Link href="/makecourse">
-                                        <IoIosAddCircle className="text-blue-600 hover:text-blue-700 text-3xl" />
+                                    <Link
+                                        href="/makecourse"
+                                        className="bg-blue-600 text-white rounded-md py-1 px-3 hover:bg-blue-700"
+                                    >
+                                        Add Course
                                     </Link>
                                 )}
                             </div>

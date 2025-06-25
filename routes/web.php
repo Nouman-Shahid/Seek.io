@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\ChallengeController;
 use App\Http\Controllers\ChapterCompletionController;
 use App\Http\Controllers\ChapterController;
 use App\Http\Controllers\CourseController;
@@ -23,11 +24,13 @@ use Inertia\Inertia;
 
 Route::get('/', [CourseController::class, 'getAllCourse'])->name('home');
 Route::get('/about', fn() => Inertia::render('About'))->name('about');
-Route::get('/explore', fn() => Inertia::render('Explore'))->name('explore');
 Route::get('/faq', fn() => Inertia::render('FAQ'))->name('faq');
 
 Route::get('/search/results', [SearchController::class, 'showResults'])->name('search.results');
 Route::post('/search', [SearchController::class, 'search'])->name('search');
+
+Route::get('/daily-challenge', [ChallengeController::class, 'getDailyChallenge'])->name('daily-challenge');
+Route::match(['get', 'post'], '/daily-challenge/check', [ChallengeController::class, 'checkAnswer'])->name('daily-challenge.check');
 
 /*
 |--------------------------------------------------------------------------

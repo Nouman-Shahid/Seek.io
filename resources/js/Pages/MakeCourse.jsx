@@ -7,10 +7,11 @@ import { Head, useForm } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import Free from "../images/assets/Free.png";
 import Paid from "../images/assets/Paid.png";
+import Navbar from "@/Components/Navbar";
 
 const steps = ["Course Information", "Pricing", "Terms & Conditions"];
 
-const MakeCourse = () => {
+const MakeCourse = ({ auth }) => {
     const [step, setStep] = useState(0);
     const { data, setData, post, errors, processing } = useForm({
         course_title: "",
@@ -56,7 +57,8 @@ const MakeCourse = () => {
     };
 
     return (
-        <AuthenticatedLayout>
+        <>
+            <Navbar auth={auth} />
             <Head title="Make Course" />
             <div className="flex justify-center w-full items-center min-h-screen  bg-gray-100">
                 <div className="w-full sm:w-8/12 lg:max-w-4xl p-8 bg-white rounded-lg shadow-lg">
@@ -474,7 +476,7 @@ const MakeCourse = () => {
                     </motion.form>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </>
     );
 };
 

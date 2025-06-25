@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\DailyQuizzes;
 use App\Models\Enrollments;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
 class AdminController extends Controller
@@ -22,6 +24,7 @@ class AdminController extends Controller
             'teacherCount' => $teacherCount,
             'courseCount' => $courseCount,
             'enrollmentCount' => $enrollmentCount
+
         ]);
     }
 
@@ -64,5 +67,41 @@ class AdminController extends Controller
             'teachers' => $teachers,
 
         ]);
+    }
+
+    public function getQuiz()
+    {
+        $quizzes = DailyQuizzes::all();
+
+        return Inertia::render('Admin/AdminQuiz', ['quizzes' => $quizzes]);
+    }
+    public function storeQuiz(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|min:3',
+            'question' => 'required|string|min:3',
+            'option' => 'required|string|min:3',
+            'category' => 'required|string'
+        ]);
+
+        DailyQuizzes::create([
+            'title' => $request->title,
+            'question' => $request->question,
+            'options' => $request->option,
+            'category' => $request->category,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+
+        return Redirect::back();
+    }
+
+
+    public function removeQuiz($id)
+    {
+        DailyQuizzes::where('id', $id)->delete();
+
+        return Redirect::back();
     }
 }
