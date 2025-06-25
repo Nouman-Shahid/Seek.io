@@ -10,7 +10,6 @@ const DailyChallenge = ({ auth, dailyquiz, isCorrect, streakCount }) => {
         answer: "",
         quiz_id: dailyquiz?.id,
     });
-
     useEffect(() => {
         if (isCorrect) {
             setShowConfetti(true);
