@@ -15,6 +15,7 @@ import { BadgeCheck, CheckCircle, Clock, Download, Star } from "lucide-react";
 import FeedbackDrawer from "@/Components/FeedbackDrawer";
 import { ToastContainer, toast } from "react-toastify";
 import moment from "moment";
+import jsPDF from "jspdf";
 
 const CourseDescription = ({
     singleCourse = {},
@@ -95,6 +96,82 @@ const CourseDescription = ({
             });
         }, 2000);
     };
+
+    const handleDownloadCertificate = () => {
+        const doc = new jsPDF({
+            orientation: "landscape",
+            unit: "pt",
+            format: "a4",
+        });
+
+        const userName = auth?.user?.name || "Student";
+        const courseName = singleCourse?.course_title || "Unnamed Course";
+        const date = new Date().toLocaleDateString();
+        const siteColor = "#1e3a8a"; // Tailwind blue-800
+
+        // Background border
+        doc.setDrawColor(siteColor);
+        doc.setLineWidth(3);
+        doc.rect(20, 20, 800, 550, "S");
+
+        // Seek.io heading
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(28);
+        doc.setTextColor(siteColor);
+        doc.text("Seek.io", 40, 70);
+
+        // "Verified Certificate" Ribbon
+        doc.setFillColor("#f3f4f6"); // light gray ribbon
+        doc.rect(640, 60, 140, 400, "F");
+
+        doc.setFontSize(14);
+        doc.setTextColor("#374151"); // gray-700
+        doc.setFont("helvetica", "bold");
+        doc.text("VERIFIED", 710, 100, { align: "center" });
+        doc.text("CERTIFICATE", 710, 120, { align: "center" });
+
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        doc.text("Issued by Seek.io", 710, 160, { align: "center" });
+
+        // Main title
+        doc.setFontSize(24);
+        doc.setFont("times", "bold");
+        doc.setTextColor("#000000");
+        doc.text("Certificate of Completion", 420, 160, { align: "center" });
+
+        // Sub content
+        doc.setFont("times", "normal");
+        doc.setFontSize(16);
+        doc.text(`This is to certify that`, 420, 200, { align: "center" });
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(22);
+        doc.text(userName, 420, 240, { align: "center" });
+
+        doc.setFont("times", "normal");
+        doc.setFontSize(16);
+        doc.text("has successfully completed", 420, 280, { align: "center" });
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(20);
+        doc.text(courseName, 420, 320, { align: "center" });
+
+        // Date
+        doc.setFont("times", "italic");
+        doc.setFontSize(12);
+        doc.text(`Date: ${date}`, 420, 360, { align: "center" });
+
+        // Signature
+        doc.setFont("courier", "normal");
+        doc.setFontSize(18);
+        doc.text("_______Seekio_______", 100, 440);
+        doc.setFontSize(12);
+
+        // Save PDF
+        doc.save(`${userName.replace(/\s/g, "_")}_Certificate.pdf`);
+    };
+
     const now = new Date();
     const banUntil = cheatingBanUntil ? new Date(cheatingBanUntil) : null;
     const isBanActive = banUntil && banUntil > now;
@@ -156,9 +233,14 @@ const CourseDescription = ({
                                                         {course_percentage}%
                                                         {course_percentage >
                                                             75 && (
-                                                            <div className="flex mx-2">
+                                                            <button
+                                                                className="flex mx-2"
+                                                                onClick={
+                                                                    handleDownloadCertificate
+                                                                }
+                                                            >
                                                                 <Download className="size-5 cursor-pointer" />
-                                                            </div>
+                                                            </button>
                                                         )}
                                                     </div>
                                                 </div>
@@ -195,19 +277,22 @@ const CourseDescription = ({
                                                     disabled={
                                                         singleCourse.publish ===
                                                             "Published" ||
-                                                        "Pending" ||
-                                                        chapters.length === 0 ||
-                                                        !courseExam?.length > 0
-                                                    }
-                                                    className={`px-4 py-2 rounded-md flex items-center gap-2 transition-all ${
                                                         singleCourse.publish ===
-                                                            "Published" ||
-                                                        "Pending" ||
+                                                            "Pending" ||
                                                         chapters.length === 0 ||
-                                                        !courseExam?.length > 0
-                                                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                                            : "bg-green-600 text-white hover:bg-green-700"
-                                                    }`}
+                                                        courseExam?.length === 0
+                                                    }
+                                                    className={`px-4 py-2 rounded-md flex items-center gap-2 transition-all
+                                                 ${
+                                                     singleCourse.publish ===
+                                                         "Published" ||
+                                                     singleCourse.publish ===
+                                                         "Pending" ||
+                                                     chapters.length === 0 ||
+                                                     courseExam?.length === 0
+                                                         ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                                         : "bg-blue-600 text-white hover:bg-blue-700"
+                                                 }`}
                                                 >
                                                     <FaCheckCircle />
                                                     {singleCourse.publish ===
@@ -215,7 +300,7 @@ const CourseDescription = ({
                                                         ? "Published"
                                                         : singleCourse.publish ===
                                                           "Pending"
-                                                        ? "Pending "
+                                                        ? "Pending"
                                                         : "Publish"}
                                                 </button>
                                             </div>
