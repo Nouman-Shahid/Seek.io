@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Chapter;
 use App\Models\ChapterCompletion;
+use App\Models\CheatingDetection;
 use App\Models\Course;
 use App\Models\CourseExam;
 use App\Models\Enrollments;
+use App\Models\ExamResults;
 use App\Models\Feedback;
 use App\Services\WebPurifyService;
 use Illuminate\Http\Request;
@@ -63,6 +65,18 @@ class CourseController extends Controller
 
         $courseExam = CourseExam::where('course_id', '=', $id)->get();
 
+        $cheatingRecord = CheatingDetection::where('course_id', $id)
+            ->where('user_id', $user?->id)
+            ->where('is_detected', true)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        $cheatingBanUntil = $cheatingRecord?->cheating_ban_until;
+
+        $course_percentage = ExamResults::where('course_id', $id)
+            ->where('user_id', $user?->id)
+            ->value('percentage');
+
 
         return Inertia::render('CourseDescription', [
             'courses' => $courses,
@@ -71,7 +85,9 @@ class CourseController extends Controller
             'isEnrolled' => $isEnrolled,
             'completedChapters' => $completedChapters,
             'feedbacks' => $feedbacks,
-            'courseExam' => $courseExam
+            'courseExam' => $courseExam,
+            'cheatingBanUntil' => $cheatingBanUntil,
+            'course_percentage' => $course_percentage
         ]);
     }
 

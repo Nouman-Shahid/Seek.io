@@ -236,6 +236,11 @@ const UserDetails = () => {
                                                 required
                                                 className="w-full mt-1 border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                                             />
+                                            {errors.profile_headline && (
+                                                <div className="text-red-600 text-sm mt-2 text-center">
+                                                    {errors.profile_headline}
+                                                </div>
+                                            )}
                                         </div>
 
                                         <div>
@@ -251,6 +256,11 @@ const UserDetails = () => {
                                                 required
                                                 className="w-full mt-1 border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                                             />
+                                            {errors.location && (
+                                                <div className="text-red-600 text-sm mt-2 text-center">
+                                                    {errors.location}
+                                                </div>
+                                            )}
                                         </div>
 
                                         <div>
@@ -267,6 +277,11 @@ const UserDetails = () => {
                                                 onChange={handleChange}
                                                 required
                                             />
+                                            {errors.profile_about && (
+                                                <div className="text-red-600 text-sm mt-2 text-center">
+                                                    {errors.profile_about}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="flex flex-col w-[30%]">
@@ -284,6 +299,11 @@ const UserDetails = () => {
                                                 className="w-full mt-1 border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                                             />
                                         </div>
+                                        {errors.profile_image && (
+                                            <div className="text-red-600 text-sm mt-2 text-center">
+                                                {errors.profile_image}
+                                            </div>
+                                        )}
 
                                         {data.profile_image && (
                                             <div className="flex justify-center mt-4">

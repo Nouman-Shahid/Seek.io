@@ -11,9 +11,10 @@ import ChapterForm from "./ChapterForm";
 import ReactConfetti from "react-confetti";
 import CompletionAudio from "../Audio/course_completion.mp3";
 import { MdDelete } from "react-icons/md";
-import { BadgeCheck, CheckCircle, Clock, Star } from "lucide-react";
+import { BadgeCheck, CheckCircle, Clock, Download, Star } from "lucide-react";
 import FeedbackDrawer from "@/Components/FeedbackDrawer";
 import { ToastContainer, toast } from "react-toastify";
+import moment from "moment";
 
 const CourseDescription = ({
     singleCourse = {},
@@ -24,6 +25,8 @@ const CourseDescription = ({
     completedChapters = [],
     feedbacks = [],
     courseExam = {},
+    cheatingBanUntil,
+    course_percentage,
 }) => {
     const [showModal, setShowModal] = useState(false);
     const [selectedChapter, setSelectedChapter] = useState(null);
@@ -92,6 +95,10 @@ const CourseDescription = ({
             });
         }, 2000);
     };
+    const now = new Date();
+    const banUntil = cheatingBanUntil ? new Date(cheatingBanUntil) : null;
+    const isBanActive = banUntil && banUntil > now;
+    console.log({ cheatingBanUntil, banUntil, isBanActive });
 
     return (
         <>
@@ -134,12 +141,29 @@ const CourseDescription = ({
                                 {auth?.user?.role !== "Teacher" ? (
                                     isEnrolled?.course_id ===
                                     singleCourse?.id ? (
-                                        <button
-                                            className="bg-gray-300 text-gray-500 px-4 py-2 rounded-md cursor-not-allowed"
-                                            disabled
-                                        >
-                                            Enrolled
-                                        </button>
+                                        <div className="flex space-x-3 items-center w-full">
+                                            <button
+                                                className="bg-gray-300 text-gray-500 px-4 py-2 rounded-md cursor-not-allowed"
+                                                disabled
+                                            >
+                                                Enrolled
+                                            </button>
+
+                                            {course_percentage && (
+                                                <div className="flex items-center justify-center ">
+                                                    <div className="flex items-center justify-center  bg-blue-50 border border-blue-200 text-blue-800 px-5 py-2.5 rounded-md text-sm font-semibold shadow-sm">
+                                                        Your Course Result:{" "}
+                                                        {course_percentage}%
+                                                        {course_percentage >
+                                                            75 && (
+                                                            <div className="flex mx-2">
+                                                                <Download className="size-5 cursor-pointer" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
                                     ) : (
                                         <Link
                                             href={`/add_to_cart/id/${singleCourse.id}`}
@@ -199,6 +223,7 @@ const CourseDescription = ({
                                     )
                                 )}
                             </div>
+
                             {singleCourse.publish === "Pending" && (
                                 <div className="bg-blue-50 border border-blue-300 text-blue-800 text-sm px-4 py-2 rounded-lg w-fit">
                                     Your course is being reviewed for guideline
@@ -327,7 +352,8 @@ const CourseDescription = ({
                             {/* Exam Button Section */}
                             {isEnrolled?.course_id === singleCourse?.id &&
                             completedChapters.length === chapters.length &&
-                            chapters.length > 0 ? (
+                            chapters.length > 0 &&
+                            !isBanActive ? (
                                 <div className="mt-6">
                                     <button
                                         onClick={() =>
@@ -343,12 +369,21 @@ const CourseDescription = ({
                             ) : (
                                 <div className="mt-6">
                                     <button
-                                        title="Complete all chapters to become eligible for the exam"
                                         disabled
-                                        className="w-full bg-gray-200  text-black  py-2 px-4 rounded-md transition-colors"
+                                        className="w-full bg-gray-200 text-black py-2 px-4 rounded-md transition-colors"
                                     >
-                                        Get Certified Now{" "}
+                                        Get Certified Now
                                     </button>
+                                    {isBanActive && (
+                                        <p className="text-sm text-red-600 mt-5">
+                                            You are temporarily banned due to
+                                            cheating. Please try again after{" "}
+                                            {moment(banUntil).format(
+                                                "DD-MM-YYYY"
+                                            )}
+                                            .
+                                        </p>
+                                    )}
                                 </div>
                             )}
                         </aside>

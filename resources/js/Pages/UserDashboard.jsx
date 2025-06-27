@@ -43,7 +43,7 @@ const TeacherDashboard = ({
 
     return (
         <>
-            <Head title="Profile" />
+            <Head title="User Dashboard" />
             <Navbar auth={auth} />
             <ToastContainer />
 

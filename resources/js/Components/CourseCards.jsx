@@ -79,11 +79,14 @@ const CourseCards = ({ auth, data = [], text, flag }) => {
                                                 : course.course_desc}
                                         </p>
                                         <div className="flex justify-between items-center mt-4">
-                                            <span className="text-md font-semibold text-blue-600">
+                                            <span className="text-md font-semibold text-blue-600 w-1/2">
                                                 {course.course_amount === "0"
                                                     ? "FREE"
-                                                    : `PKR ${course.course_amount}`}
+                                                    : `PKR ${Number(
+                                                          course.course_amount
+                                                      ).toLocaleString()}`}
                                             </span>
+
                                             <Link
                                                 href={`/course/id/${course.id}`}
                                                 className="px-4 py-2 bg-[#1d4ed8] text-white text-sm rounded-md hover:bg-[#2563eb] transition"

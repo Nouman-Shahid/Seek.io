@@ -15,7 +15,6 @@ const MemberProfile = ({ user = {}, data = [], auth }) => {
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Sidebar */}
                     <aside className="w-[30%] shadow-xl h-fit p-6 rounded-2xl space-y-6 text-center">
-                        {/* Profile Image */}
                         <div className="flex flex-col items-center">
                             {user.profile_image ? (
                                 <img
@@ -29,21 +28,18 @@ const MemberProfile = ({ user = {}, data = [], auth }) => {
                             )}
                         </div>
 
-                        {/* Name */}
                         <div className="space-y-1">
                             <h2 className="text-xl font-bold text-gray-800">
                                 {user.name}
                             </h2>
                         </div>
 
-                        {/* Address */}
                         <div className="space-y-1">
                             <p className="text-sm text-gray-600">
                                 {user.address}
                             </p>
                         </div>
 
-                        {/* Headline */}
                         <div className="space-y-1">
                             <p className="text-gray-500 italic">
                                 {user.profile_headline}
@@ -60,14 +56,15 @@ const MemberProfile = ({ user = {}, data = [], auth }) => {
                                     Contact
                                 </a>
                             )}
-                            {auth.user?.role === "Teacher" && (
-                                <Link
-                                    href={`/payout_&_earnings/id/${auth.user.id}`}
-                                    className="block lg:w-full w-3/4 px-2 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-center transition-all"
-                                >
-                                    Payouts & Earnings
-                                </Link>
-                            )}
+                            {auth.user?.role === "Teacher" &&
+                                auth?.user?.id === user.id && (
+                                    <Link
+                                        href={`/payout_&_earnings/id/${auth.user.id}`}
+                                        className="block lg:w-full w-3/4 px-2 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-center transition-all"
+                                    >
+                                        Payouts & Earnings
+                                    </Link>
+                                )}
                         </div>
                     </aside>
 
@@ -90,11 +87,6 @@ const MemberProfile = ({ user = {}, data = [], auth }) => {
                                         ? "My Courses"
                                         : "Enrolled Courses"}
                                 </h2>
-                                {auth?.user?.role === "Teacher" && (
-                                    <Link href="/makecourse">
-                                        <IoIosAddCircle className="text-blue-600 hover:text-blue-700 text-3xl" />
-                                    </Link>
-                                )}
                             </div>
 
                             <CourseCards data={data} auth={auth} />

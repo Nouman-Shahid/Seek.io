@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\ExamResults;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -19,9 +20,9 @@ class UserController extends Controller
         $request->validate([
             'role' => 'required|in:Student,Teacher',
             'course' => 'required|in:It,Business,Science,Engineering,Humanities,Other',
-            'profile_image' => 'required|string|max:500',
+            'profile_image' => 'required|string',
             'location' => 'required|string|max:500',
-            'profile_about' => 'required|string|max:500',
+            'profile_about' => 'required|string',
             'profile_headline' => 'required|string|max:400',
         ]);
 

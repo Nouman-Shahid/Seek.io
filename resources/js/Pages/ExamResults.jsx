@@ -9,13 +9,12 @@ import Navbar from "@/Components/Navbar";
 import { Head, router } from "@inertiajs/react";
 import jsPDF from "jspdf";
 
-const ExamResults = ({ results, total_questions, auth }) => {
+const ExamResults = ({ results, total_questions, auth, percentage }) => {
     useEffect(() => {
         AOS.init({ duration: 800 });
     }, []);
 
     results = results || {};
-    const percentage = (results.score / total_questions) * 100 || 0;
     const pass = percentage >= 75;
 
     const handleDownloadCertificate = () => {
@@ -194,14 +193,14 @@ const ExamResults = ({ results, total_questions, auth }) => {
                                         Correct
                                     </div>
                                 </div>
-                                <div className="bg-white rounded-xl shadow p-3 w-24">
+                                {/* <div className="bg-white rounded-xl shadow p-3 w-24">
                                     <div className="text-lg font-bold">
                                         {total_questions} min
                                     </div>
                                     <div className="text-xs text-gray-500">
                                         Total Time
                                     </div>
-                                </div>
+                                </div> */}
                                 <div className="bg-white rounded-xl shadow p-3 w-24">
                                     <div
                                         className={`text-lg font-bold ${

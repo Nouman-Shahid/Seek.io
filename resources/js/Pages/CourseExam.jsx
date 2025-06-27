@@ -3,9 +3,10 @@ import { Head, useForm, router } from "@inertiajs/react";
 import Navbar from "@/Components/Navbar";
 import * as cam from "@mediapipe/camera_utils";
 import { FaceMesh } from "@mediapipe/face_mesh";
-import { Hands } from "@mediapipe/hands"; // ✅ Make sure this is imported at the top
+import { Hands } from "@mediapipe/hands";
+import moment from "moment";
 
-const CourseExam = ({ course, questions, auth }) => {
+const CourseExam = ({ course, questions, auth, cheatingBanUntil }) => {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [cheatingDetected, setCheatingDetected] = useState(false);
     const [warnings, setWarnings] = useState(0);
@@ -377,11 +378,16 @@ const CourseExam = ({ course, questions, auth }) => {
         return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
     };
 
+    const now = new Date();
+    const banUntil = cheatingBanUntil ? new Date(cheatingBanUntil) : null;
+    const isBanActive = banUntil && banUntil > now;
+    console.log({ cheatingBanUntil, banUntil, isBanActive });
+
     if (!examStarted) {
         return (
             <div className="min-h-screen bg-gray-50 flex flex-col">
                 <Navbar auth={auth} />
-                <Head title="Exam Instructions" />
+                <Head title="Course Exam" />
                 <div className="flex-1 flex items-center justify-center p-6">
                     <div className="bg-white shadow-xl rounded-2xl p-8 max-w-2xl w-full">
                         <div className="text-center mb-8">
@@ -500,34 +506,29 @@ const CourseExam = ({ course, questions, auth }) => {
         <>
             <Navbar auth={auth} />
             <Head title="Exam" />
-            <div className="flex flex-col min-h-screen bg-gray-50">
-                {/* Exam Header */}
-                <div className="bg-blue-700 text-white py-4 px-6 shadow-md">
-                    <div className="container mx-auto flex justify-between items-center">
-                        <h1 className="text-xl sm:text-2xl font-bold">
-                            {course.course_title} Exam
-                        </h1>
-                        <div className="flex items-center space-x-6">
-                            <div className="flex items-center bg-blue-800 px-4 py-2 rounded-full">
-                                <svg
-                                    className="h-5 w-5 mr-2"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    />
-                                </svg>
-                                <span className="font-semibold">
-                                    {formatTime(timeLeft)}
-                                </span>
-                            </div>
-                            {warnings > 0 && (
-                                <div className="flex items-center bg-red-100 px-4 py-2 rounded-full text-red-800">
+            {isBanActive ? (
+                <div className="flex items-center justify-center min-h-screen">
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg shadow-md max-w-lg text-center">
+                        <p className="text-base font-medium">
+                            You are temporarily banned due to suspicious
+                            activity. Please try again after{" "}
+                            <span className="font-semibold">
+                                {moment(banUntil).format("DD-MM-YYYY")}
+                            </span>
+                            .
+                        </p>
+                    </div>
+                </div>
+            ) : (
+                <div className="flex flex-col min-h-screen bg-gray-50">
+                    {/* Exam Header */}
+                    <div className="bg-blue-700 text-white py-4 px-6 shadow-md">
+                        <div className="container mx-auto flex justify-between items-center">
+                            <h1 className="text-xl sm:text-2xl font-bold">
+                                {course.course_title} Exam
+                            </h1>
+                            <div className="flex items-center space-x-6">
+                                <div className="flex items-center bg-blue-800 px-4 py-2 rounded-full">
                                     <svg
                                         className="h-5 w-5 mr-2"
                                         fill="none"
@@ -538,162 +539,183 @@ const CourseExam = ({ course, questions, auth }) => {
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
                                             strokeWidth={2}
-                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                                         />
                                     </svg>
                                     <span className="font-semibold">
-                                        Warning: {warnings}/3
+                                        {formatTime(timeLeft)}
                                     </span>
                                 </div>
-                            )}
+                                {warnings > 0 && (
+                                    <div className="flex items-center bg-red-100 px-4 py-2 rounded-full text-red-800">
+                                        <svg
+                                            className="h-5 w-5 mr-2"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                                            />
+                                        </svg>
+                                        <span className="font-semibold">
+                                            Warning: {warnings}/3
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Main Exam Content */}
-                <div className="flex-1 p-4 sm:p-6 container mx-auto">
-                    <div className="bg-white shadow-2xl rounded-2xl flex flex-col md:flex-row overflow-hidden border border-gray-200">
-                        {/* Left Column - Question */}
-                        <div className="flex-1 p-6 sm:p-8 flex flex-col">
-                            <div className="mb-6">
-                                <h2 className="text-sm sm:text-base text-blue-700 font-semibold mb-2">
-                                    Question {currentQuestionIndex + 1} of{" "}
-                                    {questions.length}
-                                </h2>
-                                <p className="text-gray-800 text-lg sm:text-xl font-medium leading-relaxed">
-                                    {currentQuestion.question_text}
-                                </p>
-                            </div>
+                    {/* Main Exam Content */}
+                    <div className="flex-1 p-4 sm:p-6 container mx-auto">
+                        <div className="bg-white shadow-2xl rounded-2xl flex flex-col md:flex-row overflow-hidden border border-gray-200">
+                            {/* Left Column - Question */}
+                            <div className="flex-1 p-6 sm:p-8 flex flex-col">
+                                <div className="mb-6">
+                                    <h2 className="text-sm sm:text-base text-blue-700 font-semibold mb-2">
+                                        Question {currentQuestionIndex + 1} of{" "}
+                                        {questions.length}
+                                    </h2>
+                                    <p className="text-gray-800 text-lg sm:text-xl font-medium leading-relaxed">
+                                        {currentQuestion.question_text}
+                                    </p>
+                                </div>
 
-                            {/* Camera Preview for Cheating Detection */}
-                            <div className="mt-auto">
-                                <div className="relative bg-gray-100 rounded-xl overflow-hidden w-full max-w-md mx-auto border-2 border-gray-300">
-                                    <video
-                                        ref={videoRef}
-                                        className="w-full h-auto"
-                                        autoPlay
-                                        muted
-                                        playsInline
-                                    ></video>
-                                    <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-2">
-                                        <div className="flex items-center">
-                                            <div
-                                                className={`w-2 h-2 rounded-full mr-2 ${
-                                                    cameraPermissionGranted
-                                                        ? "bg-green-500"
-                                                        : "bg-red-500"
-                                                }`}
-                                            ></div>
-                                            <span>Proctoring Active</span>
+                                {/* Camera Preview for Cheating Detection */}
+                                <div className="mt-auto">
+                                    <div className="relative bg-gray-100 rounded-xl overflow-hidden w-full max-w-md mx-auto border-2 border-gray-300">
+                                        <video
+                                            ref={videoRef}
+                                            className="w-full h-auto"
+                                            autoPlay
+                                            muted
+                                            playsInline
+                                        ></video>
+                                        <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-2">
+                                            <div className="flex items-center">
+                                                <div
+                                                    className={`w-2 h-2 rounded-full mr-2 ${
+                                                        cameraPermissionGranted
+                                                            ? "bg-green-500"
+                                                            : "bg-red-500"
+                                                    }`}
+                                                ></div>
+                                                <span>Proctoring Active</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Right Column - Options */}
+                            <div className="bg-gray-50 w-full md:w-[40%] p-6 sm:p-8 border-t md:border-t-0 md:border-l border-gray-200">
+                                <p className="uppercase tracking-widest text-xs text-gray-500 mb-4">
+                                    Select your answer
+                                </p>
+                                <div className="space-y-3">
+                                    {currentQuestion.options.map((option) => {
+                                        const isSelected =
+                                            currentAnswer === option.id;
+                                        return (
+                                            <label
+                                                key={option.id}
+                                                htmlFor={`option-${option.id}`}
+                                                className={`flex items-center gap-3 border-2 p-4 rounded-xl cursor-pointer transition-all duration-200 ${
+                                                    isSelected
+                                                        ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200"
+                                                        : "border-gray-300 hover:border-blue-400 hover:bg-blue-50"
+                                                }`}
+                                            >
+                                                <input
+                                                    id={`option-${option.id}`}
+                                                    type="radio"
+                                                    name={`question-${currentQuestion.id}`}
+                                                    checked={isSelected}
+                                                    onChange={() =>
+                                                        handleOptionChange(
+                                                            currentQuestion.id,
+                                                            option.id
+                                                        )
+                                                    }
+                                                    className="w-5 h-5 accent-blue-600"
+                                                />
+                                                <span className="text-gray-700 font-medium text-sm sm:text-base">
+                                                    {option.option_text}
+                                                </span>
+                                            </label>
+                                        );
+                                    })}
+                                </div>
+                            </div>
                         </div>
 
-                        {/* Right Column - Options */}
-                        <div className="bg-gray-50 w-full md:w-[40%] p-6 sm:p-8 border-t md:border-t-0 md:border-l border-gray-200">
-                            <p className="uppercase tracking-widest text-xs text-gray-500 mb-4">
-                                Select your answer
-                            </p>
-                            <div className="space-y-3">
-                                {currentQuestion.options.map((option) => {
-                                    const isSelected =
-                                        currentAnswer === option.id;
-                                    return (
-                                        <label
-                                            key={option.id}
-                                            htmlFor={`option-${option.id}`}
-                                            className={`flex items-center gap-3 border-2 p-4 rounded-xl cursor-pointer transition-all duration-200 ${
-                                                isSelected
-                                                    ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200"
-                                                    : "border-gray-300 hover:border-blue-400 hover:bg-blue-50"
-                                            }`}
+                        {/* Navigation Buttons */}
+                        <div className="flex flex-wrap justify-between items-center mt-8">
+                            <div className="text-sm text-gray-600">
+                                {warnings > 0 && (
+                                    <div className="flex items-center bg-yellow-50 border border-yellow-200 rounded-full px-4 py-2">
+                                        <svg
+                                            className="h-4 w-4 text-yellow-600 mr-2"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
                                         >
-                                            <input
-                                                id={`option-${option.id}`}
-                                                type="radio"
-                                                name={`question-${currentQuestion.id}`}
-                                                checked={isSelected}
-                                                onChange={() =>
-                                                    handleOptionChange(
-                                                        currentQuestion.id,
-                                                        option.id
-                                                    )
-                                                }
-                                                className="w-5 h-5 accent-blue-600"
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                                             />
-                                            <span className="text-gray-700 font-medium text-sm sm:text-base">
-                                                {option.option_text}
-                                            </span>
-                                        </label>
-                                    );
-                                })}
+                                        </svg>
+                                        <span>
+                                            Warning: {warnings}/3 - Keep your
+                                            face centered
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="flex flex-wrap justify-end items-center gap-3 mt-4 sm:mt-0">
+                                <button
+                                    onClick={handlePreviousQuestion}
+                                    disabled={currentQuestionIndex === 0}
+                                    className={`px-5 py-2.5 rounded-full font-medium transition-all text-sm ${
+                                        currentQuestionIndex === 0
+                                            ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                                            : "bg-blue-100 hover:bg-blue-200 text-blue-700"
+                                    }`}
+                                >
+                                    Previous
+                                </button>
+
+                                {currentQuestionIndex ===
+                                questions.length - 1 ? (
+                                    <button
+                                        onClick={handleSubmitExam}
+                                        disabled={processing}
+                                        className="px-6 py-2.5 rounded-full font-medium bg-blue-700 hover:bg-blue-800 text-white disabled:opacity-50 transition-all text-sm"
+                                    >
+                                        {processing
+                                            ? "Submitting..."
+                                            : "Submit Exam"}
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={handleNextQuestion}
+                                        className="px-6 py-2.5 rounded-full font-medium bg-blue-700 hover:bg-blue-800 text-white transition-all text-sm"
+                                    >
+                                        Next Question
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>
-
-                    {/* Navigation Buttons */}
-                    <div className="flex flex-wrap justify-between items-center mt-8">
-                        <div className="text-sm text-gray-600">
-                            {warnings > 0 && (
-                                <div className="flex items-center bg-yellow-50 border border-yellow-200 rounded-full px-4 py-2">
-                                    <svg
-                                        className="h-4 w-4 text-yellow-600 mr-2"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                                        />
-                                    </svg>
-                                    <span>
-                                        Warning: {warnings}/3 - Keep your face
-                                        centered
-                                    </span>
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="flex flex-wrap justify-end items-center gap-3 mt-4 sm:mt-0">
-                            <button
-                                onClick={handlePreviousQuestion}
-                                disabled={currentQuestionIndex === 0}
-                                className={`px-5 py-2.5 rounded-full font-medium transition-all text-sm ${
-                                    currentQuestionIndex === 0
-                                        ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                                        : "bg-blue-100 hover:bg-blue-200 text-blue-700"
-                                }`}
-                            >
-                                Previous
-                            </button>
-
-                            {currentQuestionIndex === questions.length - 1 ? (
-                                <button
-                                    onClick={handleSubmitExam}
-                                    disabled={processing}
-                                    className="px-6 py-2.5 rounded-full font-medium bg-blue-700 hover:bg-blue-800 text-white disabled:opacity-50 transition-all text-sm"
-                                >
-                                    {processing
-                                        ? "Submitting..."
-                                        : "Submit Exam"}
-                                </button>
-                            ) : (
-                                <button
-                                    onClick={handleNextQuestion}
-                                    className="px-6 py-2.5 rounded-full font-medium bg-blue-700 hover:bg-blue-800 text-white transition-all text-sm"
-                                >
-                                    Next Question
-                                </button>
-                            )}
-                        </div>
-                    </div>
                 </div>
-            </div>
+            )}
         </>
     );
 };

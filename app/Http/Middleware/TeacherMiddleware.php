@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Symfony\Component\HttpFoundation\Response;
 
 class TeacherMiddleware
@@ -19,6 +20,6 @@ class TeacherMiddleware
         if (Auth::check() && Auth::user()->role === 'Teacher') {
             return $next($request);
         }
-        return $next($request);
+        return Redirect::route('home');
     }
 }

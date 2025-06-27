@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Symfony\Component\HttpFoundation\Response;
 
 class AdminMiddleWare
@@ -19,6 +20,6 @@ class AdminMiddleWare
         if (Auth::check() && Auth::user()->role === 'Admin') {
             return $next($request);
         }
-        return $next($request);
+        return Redirect::route('home');
     }
 }

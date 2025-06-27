@@ -137,7 +137,7 @@ const AdminQuiz = ({ quizzes }) => {
                             }
                             required
                         >
-                            <option value="IT">IT</option>
+                            <option value="It">IT</option>
                             <option value="Business">Business</option>
                             <option value="Science">Science</option>
                             <option value="Engineering">Engineering</option>

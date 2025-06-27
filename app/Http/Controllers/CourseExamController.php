@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CheatingDetection;
 use App\Models\Course;
 use App\Models\CourseExam;
 use App\Models\ExamResults;
@@ -9,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use phpDocumentor\Reflection\DocBlock\Tags\Example;
 
 class CourseExamController extends Controller
 {
@@ -134,17 +136,35 @@ class CourseExamController extends Controller
 
     public function getExamInfo($id)
     {
+        $user = Auth::user();
+
         $exam = CourseExam::where('course_id', "=", $id)->first();
 
         $course = Course::find($id);
 
+
+
+        $cheatingRecord = CheatingDetection::where('course_id', $id)
+            ->where('user_id', $user?->id)
+            ->where('is_detected', true)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        $cheatingBanUntil = $cheatingRecord?->cheating_ban_until;
+
         // dd($exam, $course); 
 
-        return Inertia::render('ExamInstructions', ['exam' => $exam, 'course' => $course]);
+        return Inertia::render('ExamInstructions', [
+            'exam' => $exam,
+            'course' => $course,
+            'cheatingBanUntil' => $cheatingBanUntil
+        ]);
     }
 
     public function exam($id)
     {
+        $user = Auth::user();
+
         $course = Course::find($id);
 
         // Fetch all questions related to this course
@@ -162,9 +182,18 @@ class CourseExamController extends Controller
             return $question;
         });
 
+        $cheatingRecord = CheatingDetection::where('course_id', $id)
+            ->where('user_id', $user?->id)
+            ->where('is_detected', true)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        $cheatingBanUntil = $cheatingRecord?->cheating_ban_until;
+
         return Inertia::render('CourseExam', [
             'course' => $course,
             'questions' => $questionsWithOptions,
+            'cheatingBanUntil' => $cheatingBanUntil
         ]);
     }
 
@@ -230,9 +259,15 @@ class CourseExamController extends Controller
             ->where('course_id', '=', $courseId)
             ->count();
 
+        $percentage = $results->score / $total_questions * 100;
+
+        ExamResults::where('course_id', $courseId)
+            ->update(['percentage' => $percentage]);
+
         return Inertia::render('ExamResults', [
             'results' => $results,
             'total_questions' => $total_questions,
+            'percentage' => $percentage,
         ]);
     }
 }
