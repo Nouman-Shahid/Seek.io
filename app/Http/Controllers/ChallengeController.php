@@ -19,7 +19,7 @@ class ChallengeController extends Controller
 
         $latestAttempt = StudentDailyQuiz::where('user_id', $user->id)
             ->whereDate('quiz_date', now()->toDateString())
-            ->latest()
+            ->latest('id')
             ->first();
 
         $streak = $latestAttempt ? $latestAttempt->streak_count : 0;

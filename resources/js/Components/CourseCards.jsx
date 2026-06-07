@@ -1,11 +1,17 @@
 import React, { useRef, useMemo } from "react";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 
 const CourseCards = ({ auth, data = [], text, flag }) => {
+    const page = usePage();
+    const enrolledIds = (page.props?.auth?.enrolledCourseIds ?? []).map(Number);
+    const currentUserId = page.props?.auth?.user?.id ?? auth?.user?.id;
+
     const filteredData = useMemo(() => {
         let filtered = data;
         if (flag === "Free") {
-            filtered = data.filter((course) => course.course_amount === "0");
+            filtered = data.filter(
+                (course) => Number(course.course_amount) === 0
+            );
         }
         const shuffled = [...filtered].sort(() => 0.5 - Math.random());
         return shuffled.slice(0, 9);
@@ -39,7 +45,7 @@ const CourseCards = ({ auth, data = [], text, flag }) => {
                                         alt={course.course_title}
                                     />
 
-                                    {auth?.user?.id ===
+                                    {currentUserId ===
                                         course.course_teacher && (
                                         <span
                                             className={`absolute top-3 right-3 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md ${
@@ -59,7 +65,28 @@ const CourseCards = ({ auth, data = [], text, flag }) => {
                                         </span>
                                     )}
 
-                                    {}
+                                    {/* Enrolled badge — shown when the current
+                                        student is enrolled in this course */}
+                                    {currentUserId !== course.course_teacher &&
+                                        enrolledIds.includes(
+                                            Number(course.id)
+                                        ) && (
+                                            <span className="absolute top-3 left-3 inline-flex items-center gap-1 bg-emerald-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md ring-1 ring-white/30">
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    viewBox="0 0 20 20"
+                                                    fill="currentColor"
+                                                    className="w-3.5 h-3.5"
+                                                >
+                                                    <path
+                                                        fillRule="evenodd"
+                                                        d="M16.704 5.29a1 1 0 010 1.42l-7.5 7.5a1 1 0 01-1.42 0l-3.5-3.5a1 1 0 111.42-1.42l2.79 2.79 6.79-6.79a1 1 0 011.42 0z"
+                                                        clipRule="evenodd"
+                                                    />
+                                                </svg>
+                                                Enrolled
+                                            </span>
+                                        )}
 
                                     <div className="p-4 flex flex-col justify-between h-[240px]">
                                         <h5 className="text-lg font-semibold text-gray-900">
@@ -80,7 +107,8 @@ const CourseCards = ({ auth, data = [], text, flag }) => {
                                         </p>
                                         <div className="flex justify-between items-center mt-4">
                                             <span className="text-md font-semibold text-blue-600 w-1/2">
-                                                {course.course_amount === "0"
+                                                {Number(course.course_amount) ===
+                                                0
                                                     ? "FREE"
                                                     : `PKR ${Number(
                                                           course.course_amount

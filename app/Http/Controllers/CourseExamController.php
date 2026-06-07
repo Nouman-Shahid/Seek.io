@@ -190,6 +190,10 @@ class CourseExamController extends Controller
 
         $cheatingBanUntil = $cheatingRecord?->cheating_ban_until;
 
+        // Exam duration in minutes (1 minute per question, minimum 5). The
+        // React page reads `course.exam_duration` to drive the countdown timer.
+        $course->exam_duration = max(5, $questionsWithOptions->count());
+
         return Inertia::render('CourseExam', [
             'course' => $course,
             'questions' => $questionsWithOptions,

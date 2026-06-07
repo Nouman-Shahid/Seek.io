@@ -48,7 +48,7 @@ class SearchController extends Controller
                 DB::raw("NULL as profile_headline"),
                 DB::raw("NULL as email"),
                 DB::raw("'course' as type"),
-                DB::raw("(publish = 'Published')::integer as is_published") // Cast to integer
+                DB::raw("(CASE WHEN publish = 'Published' THEN 1 ELSE 0 END) as is_published") // MySQL boolean->int
             )
             ->where('publish', 'Published')
             ->where(function ($query) use ($search, $searchTerms) {

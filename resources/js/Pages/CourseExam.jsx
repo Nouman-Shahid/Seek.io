@@ -13,7 +13,10 @@ const CourseExam = ({ course, questions, auth, cheatingBanUntil }) => {
     const [cameraPermissionGranted, setCameraPermissionGranted] =
         useState(false);
     const [examStarted, setExamStarted] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(course.exam_duration * 60); // in seconds
+    const [timeLeft, setTimeLeft] = useState(
+        (Number(course.exam_duration) || 5) * 60
+    ); // in seconds
+    const [proctoringError, setProctoringError] = useState(false);
 
     const videoRef = useRef(null);
     const cameraRef = useRef(null);
@@ -58,61 +61,8 @@ const CourseExam = ({ course, questions, auth, cheatingBanUntil }) => {
         }
     };
 
-    // 👇 Full useEffect for initializing MediaPipe Hands tracking
-    useEffect(() => {
-        if (!cameraPermissionGranted || !examStarted) return;
-
-        const hands = new Hands({
-            locateFile: (file) =>
-                ` https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
-        });
-
-        hands.setOptions({
-            maxNumHands: 2,
-            modelComplexity: 1,
-            minDetectionConfidence: 0.5,
-            minTrackingConfidence: 0.5,
-        });
-
-        hands.onResults(onHandResults);
-
-        if (navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices
-                .getUserMedia({
-                    video: {
-                        width: 640,
-                        height: 480,
-                        facingMode: "user",
-                    },
-                })
-                .then((stream) => {
-                    if (videoRef.current) {
-                        videoRef.current.srcObject = stream;
-                        videoRef.current.play();
-                        const camera = new cam.Camera(videoRef.current, {
-                            onFrame: async () => {
-                                await hands.send({ image: videoRef.current });
-                            },
-                            width: 640,
-                            height: 480,
-                        });
-                        camera.start();
-                    }
-                })
-                .catch((err) => {
-                    console.error("Hand tracking camera error:", err);
-                    setCheatingDetected(true);
-                });
-        }
-
-        return () => {
-            if (videoRef.current?.srcObject) {
-                videoRef.current.srcObject
-                    .getTracks()
-                    .forEach((track) => track.stop());
-            }
-        };
-    }, [cameraPermissionGranted, examStarted]);
+    // (Hand tracking is initialized inside the single consolidated camera
+    // effect below — see "Proctoring: single camera stream".)
 
     // 🚨 Timer countdown
     useEffect(() => {
@@ -161,86 +111,116 @@ const CourseExam = ({ course, questions, auth, cheatingBanUntil }) => {
         };
     }, [examStarted]);
 
-    // 🚨 Camera Permission Detection
+    // 🚨 Proctoring: single camera stream feeding FaceMesh + Hands.
+    //
+    // NOTE: A camera supports only one active stream on most systems, so we
+    // acquire it ONCE here (instead of in several competing effects) and feed
+    // both MediaPipe models from the same stream. A camera/model failure
+    // degrades proctoring (shows a banner) but does NOT cancel the exam.
     useEffect(() => {
         if (!examStarted) return;
 
-        const checkCameraPermission = async () => {
+        let stream = null;
+        let cancelled = false;
+
+        const setup = async () => {
+            if (!navigator.mediaDevices?.getUserMedia) {
+                setProctoringError(true);
+                setCameraPermissionGranted(false);
+                return; // insecure origin / no camera API — exam still runs
+            }
+
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: true,
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: { width: 640, height: 480, facingMode: "user" },
                 });
-                const tracks = stream.getTracks();
-                tracks.forEach((track) => track.stop());
-                setCameraPermissionGranted(true);
             } catch (err) {
-                setCheatingDetected(true);
+                console.error("Camera error:", err);
+                setProctoringError(true);
+                setCameraPermissionGranted(false);
+                return; // do NOT treat as cheating
+            }
+
+            if (cancelled) {
+                stream.getTracks().forEach((t) => t.stop());
+                return;
+            }
+
+            setCameraPermissionGranted(true);
+            setProctoringError(false);
+
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream;
+                try {
+                    await videoRef.current.play();
+                } catch (e) {
+                    /* autoplay race — ignored */
+                }
+            }
+
+            try {
+                const faceMesh = new FaceMesh({
+                    locateFile: (file) =>
+                        `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`,
+                });
+                faceMesh.setOptions({
+                    maxNumFaces: 1,
+                    refineLandmarks: true,
+                    minDetectionConfidence: 0.5,
+                    minTrackingConfidence: 0.5,
+                });
+                faceMesh.onResults(onResults);
+
+                const hands = new Hands({
+                    locateFile: (file) =>
+                        `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
+                });
+                hands.setOptions({
+                    maxNumHands: 2,
+                    modelComplexity: 1,
+                    minDetectionConfidence: 0.5,
+                    minTrackingConfidence: 0.5,
+                });
+                hands.onResults(onHandResults);
+
+                cameraRef.current = new cam.Camera(videoRef.current, {
+                    onFrame: async () => {
+                        try {
+                            await faceMesh.send({ image: videoRef.current });
+                            await hands.send({ image: videoRef.current });
+                        } catch (e) {
+                            /* model still loading / CDN slow — skip frame */
+                        }
+                    },
+                    width: 640,
+                    height: 480,
+                });
+                cameraRef.current.start();
+            } catch (e) {
+                console.error("Proctoring model init failed:", e);
+                setProctoringError(true); // degraded, but exam continues
             }
         };
 
-        const interval = setInterval(checkCameraPermission, 5000);
-        return () => clearInterval(interval);
-    }, [examStarted]);
-
-    // 🚨 Head Movement Detection with MediaPipe
-    useEffect(() => {
-        if (!cameraPermissionGranted || !examStarted) return;
-
-        const faceMesh = new FaceMesh({
-            locateFile: (file) =>
-                `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`,
-        });
-
-        faceMesh.setOptions({
-            maxNumFaces: 1,
-            refineLandmarks: true,
-            minDetectionConfidence: 0.5,
-            minTrackingConfidence: 0.5,
-        });
-
-        faceMesh.onResults(onResults);
-
-        if (navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices
-                .getUserMedia({
-                    video: {
-                        width: 640,
-                        height: 480,
-                        facingMode: "user",
-                    },
-                })
-                .then((stream) => {
-                    if (videoRef.current) {
-                        videoRef.current.srcObject = stream;
-                        videoRef.current.play();
-                    }
-
-                    cameraRef.current = new cam.Camera(videoRef.current, {
-                        onFrame: async () => {
-                            await faceMesh.send({ image: videoRef.current });
-                        },
-                        width: 640,
-                        height: 480,
-                    });
-                    cameraRef.current.start();
-                })
-                .catch((err) => {
-                    console.error("Camera error: ", err);
-                    setCheatingDetected(true);
-                });
-        }
+        setup();
 
         return () => {
-            if (cameraRef.current) {
-                cameraRef.current.stop();
+            cancelled = true;
+            try {
+                cameraRef.current?.stop();
+            } catch (e) {
+                /* ignore */
             }
+            cameraRef.current = null;
+            if (stream) stream.getTracks().forEach((t) => t.stop());
             if (videoRef.current?.srcObject) {
                 videoRef.current.srcObject
                     .getTracks()
-                    .forEach((track) => track.stop());
+                    .forEach((t) => t.stop());
+                videoRef.current.srcObject = null;
             }
         };
-    }, [cameraPermissionGranted, examStarted]);
+    }, [examStarted]);
 
     const onResults = (results) => {
         if (
@@ -319,22 +299,23 @@ const CourseExam = ({ course, questions, auth, cheatingBanUntil }) => {
     };
 
     const requestCameraAccess = async () => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: {
-                    width: 640,
-                    height: 480,
-                    facingMode: "user",
-                },
-            });
-            stream.getTracks().forEach((track) => track.stop());
-            setCameraPermissionGranted(true);
-            setExamStarted(true);
-        } catch (err) {
-            alert(
-                "Camera access is required to take this exam. Please enable camera permissions."
-            );
+        // Ask for camera permission up front, but ALWAYS start the exam —
+        // proctoring is best-effort and must never block the student.
+        if (navigator.mediaDevices?.getUserMedia) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { width: 640, height: 480, facingMode: "user" },
+                });
+                stream.getTracks().forEach((track) => track.stop());
+                setCameraPermissionGranted(true);
+            } catch (err) {
+                console.error("Camera permission denied/unavailable:", err);
+                setProctoringError(true);
+            }
+        } else {
+            setProctoringError(true);
         }
+        setExamStarted(true);
     };
 
     // Exam Form Handlers
@@ -604,7 +585,13 @@ const CourseExam = ({ course, questions, auth, cheatingBanUntil }) => {
                                                             : "bg-red-500"
                                                     }`}
                                                 ></div>
-                                                <span>Proctoring Active</span>
+                                                <span>
+                                                    {cameraPermissionGranted
+                                                        ? "Proctoring Active"
+                                                        : proctoringError
+                                                        ? "Proctoring Unavailable (exam continues)"
+                                                        : "Connecting camera…"}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>

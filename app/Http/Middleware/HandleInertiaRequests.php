@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Enrollments;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -29,10 +30,20 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $user,
+                // Course IDs the current user is enrolled in — used to show
+                // an "Enrolled" badge on course cards across the app.
+                'enrolledCourseIds' => $user
+                    ? Enrollments::where('student_id', $user->id)
+                        ->pluck('course_id')
+                        ->map(fn ($id) => (int) $id)
+                        ->values()
+                    : [],
             ],
         ];
     }

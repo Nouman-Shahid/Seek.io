@@ -17,6 +17,16 @@ import { ToastContainer, toast } from "react-toastify";
 import moment from "moment";
 import jsPDF from "jspdf";
 
+// Normalize any YouTube link (watch?v=, youtu.be/, shorts/, or already-embed)
+// into an embeddable /embed/ URL so it can render inside an <iframe>.
+const toEmbedUrl = (url) => {
+    if (!url) return url;
+    const match = url.match(
+        /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/
+    );
+    return match ? `https://www.youtube.com/embed/${match[1]}` : url;
+};
+
 const CourseDescription = ({
     singleCourse = {},
     auth,
@@ -560,8 +570,12 @@ const CourseDescription = ({
                                             </div>
                                         ) : (
                                             <iframe
-                                                src={selectedChapter.video}
+                                                src={toEmbedUrl(
+                                                    selectedChapter.video
+                                                )}
+                                                title={selectedChapter.title}
                                                 className="w-full h-64 md:h-96 rounded-md border border-gray-300 shadow-sm"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                                 allowFullScreen
                                             />
                                         )}

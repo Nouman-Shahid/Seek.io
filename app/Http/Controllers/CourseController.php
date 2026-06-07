@@ -182,7 +182,7 @@ class CourseController extends Controller
 
         // Calculate the average rating and round to 1 decimal place
         $avgRating = Feedback::where('course_id', $validated['course_id'])
-            ->selectRaw('AVG(CAST(rating AS INTEGER)) as avg_rating')
+            ->selectRaw('AVG(CAST(rating AS UNSIGNED)) as avg_rating')
             ->value('avg_rating');
 
         $avgRating = round($avgRating, 1); // round to 1 decimal place
@@ -201,7 +201,7 @@ class CourseController extends Controller
         $feedback->delete();
 
         $avgRating = Feedback::where('course_id', $courseId)
-            ->selectRaw('AVG(CAST(rating AS INTEGER)) as avg_rating')
+            ->selectRaw('AVG(CAST(rating AS UNSIGNED)) as avg_rating')
             ->value('avg_rating');
 
         $avgRating = $avgRating ? round($avgRating, 1) : null;
