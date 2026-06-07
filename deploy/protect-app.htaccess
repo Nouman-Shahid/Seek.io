@@ -1,0 +1,15 @@
+# Place this file at:  htdocs/laravel/.htaccess
+# It blocks all direct web access to the framework files (.env, source code,
+# etc.) since the app lives under the public web root on shared hosting.
+# Requests are only ever served through htdocs/index.php.
+
+# Apache 2.4+
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+
+# Apache 2.2 fallback
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+</IfModule>
